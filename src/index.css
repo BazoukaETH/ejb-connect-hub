@@ -1,105 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* EJB Design System
+ * All colors HSL. Tokens map to brand book.
+ * Base: light gray surface. Blue is primary. Neon accents are spot-only.
+ */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Brand palette (HSL) */
+    --ejb-blue: 232 85% 61%;          /* #485CF0 */
+    --ejb-blue-700: 232 70% 50%;
+    --ejb-blue-50: 232 100% 96%;
+    --ejb-cyan: 180 75% 84%;          /* #B8F4F4 */
+    --ejb-black: 0 0% 0%;
+    --ejb-gray: 213 10% 82%;          /* #CDD2D7 */
+    --ejb-gray-600: 215 12% 45%;
+    --ejb-gray-500: 215 10% 60%;
+    --ejb-light-gray: 220 14% 97%;    /* #F6F7F8 */
+    --ejb-neon-yellow: 75 100% 77%;   /* #E9FF89 */
+    --ejb-neon-green: 105 100% 76%;   /* #BAFF84 */
+    --ejb-red: 0 63% 55%;             /* #D64545 muted */
+    --ejb-amber: 38 92% 50%;
+
+    /* Semantic tokens (shadcn) */
+    --background: 220 14% 97%;
+    --foreground: 0 0% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 8%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 232 85% 61%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 0 0% 12%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 215 12% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 232 100% 96%;
+    --accent-foreground: 232 85% 45%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 142 71% 35%;
+    --success-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    --warning: 38 92% 45%;
+    --warning-foreground: 0 0% 100%;
 
-    --sidebar-background: 0 0% 98%;
+    --info: 180 75% 35%;
+    --info-foreground: 0 0% 100%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --border: 213 15% 88%;
+    --input: 213 15% 88%;
+    --ring: 232 85% 61%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --radius: 0.625rem;          /* 10px = md */
+    --radius-sm: 0.375rem;       /* 6px */
+    --radius-lg: 0.875rem;       /* 14px */
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 12% 35%;
+    --sidebar-primary: 232 85% 61%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 232 100% 96%;
+    --sidebar-accent-foreground: 232 85% 45%;
+    --sidebar-border: 213 15% 90%;
+    --sidebar-ring: 232 85% 61%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    /* Chip semantic backgrounds */
+    --chip-paid-bg: 105 100% 88%;
+    --chip-paid-fg: 142 71% 22%;
+    --chip-unpaid-bg: 0 80% 94%;
+    --chip-unpaid-fg: 0 63% 38%;
+    --chip-pending-bg: 38 100% 92%;
+    --chip-pending-fg: 25 80% 32%;
+    --chip-info-bg: 180 75% 92%;
+    --chip-info-fg: 195 60% 28%;
+    --chip-neutral-bg: 220 14% 92%;
+    --chip-neutral-fg: 215 14% 30%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Shadows */
+    --shadow-card: 0 1px 2px 0 hsl(220 14% 20% / 0.04), 0 1px 3px 0 hsl(220 14% 20% / 0.04);
+    --shadow-card-hover: 0 2px 4px 0 hsl(220 14% 20% / 0.06), 0 4px 12px 0 hsl(220 14% 20% / 0.06);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 30% 8%;
     --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
+    --card: 222 25% 11%;
     --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 25% 11%;
     --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 232 85% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 25% 18%;
     --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    --muted: 217 25% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 232 50% 22%;
+    --accent-foreground: 232 100% 90%;
+    --destructive: 0 63% 50%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 217 25% 20%;
+    --input: 217 25% 20%;
+    --ring: 232 85% 65%;
+    --sidebar-background: 222 28% 9%;
+    --sidebar-foreground: 215 20% 70%;
+    --sidebar-primary: 232 85% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 232 40% 18%;
+    --sidebar-accent-foreground: 232 100% 92%;
+    --sidebar-border: 217 25% 18%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  * { @apply border-border; }
+
+  html {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  [lang="ar"], [dir="rtl"] {
+    font-family: Vazirmatn, "Helvetica Neue", sans-serif;
+  }
+
+  /* KPI numerals: tabular for alignment */
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+@layer components {
+  .ejb-card {
+    @apply bg-card border border-border rounded-[var(--radius-lg)];
+    box-shadow: var(--shadow-card);
+  }
+  .ejb-card-hover {
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .ejb-card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+    @apply border-border;
+  }
+
+  /* Status chip base */
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-[var(--radius-sm)];
+  }
+  .chip-paid    { background: hsl(var(--chip-paid-bg));    color: hsl(var(--chip-paid-fg)); }
+  .chip-unpaid  { background: hsl(var(--chip-unpaid-bg));  color: hsl(var(--chip-unpaid-fg)); }
+  .chip-pending { background: hsl(var(--chip-pending-bg)); color: hsl(var(--chip-pending-fg)); }
+  .chip-info    { background: hsl(var(--chip-info-bg));    color: hsl(var(--chip-info-fg)); }
+  .chip-neutral { background: hsl(var(--chip-neutral-bg)); color: hsl(var(--chip-neutral-fg)); }
+  .chip-brand   { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); }
+
+  .data-table th {
+    @apply text-[11px] uppercase tracking-wider font-medium text-muted-foreground py-2 px-3 text-left;
+  }
+  .data-table td {
+    @apply py-2.5 px-3 text-sm border-t border-border;
+  }
+  .data-table tbody tr:hover {
+    background: hsl(var(--ejb-light-gray));
   }
 }
