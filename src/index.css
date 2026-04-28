@@ -182,4 +182,24 @@
   .data-table tbody tr:hover {
     background: hsl(var(--ejb-light-gray));
   }
+
+  /* Section eyebrow label */
+  .ejb-eyebrow {
+    @apply text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground;
+  }
+
+  /* Subtle hairline grid for empty states */
+  .ejb-grid-bg {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.6) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.6) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Skeleton shimmer */
+  .ejb-shimmer {
+    background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--secondary)) 50%, hsl(var(--muted)) 100%);
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-md;
+  }
 }
