@@ -1,9 +1,20 @@
 import { Outlet, useLocation, Link } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Search, Bell, ChevronRight } from "lucide-react";
+import { Search, Bell, ChevronRight, Sparkles } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState, useRef } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const labels: Record<string, string> = {
   "": "Dashboard",
