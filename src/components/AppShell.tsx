@@ -79,50 +79,45 @@ export function AppShell() {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      // Find nearest interactive element
       const btn = target.closest<HTMLElement>(
-        'button, [role="button"], [data-demo-clickable]'
+        'button, [role="button"]'
       );
       if (!btn) return;
+      if (!main.contains(btn)) return;
 
-      // Skip if it's inside something that already handles it
-      if (btn.closest("a")) return; // links navigate
+      // Skip elements that already have built-in behavior
+      if (btn.closest("a")) return;
       if (btn.hasAttribute("data-demo-skip")) return;
       if (btn.getAttribute("type") === "submit") return;
-      if (btn.hasAttribute("data-state")) return; // radix triggers (dialog/popover/select/tabs/etc.)
+      if (btn.hasAttribute("data-state")) return; // radix triggers
       if (btn.closest("[data-radix-popper-content-wrapper]")) return;
       if (btn.closest('[role="dialog"]')) return;
       if (btn.closest('[role="menu"]')) return;
       if (btn.closest('[role="listbox"]')) return;
       if (btn.closest('[role="tablist"]')) return;
       if (btn.closest("[data-sidebar]")) return;
-      if (btn.closest("nav")) return;
-      if (btn.closest("form")) return;
 
-      // Skip if React attached an onClick (heuristic: presence of onclick or react listener)
-      // We can't introspect React listeners, so we rely on onclick attr OR check a marker.
-      // Strategy: only intercept if button hasn't been marked as "wired".
-      if (btn.hasAttribute("data-wired")) return;
-
-      // Get a label
       const label =
         btn.getAttribute("aria-label") ||
         btn.textContent?.trim().replace(/\s+/g, " ").slice(0, 60) ||
         "Action";
 
-      // Don't intercept icon-only utility buttons in header chrome
-      if (btn.closest("header")) return;
-
-      // Only intercept if no other handler ran in time — use a microtask deferral.
-      // Simpler: always show, since user wants every press to open something.
-      e.preventDefault();
-      e.stopPropagation();
-      setDemoLabel(label);
-      setDemoOpen(true);
+      // Defer: let any React onClick run first. If it opened a dialog/sheet/popover
+      // or navigated, skip the demo modal.
+      const beforeUrl = window.location.href;
+      setTimeout(() => {
+        if (window.location.href !== beforeUrl) return;
+        const opened = document.querySelector(
+          '[role="dialog"][data-state="open"], [data-state="open"][role="alertdialog"], [data-radix-popper-content-wrapper]'
+        );
+        if (opened) return;
+        setDemoLabel(label);
+        setDemoOpen(true);
+      }, 0);
     };
 
-    main.addEventListener("click", handler, true);
-    return () => main.removeEventListener("click", handler, true);
+    main.addEventListener("click", handler);
+    return () => main.removeEventListener("click", handler);
   }, []);
 
   return (
