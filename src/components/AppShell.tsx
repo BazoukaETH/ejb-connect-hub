@@ -1,9 +1,20 @@
 import { Outlet, useLocation, Link } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Search, Bell, ChevronRight } from "lucide-react";
+import { Search, Bell, ChevronRight, Sparkles } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState, useRef } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const labels: Record<string, string> = {
   "": "Dashboard",
@@ -56,6 +67,59 @@ function Breadcrumbs() {
 }
 
 export function AppShell() {
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [demoLabel, setDemoLabel] = useState("Action");
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      const btn = target.closest<HTMLElement>(
+        'button, [role="button"]'
+      );
+      if (!btn) return;
+      if (!main.contains(btn)) return;
+
+      // Skip elements that already have built-in behavior
+      if (btn.closest("a")) return;
+      if (btn.hasAttribute("data-demo-skip")) return;
+      if (btn.getAttribute("type") === "submit") return;
+      if (btn.hasAttribute("data-state")) return; // radix triggers
+      if (btn.closest("[data-radix-popper-content-wrapper]")) return;
+      if (btn.closest('[role="dialog"]')) return;
+      if (btn.closest('[role="menu"]')) return;
+      if (btn.closest('[role="listbox"]')) return;
+      if (btn.closest('[role="tablist"]')) return;
+      if (btn.closest("[data-sidebar]")) return;
+
+      const label =
+        btn.getAttribute("aria-label") ||
+        btn.textContent?.trim().replace(/\s+/g, " ").slice(0, 60) ||
+        "Action";
+
+      // Defer: let any React onClick run first. If it opened a dialog/sheet/popover
+      // or navigated, skip the demo modal.
+      const beforeUrl = window.location.href;
+      setTimeout(() => {
+        if (window.location.href !== beforeUrl) return;
+        const opened = document.querySelector(
+          '[role="dialog"][data-state="open"], [data-state="open"][role="alertdialog"], [data-radix-popper-content-wrapper]'
+        );
+        if (opened) return;
+        setDemoLabel(label);
+        setDemoOpen(true);
+      }, 0);
+    };
+
+    main.addEventListener("click", handler);
+    return () => main.removeEventListener("click", handler);
+  }, []);
+
   return (
     <SidebarProvider defaultOpen>
       <div className="min-h-screen flex w-full bg-background">
@@ -86,11 +150,41 @@ export function AppShell() {
               </div>
             </div>
           </header>
-          <main className="flex-1 min-w-0">
+          <main ref={mainRef} className="flex-1 min-w-0">
             <Outlet />
           </main>
         </div>
       </div>
+
+      <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
+        <DialogContent className="sm:max-w-[440px]">
+          <DialogHeader>
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+            </div>
+            <DialogTitle className="text-left">{demoLabel}</DialogTitle>
+            <DialogDescription className="text-left">
+              This is a prototype using mock data. In production, this action would open a full flow
+              (form, drawer, or confirmation) and persist changes to the backend.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setDemoOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setDemoOpen(false);
+                toast.success(`${demoLabel} — done`, {
+                  description: "Demo action completed.",
+                });
+              }}
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 }
