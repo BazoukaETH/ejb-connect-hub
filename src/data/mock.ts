@@ -388,6 +388,135 @@ export const PIPELINE_STAGES = [
   { name: "Active", count: 412 },
 ];
 
+// ---------- Extended fixtures ----------
+
+export interface OnboardingTask {
+  memberId: string;
+  memberName: string;
+  company: string;
+  hue: number;
+  joinedDays: number;
+  steps: { profile: boolean; payment: boolean; intro: boolean; firstEvent: boolean };
+  owner: string;
+}
+
+export const ONBOARDING: OnboardingTask[] = [
+  { memberId: "m-061", memberName: "Karim Ezzat", company: "Misr Capital", hue: 30, joinedDays: 2, steps: { profile: true, payment: true, intro: false, firstEvent: false }, owner: "Yasmin" },
+  { memberId: "m-062", memberName: "Reem Mansour", company: "Cairo Medtech", hue: 120, joinedDays: 5, steps: { profile: true, payment: true, intro: true, firstEvent: false }, owner: "Yasmin" },
+  { memberId: "m-063", memberName: "Soha Badr", company: "Heliopolis RE", hue: 240, joinedDays: 8, steps: { profile: true, payment: false, intro: false, firstEvent: false }, owner: "Nour" },
+  { memberId: "m-064", memberName: "Ayman Khalil", company: "Cairo FinServ", hue: 270, joinedDays: 11, steps: { profile: false, payment: false, intro: false, firstEvent: false }, owner: "Yasmin" },
+  { memberId: "m-065", memberName: "Hala Naguib", company: "Pyramids Hospitality", hue: 60, joinedDays: 14, steps: { profile: true, payment: true, intro: true, firstEvent: true }, owner: "Mona" },
+  { memberId: "m-066", memberName: "Bassem Sharif", company: "Nile Logistics", hue: 90, joinedDays: 17, steps: { profile: true, payment: false, intro: true, firstEvent: false }, owner: "Yasmin" },
+];
+
+export interface Expense {
+  id: string;
+  date: string;
+  vendor: string;
+  category: "Events" | "Office" | "Marketing" | "Travel" | "Software" | "Professional fees";
+  amount: number;
+  status: "Pending" | "Paid" | "Reimbursed";
+  approver: string;
+  reference: string;
+}
+
+export const EXPENSES: Expense[] = [
+  { id: "x-1", date: "2026-04-26", vendor: "Four Seasons Nile Plaza", category: "Events", amount: 380000, status: "Paid", approver: "Mona", reference: "INV-2026-0421" },
+  { id: "x-2", date: "2026-04-22", vendor: "Smart Village Conference Hall", category: "Events", amount: 84000, status: "Paid", approver: "Mona", reference: "INV-2026-0418" },
+  { id: "x-3", date: "2026-04-19", vendor: "Allam & Co Legal Advisory", category: "Professional fees", amount: 75000, status: "Paid", approver: "Mona", reference: "INV-04-19" },
+  { id: "x-4", date: "2026-04-15", vendor: "Adobe Creative Cloud", category: "Software", amount: 18400, status: "Paid", approver: "Tarek", reference: "INV-AD-0415" },
+  { id: "x-5", date: "2026-04-12", vendor: "Cairo Marriott (Board offsite)", category: "Travel", amount: 142000, status: "Pending", approver: "Mona", reference: "INV-CM-0412" },
+  { id: "x-6", date: "2026-04-08", vendor: "Print House", category: "Marketing", amount: 22500, status: "Paid", approver: "Tarek", reference: "INV-PH-04" },
+  { id: "x-7", date: "2026-04-04", vendor: "Office Lease (Q2)", category: "Office", amount: 240000, status: "Paid", approver: "Nour", reference: "RNT-Q2" },
+  { id: "x-8", date: "2026-03-28", vendor: "Networking dinner — Sohour", category: "Events", amount: 96000, status: "Reimbursed", approver: "Mona", reference: "EXP-SOH-03" },
+];
+
+export const EXPENSE_BUDGET = {
+  total: 7_200_000,
+  used: 4_380_000,
+  byCategory: [
+    { name: "Events", value: 2_140_000, budget: 3_000_000 },
+    { name: "Office", value: 720_000, budget: 1_200_000 },
+    { name: "Professional fees", value: 540_000, budget: 900_000 },
+    { name: "Marketing", value: 380_000, budget: 700_000 },
+    { name: "Travel", value: 360_000, budget: 800_000 },
+    { name: "Software", value: 240_000, budget: 600_000 },
+  ],
+};
+
+export interface MemberNote {
+  id: string;
+  memberId: string;
+  author: string;
+  hue: number;
+  body: string;
+  ts: string;
+  pinned?: boolean;
+}
+
+export const MEMBER_NOTES: MemberNote[] = [
+  { id: "n-1", memberId: "m-001", author: "Mona Allam", hue: 220, body: "Confirmed attendance to Annual Summit. Wants intro to Hassan Allam re: PPP project.", ts: "2 days ago", pinned: true },
+  { id: "n-2", memberId: "m-001", author: "Yasmin Allam", hue: 320, body: "Updated phone number after WhatsApp confirmation.", ts: "1 week ago" },
+  { id: "n-3", memberId: "m-001", author: "Nour Hegazy", hue: 140, body: "Payment received via bank transfer. Receipt sent.", ts: "2 weeks ago" },
+];
+
+export interface CommsLog {
+  id: string;
+  memberId: string;
+  channel: "Email" | "SMS" | "WhatsApp" | "Phone" | "In-app";
+  direction: "out" | "in";
+  subject: string;
+  ts: string;
+  by: string;
+}
+
+export const MEMBER_COMMS: CommsLog[] = [
+  { id: "co-1", memberId: "m-001", channel: "Email", direction: "out", subject: "Receipt for 2026/27 dues", ts: "2 days ago", by: "Nour" },
+  { id: "co-2", memberId: "m-001", channel: "WhatsApp", direction: "out", subject: "Reminder: cycle closes 31 Jul", ts: "5 days ago", by: "Yasmin" },
+  { id: "co-3", memberId: "m-001", channel: "Email", direction: "in", subject: "Re: Annual Summit RSVP confirmation", ts: "1 week ago", by: "—" },
+  { id: "co-4", memberId: "m-001", channel: "Phone", direction: "out", subject: "Welcome call — onboarding", ts: "3 weeks ago", by: "Mona" },
+];
+
+export interface AuditEntry {
+  id: string;
+  actor: string;
+  hue: number;
+  role: AdminRole;
+  action: string;
+  entity: string;
+  before?: string;
+  after?: string;
+  ts: string;
+  ip: string;
+  type: "create" | "update" | "delete" | "publish" | "payment" | "stage" | "auth";
+}
+
+export const AUDIT: AuditEntry[] = [
+  { id: "au-1", actor: "Nour Hegazy", hue: 140, role: "Finance", type: "payment", action: "Recorded payment", entity: "Tarek Mostafa · M-0023", before: "Unpaid", after: "Paid · EGP 15,000", ts: "12 min ago", ip: "156.193.44.12" },
+  { id: "au-2", actor: "Yasmin Allam", hue: 320, role: "Membership Officer", type: "stage", action: "Moved applicant", entity: "Reem Mansour", before: "Applicant", after: "Pending Payment", ts: "1 hour ago", ip: "156.193.44.12" },
+  { id: "au-3", actor: "Tarek Mostafa", hue: 30, role: "Comms", type: "publish", action: "Published announcement", entity: "Last Call: EJB x CIF 2026", ts: "2 hours ago", ip: "41.34.221.5" },
+  { id: "au-4", actor: "Mona Allam", hue: 220, role: "Super Admin", type: "update", action: "Updated committee chair", entity: "Consulting & Technology", before: "Karim Said", after: "Yasmin Allam", ts: "3 hours ago", ip: "156.193.44.12" },
+  { id: "au-5", actor: "Nour Hegazy", hue: 140, role: "Finance", type: "payment", action: "Recorded partial payment", entity: "Soha Badr · M-0044", before: "Unpaid", after: "Partial · EGP 7,500", ts: "yesterday", ip: "156.193.44.12" },
+  { id: "au-6", actor: "Mona Allam", hue: 220, role: "Super Admin", type: "create", action: "Added member", entity: "Karim Ezzat · M-0061", ts: "yesterday", ip: "156.193.44.12" },
+  { id: "au-7", actor: "Tarek Mostafa", hue: 30, role: "Comms", type: "update", action: "Reordered partners strip", entity: "App content", before: "CIB · EFG · Orascom", after: "CIB · Orascom · EFG", ts: "2 days ago", ip: "41.34.221.5" },
+  { id: "au-8", actor: "Yasmin Allam", hue: 320, role: "Membership Officer", type: "update", action: "Edited member profile", entity: "Hassan Allam · M-0005", ts: "2 days ago", ip: "156.193.44.12" },
+  { id: "au-9", actor: "Mona Allam", hue: 220, role: "Super Admin", type: "auth", action: "Signed in", entity: "Web · Chrome / macOS", ts: "3 days ago", ip: "156.193.44.12" },
+  { id: "au-10", actor: "Karim Said", hue: 200, role: "Employee", type: "update", action: "Uploaded document", entity: "CIB Premium Banking Benefit.pdf", ts: "3 days ago", ip: "156.193.44.12" },
+  { id: "au-11", actor: "Mona Allam", hue: 220, role: "Super Admin", type: "delete", action: "Removed taxonomy term", entity: "Areas of Focus → 'Misc'", ts: "4 days ago", ip: "156.193.44.12" },
+  { id: "au-12", actor: "Nour Hegazy", hue: 140, role: "Finance", type: "publish", action: "Closed cycle", entity: "Cycle 2025/2026 · 91% paid", ts: "5 days ago", ip: "156.193.44.12" },
+];
+
+// Per-member quick stats helper
+export function memberStats(memberId: string) {
+  const idx = parseInt(memberId.replace(/\D/g, ""), 10) || 1;
+  return {
+    eventsAttended: 4 + (idx % 7),
+    referrals: idx % 4,
+    chatMessages: 12 + (idx * 3) % 80,
+    documentsRead: 6 + (idx * 2) % 30,
+  };
+}
+
 export const FINANCIAL_SNAPSHOT = {
   cashBalance: 8_700_000,
   reserve: 6_200_000,

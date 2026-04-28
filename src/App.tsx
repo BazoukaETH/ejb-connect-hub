@@ -19,6 +19,8 @@ import Taxonomies from "./pages/Taxonomies";
 import ChatModeration from "./pages/ChatModeration";
 import AppContent from "./pages/AppContent";
 import AuditLog from "./pages/AuditLog";
+import Onboarding from "./pages/Onboarding";
+import Expenses from "./pages/Expenses";
 import Stub from "./pages/Stub";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -36,11 +38,11 @@ const App = () => (
             <Route path="/members" element={<Members />} />
             <Route path="/members/:id" element={<MemberDetail />} />
             <Route path="/applicants" element={<Applicants />} />
-            <Route path="/onboarding" element={<Stub title="Onboarding queue" description="Track new member onboarding tasks: profile, payment, intro, first event." />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/team" element={<Team />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="/partners" element={<Partners />} />
-            <Route path="/expenses" element={<Stub title="Expenses" description="Operational expenses, vendor payments, and budget tracking." />} />
+            <Route path="/expenses" element={<Expenses />} />
             <Route path="/committees" element={<Committees />} />
             <Route path="/events" element={<Events />} />
             <Route path="/announcements" element={<Announcements />} />

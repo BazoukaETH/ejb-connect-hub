@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { StatusChip, variantForMemberStatus, variantForPayment } from "@/components/StatusChip";
+import { EmptyState } from "@/components/EmptyState";
 import { MEMBERS, COMMITTEES, getCommittee } from "@/data/mock";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Download, Mail, Plus, ChevronDown, MoreHorizontal, Bookmark } from "lucide-react";
+import { Search, Download, Mail, Plus, ChevronDown, MoreHorizontal, Bookmark, SearchX } from "lucide-react";
 
 const SAVED_VIEWS = [
   { name: "All members", count: 60, active: true },
@@ -136,8 +137,23 @@ export default function Members() {
             ))}
           </tbody>
         </table>
+        {filtered.length === 0 && (
+          <div className="p-6">
+            <EmptyState
+              icon={SearchX}
+              title="No members match these filters"
+              description="Try clearing the search or relaxing the status / payment filter."
+              compact
+              action={
+                <Button size="sm" variant="outline" onClick={() => { setQ(""); setStatusFilter("All"); setPayFilter("All"); }}>
+                  Reset filters
+                </Button>
+              }
+            />
+          </div>
+        )}
         <div className="flex items-center justify-between px-3 py-2.5 border-t border-border bg-secondary/30 text-xs">
-          <span className="text-muted-foreground">Showing 1-{filtered.length} of 500</span>
+          <span className="text-muted-foreground">Showing 1–{filtered.length} of 500</span>
           <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" className="h-7 text-xs">Prev</Button>
             <Button variant="outline" size="sm" className="h-7 text-xs">Next</Button>
