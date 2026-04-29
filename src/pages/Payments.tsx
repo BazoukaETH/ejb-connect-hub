@@ -250,6 +250,105 @@ export default function Payments() {
           </div>
         </TabsContent>
 
+        <TabsContent value="method" className="mt-4">
+          {(() => {
+            const methods = [
+              { name: "Bank transfer", count: 5, total: 67500, share: 71 },
+              { name: "Card",          count: 1, total: 15000, share: 16 },
+              { name: "Cheque",        count: 1, total: 15000, share: 16 },
+              { name: "Cash",          count: 1, total: 15000, share: 16 },
+            ];
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="ejb-card p-5">
+                  <h3 className="text-sm font-semibold mb-1">Collections by method (this cycle)</h3>
+                  <p className="text-xs text-muted-foreground mb-4">Share of total collected</p>
+                  <div className="space-y-3">
+                    {methods.map((m) => (
+                      <div key={m.name}>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="font-medium">{m.name}</span>
+                          <span className="text-muted-foreground num">{fmtEGP(m.total)} · {m.share}%</span>
+                        </div>
+                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                          <div className="h-full bg-primary" style={{ width: `${m.share}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="ejb-card p-5">
+                  <h3 className="text-sm font-semibold mb-1">Reconciliation status</h3>
+                  <p className="text-xs text-muted-foreground mb-4">CIB / EFG bank feeds</p>
+                  <div className="space-y-2.5 text-sm">
+                    <div className="flex items-center justify-between p-3 rounded-md border border-border">
+                      <div><div className="font-medium">CIB Operating Account</div><div className="text-[11px] text-muted-foreground num">Last sync 14 min ago</div></div>
+                      <StatusChip variant="paid" label="In sync" dot />
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-md border border-border">
+                      <div><div className="font-medium">EFG Hermes Reserve</div><div className="text-[11px] text-muted-foreground num">Last sync 2 hours ago</div></div>
+                      <StatusChip variant="paid" label="In sync" dot />
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-md border border-border">
+                      <div><div className="font-medium">Cash & Cheque ledger</div><div className="text-[11px] text-muted-foreground">2 cheques pending clearance</div></div>
+                      <StatusChip variant="pending" label="Review" dot />
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full mt-4 h-9">Open reconciliation workspace</Button>
+                </div>
+              </div>
+            );
+          })()}
+        </TabsContent>
+
+        <TabsContent value="aging" className="mt-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            {AGING_BUCKETS.map((b, i) => {
+              const tone = i === 0 ? "text-foreground" : i === 1 ? "text-[hsl(var(--ejb-amber))]" : "text-destructive";
+              const bar = i === 0 ? "bg-primary" : i === 1 ? "bg-[hsl(var(--ejb-amber))]" : "bg-destructive";
+              return (
+                <div key={b.bucket} className="ejb-card p-4">
+                  <div className="ejb-eyebrow">{b.bucket}</div>
+                  <div className={`text-2xl font-bold num tracking-tight mt-1 ${tone}`}>{b.count}</div>
+                  <div className="text-[11px] text-muted-foreground num">{fmtEGP(b.amount, { compact: true })} outstanding</div>
+                  <div className="mt-2.5 h-1.5 bg-secondary rounded-full overflow-hidden">
+                    <div className={`h-full ${bar}`} style={{ width: `${(b.count / 50) * 100}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="ejb-card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-sm font-semibold">Members 60+ days overdue</h3>
+                <p className="text-xs text-muted-foreground">Recommended for personal follow-up or board escalation</p>
+              </div>
+              <Button size="sm" variant="outline" className="h-8"><Mail className="h-3.5 w-3.5 mr-1.5" /> Send escalation batch</Button>
+            </div>
+            <table className="w-full data-table">
+              <thead className="bg-secondary/50"><tr><th>Member</th><th>Company</th><th>Days overdue</th><th>Amount</th><th>Last reminder</th><th></th></tr></thead>
+              <tbody>
+                {MEMBERS.slice(48, 58).map((m, i) => (
+                  <tr key={m.id} className="hover:bg-secondary/40">
+                    <td>
+                      <div className="flex items-center gap-2.5">
+                        <Avatar name={m.name} hue={m.avatarHue} size="sm" />
+                        <div className="font-medium text-sm">{m.name}</div>
+                      </div>
+                    </td>
+                    <td className="text-xs text-muted-foreground">{m.company}</td>
+                    <td><StatusChip variant="unpaid" label={`${62 + i * 3}d`} dot /></td>
+                    <td className="num">{fmtEGP(15000)}</td>
+                    <td className="text-xs text-muted-foreground">{i % 3 === 0 ? "Not sent" : `${5 + i}d ago`}</td>
+                    <td><Button variant="ghost" size="sm" className="h-7 text-xs">Open</Button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </TabsContent>
+
         <TabsContent value="month" className="mt-4">
           <div className="ejb-card p-5">
             <h3 className="text-sm font-semibold mb-1">Collections by month (cycle to date)</h3>
