@@ -5,12 +5,12 @@ import { Smartphone, Pencil } from "lucide-react";
 const SECTIONS = [
   { title: "Home tiles", desc: "Find a Member · Committees · Announcements · Documents" },
   { title: "Home greeting", desc: "Hi, {first name}! · Welcome subtitle" },
-  { title: "Featured event", desc: "Annual Business Summit 2026 — pinned" },
-  { title: "Featured announcement", desc: "Last Call: EJB x CIF 2026 — pinned" },
+  { title: "Featured event", desc: "Annual Business Summit 2026 - pinned" },
+  { title: "Featured announcement", desc: "Last Call: EJB x CIF 2026 - pinned" },
   { title: "Partners strip", desc: "5 active partners shown in Platinum → Silver order" },
   { title: "Bottom nav labels", desc: "Home · Network · Updates · Hub · Profile" },
-  { title: "Maintenance banner", desc: "Off — schedule by date" },
-  { title: "App version notes", desc: "v3.4.0 — Improved RSVP flow" },
+  { title: "Maintenance banner", desc: "Off - schedule by date" },
+  { title: "App version notes", desc: "v3.4.0 - Improved RSVP flow" },
 ];
 
 export default function AppContent() {

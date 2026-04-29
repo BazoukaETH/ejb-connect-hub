@@ -57,7 +57,7 @@ export default function Announcements() {
                     <td className="text-xs text-muted-foreground">{a.audience}</td>
                     <td className="num text-xs text-muted-foreground">{a.publishedAt && fmtDateTime(a.publishedAt)}</td>
                     <td className="text-xs">{a.author}</td>
-                    <td className="num text-xs">{a.reach ? `${a.reach.sent} / ${a.reach.total}` : "—"}</td>
+                    <td className="num text-xs">{a.reach ? `${a.reach.sent} / ${a.reach.total}` : "-"}</td>
                     <td className="num text-xs">
                       {a.openRate != null && (
                         <div className="flex items-center gap-1.5">

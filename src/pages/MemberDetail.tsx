@@ -13,7 +13,7 @@ const PAYMENT_HISTORY = [
   { cycle: "2025 / 2026", amount: 15000, due: "2025-07-31", status: "Paid", date: "2025-06-30", method: "Bank transfer", ref: "TRX-87412" },
   { cycle: "2024 / 2025", amount: 15000, due: "2024-07-31", status: "Paid", date: "2024-07-04", method: "Cheque", ref: "CHQ-2310" },
   { cycle: "2023 / 2024", amount: 12500, due: "2023-07-31", status: "Partial", date: "2023-08-12", method: "Bank transfer", ref: "TRX-72109" },
-  { cycle: "2022 / 2023", amount: 0, due: "2022-07-31", status: "Waived", date: "—", method: "—", ref: "—" },
+  { cycle: "2022 / 2023", amount: 0, due: "2022-07-31", status: "Waived", date: "-", method: "-", ref: "-" },
 ];
 
 const ACTIVITY = [
@@ -24,10 +24,10 @@ const ACTIVITY = [
 ];
 
 const FILES = [
-  { name: "Signed application — 2018.pdf", size: "1.1 MB", date: "2018-04-12" },
+  { name: "Signed application - 2018.pdf", size: "1.1 MB", date: "2018-04-12" },
   { name: "ID copy.pdf", size: "640 KB", date: "2018-04-12" },
-  { name: "Receipt — 2026/27.pdf", size: "92 KB", date: "2026-06-12" },
-  { name: "Receipt — 2025/26.pdf", size: "92 KB", date: "2025-06-30" },
+  { name: "Receipt - 2026/27.pdf", size: "92 KB", date: "2026-06-12" },
+  { name: "Receipt - 2025/26.pdf", size: "92 KB", date: "2025-06-30" },
 ];
 
 export default function MemberDetail() {
@@ -82,7 +82,7 @@ export default function MemberDetail() {
             <div><div className="ejb-eyebrow">Membership #</div><div className="font-medium num mt-0.5">{member.membershipNo}</div></div>
             <div><div className="ejb-eyebrow">Joined</div><div className="font-medium mt-0.5">{fmtDate(member.joinedDate)}</div></div>
             <div><div className="ejb-eyebrow">City</div><div className="font-medium mt-0.5">{member.city}</div></div>
-            <div><div className="ejb-eyebrow">Referred by</div><div className="font-medium num mt-0.5">{member.referredBy ?? "—"}</div></div>
+            <div><div className="ejb-eyebrow">Referred by</div><div className="font-medium num mt-0.5">{member.referredBy ?? "-"}</div></div>
           </div>
 
           <div className="border-t border-border pt-4 grid grid-cols-2 gap-3 text-xs">
@@ -164,7 +164,7 @@ export default function MemberDetail() {
                       return (
                         <tr key={p.cycle}>
                           <td className="font-medium num">{p.cycle}</td>
-                          <td className="num">{p.amount ? fmtEGP(p.amount) : "—"}</td>
+                          <td className="num">{p.amount ? fmtEGP(p.amount) : "-"}</td>
                           <td className="num text-muted-foreground">{p.due}</td>
                           <td><span className="inline-flex items-center gap-1.5"><span className={`h-1.5 w-1.5 rounded-full ${dot}`} /><span className="text-xs">{p.status}</span></span></td>
                           <td className="num text-muted-foreground">{p.date}</td>

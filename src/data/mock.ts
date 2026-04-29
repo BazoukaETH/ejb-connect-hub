@@ -274,7 +274,7 @@ export const ANNOUNCEMENTS: Announcement[] = [
     author: "Nour Hegazy", reach: { sent: 372, total: 372 }, openRate: 58,
   },
   {
-    id: "an-3", title: "Quarterly Financial Briefing — Recording Available",
+    id: "an-3", title: "Quarterly Financial Briefing - Recording Available",
     body: "The Q1 briefing recording and slides are now in the Documents library under Member Briefings.",
     priority: "Medium", category: "General", audience: "All members",
     status: "Published", publishedAt: "2026-04-15T11:00:00",
@@ -428,7 +428,7 @@ export const EXPENSES: Expense[] = [
   { id: "x-5", date: "2026-04-12", vendor: "Cairo Marriott (Board offsite)", category: "Travel", amount: 142000, status: "Pending", approver: "Mona", reference: "INV-CM-0412" },
   { id: "x-6", date: "2026-04-08", vendor: "Print House", category: "Marketing", amount: 22500, status: "Paid", approver: "Tarek", reference: "INV-PH-04" },
   { id: "x-7", date: "2026-04-04", vendor: "Office Lease (Q2)", category: "Office", amount: 240000, status: "Paid", approver: "Nour", reference: "RNT-Q2" },
-  { id: "x-8", date: "2026-03-28", vendor: "Networking dinner — Sohour", category: "Events", amount: 96000, status: "Reimbursed", approver: "Mona", reference: "EXP-SOH-03" },
+  { id: "x-8", date: "2026-03-28", vendor: "Networking dinner - Sohour", category: "Events", amount: 96000, status: "Reimbursed", approver: "Mona", reference: "EXP-SOH-03" },
 ];
 
 export const EXPENSE_BUDGET = {
@@ -473,8 +473,8 @@ export interface CommsLog {
 export const MEMBER_COMMS: CommsLog[] = [
   { id: "co-1", memberId: "m-001", channel: "Email", direction: "out", subject: "Receipt for 2026/27 dues", ts: "2 days ago", by: "Nour" },
   { id: "co-2", memberId: "m-001", channel: "WhatsApp", direction: "out", subject: "Reminder: cycle closes 31 Jul", ts: "5 days ago", by: "Yasmin" },
-  { id: "co-3", memberId: "m-001", channel: "Email", direction: "in", subject: "Re: Annual Summit RSVP confirmation", ts: "1 week ago", by: "—" },
-  { id: "co-4", memberId: "m-001", channel: "Phone", direction: "out", subject: "Welcome call — onboarding", ts: "3 weeks ago", by: "Mona" },
+  { id: "co-3", memberId: "m-001", channel: "Email", direction: "in", subject: "Re: Annual Summit RSVP confirmation", ts: "1 week ago", by: "-" },
+  { id: "co-4", memberId: "m-001", channel: "Phone", direction: "out", subject: "Welcome call - onboarding", ts: "3 weeks ago", by: "Mona" },
 ];
 
 export interface AuditEntry {

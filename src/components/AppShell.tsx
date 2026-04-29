@@ -175,7 +175,7 @@ export function AppShell() {
             <Button
               onClick={() => {
                 setDemoOpen(false);
-                toast.success(`${demoLabel} — done`, {
+                toast.success(`${demoLabel} - done`, {
                   description: "Demo action completed.",
                 });
               }}

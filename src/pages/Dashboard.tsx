@@ -103,7 +103,7 @@ function Funnel() {
               </div>
             </div>
             <span className="w-12 text-right text-muted-foreground num">
-              {conv !== null ? `${conv}%` : "—"}
+              {conv !== null ? `${conv}%` : "-"}
             </span>
           </div>
         );
