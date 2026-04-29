@@ -21,7 +21,11 @@ import AppContent from "./pages/AppContent";
 import AuditLog from "./pages/AuditLog";
 import Onboarding from "./pages/Onboarding";
 import Expenses from "./pages/Expenses";
-import Stub from "./pages/Stub";
+import Settings from "./pages/Settings";
+import Boardroom from "./pages/Boardroom";
+import BoardroomDecisions from "./pages/BoardroomDecisions";
+import BoardroomStrategic from "./pages/BoardroomStrategic";
+import BoardroomTreasury from "./pages/BoardroomTreasury";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -35,6 +39,10 @@ const App = () => (
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/boardroom" element={<Boardroom />} />
+            <Route path="/boardroom/decisions" element={<BoardroomDecisions />} />
+            <Route path="/boardroom/strategic" element={<BoardroomStrategic />} />
+            <Route path="/boardroom/treasury" element={<BoardroomTreasury />} />
             <Route path="/members" element={<Members />} />
             <Route path="/members/:id" element={<MemberDetail />} />
             <Route path="/applicants" element={<Applicants />} />
@@ -53,7 +61,7 @@ const App = () => (
             <Route path="/chat" element={<ChatModeration />} />
             <Route path="/taxonomies" element={<Taxonomies />} />
             <Route path="/audit" element={<AuditLog />} />
-            <Route path="/settings" element={<Stub title="Settings" description="Workspace settings, integrations, and notification preferences." />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
