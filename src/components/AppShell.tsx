@@ -121,14 +121,11 @@ function ShellInner() {
 
   // Choose user persona based on previewed role for the top bar
   const personas: Record<string, { name: string; hue: number }> = {
-    "Super Admin":        { name: "Mona Allam",   hue: 220 },
-    "Finance":            { name: "Nour Hegazy",  hue: 140 },
-    "Membership Officer": { name: "Yasmin Allam", hue: 320 },
-    "Comms":              { name: "Tarek Mostafa",hue: 30  },
-    "Employee":           { name: "Karim Said",   hue: 200 },
-    "Board":              { name: "Hussein Osman",hue: 250 },
-    "Chairman":           { name: "Hussein Osman",hue: 250 },
-    "Committee Chair":    { name: "Ahmed Hassan", hue: 180 },
+    "EJB Admin":       { name: "Mona Allam",    hue: 220 },
+    "Finance":         { name: "Nour Hegazy",   hue: 140 },
+    "Committee Heads": { name: "Ahmed Hassan",  hue: 180 },
+    "Board Members":   { name: "Hussein Osman", hue: 250 },
+    "Chairman":        { name: "Omar El Sherif",hue: 260 },
   };
   const persona = personas[role];
 

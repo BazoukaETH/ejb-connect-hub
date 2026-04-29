@@ -134,7 +134,7 @@ export default function Dashboard() {
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
       <PageHeader
-        title={role === "Chairman" || role === "Board" ? "Cockpit (operations view)" : "Cockpit"}
+        title={role === "Chairman" || role === "Board Members" ? "Cockpit (operations view)" : "Cockpit"}
         description={`Cycle ${CYCLE} · closes ${CYCLE_CLOSE}`}
         actions={
           <div className="flex items-center gap-2">
