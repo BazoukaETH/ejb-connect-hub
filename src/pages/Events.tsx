@@ -69,11 +69,61 @@ export default function Events() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">{past.map(renderCard)}</div>
         </TabsContent>
         <TabsContent value="calendar">
-          <div className="ejb-card p-12 text-center">
-            <Calendar className="h-8 w-8 mx-auto text-muted-foreground" />
-            <p className="text-sm font-semibold mt-3">Calendar view coming next</p>
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">A month grid with events overlaid, RSVP heat by day, and quick drag-to-reschedule.</p>
-          </div>
+          {(() => {
+            const year = 2026, month = 4; // May 2026
+            const firstDow = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const cells: (number | null)[] = [];
+            for (let i = 0; i < firstDow; i++) cells.push(null);
+            for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+            while (cells.length % 7) cells.push(null);
+            const eventsByDay: Record<number, typeof EVENTS> = {};
+            EVENTS.forEach((e) => {
+              const d = new Date(e.date);
+              if (d.getFullYear() === year && d.getMonth() === month) {
+                const day = d.getDate();
+                eventsByDay[day] = eventsByDay[day] ?? [];
+                eventsByDay[day].push(e);
+              }
+            });
+            return (
+              <div className="ejb-card p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold">May 2026</h3>
+                  <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Published</span>
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-[hsl(var(--ejb-amber))]" /> Draft</span>
+                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-muted-foreground" /> Past</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-7 gap-px bg-border rounded-md overflow-hidden">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+                    <div key={d} className="bg-secondary/60 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground text-center py-1.5">{d}</div>
+                  ))}
+                  {cells.map((c, i) => {
+                    const evs = c ? (eventsByDay[c] ?? []) : [];
+                    return (
+                      <div key={i} className="bg-card min-h-[88px] p-1.5 text-left">
+                        {c && <div className="text-[11px] font-medium num text-muted-foreground mb-1">{c}</div>}
+                        <div className="space-y-1">
+                          {evs.map((e) => {
+                            const tone = e.status === "Draft" ? "bg-[hsl(var(--ejb-amber))]/15 text-[hsl(var(--ejb-amber))] border-[hsl(var(--ejb-amber))]/30"
+                              : e.status === "Past" ? "bg-secondary text-muted-foreground border-border"
+                              : "bg-primary/10 text-primary border-primary/30";
+                            return (
+                              <button key={e.id} className={`w-full text-left text-[10px] leading-tight px-1.5 py-1 rounded border ${tone} truncate`} title={e.title}>
+                                {e.title}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
         </TabsContent>
       </Tabs>
     </div>

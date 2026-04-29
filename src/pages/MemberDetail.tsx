@@ -3,10 +3,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { StatusChip, variantForMemberStatus, variantForPayment } from "@/components/StatusChip";
 import { EmptyState } from "@/components/EmptyState";
-import { MEMBERS, getCommittee, fmtEGP, fmtDate, MEMBER_NOTES, MEMBER_COMMS, memberStats, CYCLE } from "@/data/mock";
+import { MEMBERS, getCommittee, fmtEGP, fmtDate, MEMBER_NOTES, MEMBER_COMMS, memberStats, CYCLE, memberTier } from "@/data/mock";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, Linkedin, Copy, MoreHorizontal, Download, Plus, Pin, MessageSquare, Files, ChevronDown } from "lucide-react";
+import { Mail, Phone, Linkedin, Copy, MoreHorizontal, Download, Plus, Pin, MessageSquare, Files, ChevronDown, Crown, Check, Circle } from "lucide-react";
 
 const PAYMENT_HISTORY = [
   { cycle: "2026 / 2027", amount: 15000, due: "2026-07-31", status: "Paid", date: "2026-06-12", method: "Bank transfer", ref: "TRX-99821" },
@@ -37,6 +37,14 @@ export default function MemberDetail() {
   const lifetime = PAYMENT_HISTORY.reduce((s, p) => s + p.amount, 0);
   const notes = MEMBER_NOTES.length ? MEMBER_NOTES : [];
   const comms = MEMBER_COMMS.length ? MEMBER_COMMS : [];
+  const tier = memberTier(member.id);
+  const TIMELINE = [
+    { label: "Applied",    date: "12 Apr 2018", done: true },
+    { label: "Approved",   date: "28 Apr 2018", done: true },
+    { label: "First dues", date: "04 May 2018", done: true },
+    { label: "Activated",  date: "04 May 2018", done: true },
+    { label: `Renewed ${CYCLE}`, date: "12 Jun 2026", done: member.paymentStatus === "Paid", current: member.paymentStatus !== "Paid" },
+  ];
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
@@ -65,6 +73,11 @@ export default function MemberDetail() {
             <div className="flex items-center gap-1.5 mt-3 flex-wrap justify-center">
               <StatusChip variant={variantForMemberStatus(member.status)} label={member.status} dot />
               <StatusChip variant={variantForPayment(member.paymentStatus)} label={member.paymentStatus === "Paid" ? `Paid ${CYCLE.split(" / ")[0].slice(2)}/${CYCLE.split(" / ")[1].slice(2)}` : member.paymentStatus} />
+              {tier !== "Standard" && (
+                <span className={`chip ${tier === "Founding" ? "chip-brand" : "chip-pending"}`}>
+                  <Crown className="h-2.5 w-2.5 mr-1" /> {tier}
+                </span>
+              )}
             </div>
           </div>
 
@@ -108,6 +121,24 @@ export default function MemberDetail() {
             </TabsList>
 
             <TabsContent value="overview" className="mt-5 space-y-5">
+              {/* Membership timeline */}
+              <div className="ejb-card p-5">
+                <h3 className="ejb-eyebrow mb-4">Membership timeline</h3>
+                <div className="flex items-start justify-between relative">
+                  <div className="absolute top-3 left-[6%] right-[6%] h-0.5 bg-secondary" />
+                  <div className="absolute top-3 left-[6%] h-0.5 bg-primary transition-all" style={{ width: `${((TIMELINE.filter(t => t.done).length - 1) / (TIMELINE.length - 1)) * 88}%` }} />
+                  {TIMELINE.map((step) => (
+                    <div key={step.label} className="flex flex-col items-center relative z-10 flex-1">
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center border-2 ${step.done ? "bg-primary border-primary text-primary-foreground" : step.current ? "bg-card border-primary text-primary" : "bg-card border-border text-muted-foreground"}`}>
+                        {step.done ? <Check className="h-3 w-3" /> : <Circle className="h-2 w-2 fill-current" />}
+                      </div>
+                      <div className="text-[10px] font-semibold mt-2 text-center">{step.label}</div>
+                      <div className="text-[10px] text-muted-foreground num text-center">{step.date}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="ejb-card p-5">
                 <h3 className="text-sm font-semibold mb-2">About</h3>
                 <p className="text-sm text-muted-foreground">{member.about}</p>
