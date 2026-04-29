@@ -356,7 +356,7 @@ export default function Payments() {
             <table className="w-full data-table">
               <thead className="bg-secondary/50"><tr><th>Member</th><th>Company</th><th>Days overdue</th><th>Amount</th><th>Last reminder</th><th></th></tr></thead>
               <tbody>
-                {MEMBERS.slice(48, 58).map((m, i) => (
+                {members.slice(48, 58).map((m, i) => (
                   <tr key={m.id} className="hover:bg-secondary/40">
                     <td>
                       <div className="flex items-center gap-2.5">
