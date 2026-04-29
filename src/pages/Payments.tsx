@@ -102,13 +102,13 @@ export default function Payments() {
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
       <PageHeader
         title="Payments & Dues"
-        description={`Cycle ${CYCLE} · closes ${CYCLE_CLOSE} · ${daysLeft} days left`}
+        description={`Cycle ${selectedCycle} · ${isCycleOpen ? `closes ${CYCLE_CLOSE} · ${daysLeft} days left` : "closed"}`}
         actions={
           <>
             <Button variant="outline" size="sm" className="h-9"><Download className="h-3.5 w-3.5 mr-1.5" /> Export</Button>
             <Button variant="outline" size="sm" className="h-9"><Mail className="h-3.5 w-3.5 mr-1.5" /> Send reminders ({UNPAID_COUNT})</Button>
-            <Button variant="outline" size="sm" className="h-9 border-destructive/30 text-destructive hover:bg-destructive/10" onClick={() => setCloseOpen(true)}>
-              <Lock className="h-3.5 w-3.5 mr-1.5" /> Close cycle
+            <Button variant="outline" size="sm" className="h-9 border-destructive/30 text-destructive hover:bg-destructive/10" disabled={!isCycleOpen} onClick={() => setCloseOpen(true)}>
+              <Lock className="h-3.5 w-3.5 mr-1.5" /> {isCycleOpen ? "Close cycle" : "Cycle closed"}
             </Button>
           </>
         }
@@ -116,10 +116,16 @@ export default function Payments() {
 
       {/* Cycle selector + summary strip */}
       <div className="flex items-center gap-2 mb-4">
-        <Button variant="outline" size="sm" className="h-8 w-8 p-0"><ChevronLeft className="h-4 w-4" /></Button>
-        <div className="px-4 h-8 flex items-center bg-card border border-border rounded-md text-sm font-medium num">Cycle {CYCLE}</div>
-        <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled><ChevronRight className="h-4 w-4" /></Button>
-        <span className="text-xs text-muted-foreground ml-2">Compare: 2025/26 · 2024/25</span>
+        <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled={cycleIdx === CYCLES.length - 1} onClick={() => setSelectedCycle(CYCLES[Math.min(CYCLES.length - 1, cycleIdx + 1)])}>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <div className="px-4 h-8 flex items-center bg-card border border-border rounded-md text-sm font-medium num">
+          Cycle {selectedCycle} {!isCycleOpen && <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground">closed</span>}
+        </div>
+        <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled={cycleIdx === 0} onClick={() => setSelectedCycle(CYCLES[Math.max(0, cycleIdx - 1)])}>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <span className="text-xs text-muted-foreground ml-2">Use ← → to compare cycles</span>
       </div>
 
       {/* Summary */}
@@ -191,7 +197,7 @@ export default function Payments() {
           <div className="ejb-card p-3 mb-3 flex items-center gap-2 flex-wrap">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search member, company, M-#…" className="pl-8 h-8" />
+              <Input value={localQ} onChange={(e) => setLocalQ(e.target.value)} placeholder="Search member, company, M-#…" className="pl-8 h-8" />
             </div>
             <div className="flex items-center gap-1 bg-secondary rounded-md p-0.5">
               {(["all", "paid", "unpaid"] as const).map((f) => (
@@ -233,7 +239,7 @@ export default function Payments() {
                     <td className="text-[11px] text-muted-foreground">{r.reminder ?? (r.paid ? "-" : "Not sent")}</td>
                     <td>
                       {!r.paid && (
-                        <Button size="sm" className="h-7 text-xs" onClick={() => { setActiveMember(r.member.name); setRecordOpen(true); }}>
+                        <Button size="sm" className="h-7 text-xs" disabled={!isCycleOpen} onClick={() => openRecord(r.member.id)}>
                           <Plus className="h-3 w-3 mr-1" /> Record
                         </Button>
                       )}
@@ -255,10 +261,10 @@ export default function Payments() {
                 <tr><th>Date</th><th>Member</th><th>Amount</th><th>Method</th><th>Reference</th><th>Recorded by</th><th></th></tr>
               </thead>
               <tbody>
-                {TRANSACTIONS.map((t) => (
+                {transactions.filter((t) => t.cycle === selectedCycle).map((t) => (
                   <tr key={t.id} className="hover:bg-secondary/40">
                     <td className="num text-xs text-muted-foreground">{t.date}</td>
-                    <td className="font-medium text-sm">{t.member}</td>
+                    <td className="font-medium text-sm">{t.memberName}</td>
                     <td className="num font-medium">{fmtEGP(t.amount)}{t.amount < CYCLE_DUE_AMOUNT && <span className="ml-1.5 chip chip-pending">Partial</span>}</td>
                     <td className="text-xs">{t.method}</td>
                     <td className="num text-xs text-muted-foreground">{t.ref}</td>
