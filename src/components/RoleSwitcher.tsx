@@ -33,7 +33,7 @@ export function RoleSwitcher() {
         ))}
         <DropdownMenuSeparator />
         <div className="px-2 py-1.5 text-[10px] text-muted-foreground leading-snug">
-          Members do not have admin access. Board, Chairman, and Committee Chair are read-only previews of what the leadership tier sees.
+          Members do not have admin access. Chairman, Board Members, and Committee Heads are read-only previews of what the leadership tier sees.
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
