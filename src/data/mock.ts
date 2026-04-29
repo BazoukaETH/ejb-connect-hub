@@ -379,14 +379,17 @@ export const CYCLE_WEEKLY = [
   { week: "W7", value: 4.8 }, { week: "W8", value: 5.58 },
 ];
 
+// Funnel stages: pipeline only. Active is shown separately as a context KPI.
 export const PIPELINE_STAGES = [
   { name: "Lead", count: 14 },
   { name: "Prospect", count: 11 },
   { name: "Referred", count: 8 },
   { name: "Applicant", count: 9 },
   { name: "Pending Payment", count: 5 },
-  { name: "Active", count: 412 },
 ];
+
+export const ACTIVE_MEMBERS = 412;
+export const MEMBER_CAP = 500;
 
 // ---------- Extended fixtures ----------
 
