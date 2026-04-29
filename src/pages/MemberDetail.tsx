@@ -121,6 +121,24 @@ export default function MemberDetail() {
             </TabsList>
 
             <TabsContent value="overview" className="mt-5 space-y-5">
+              {/* Membership timeline */}
+              <div className="ejb-card p-5">
+                <h3 className="ejb-eyebrow mb-4">Membership timeline</h3>
+                <div className="flex items-start justify-between relative">
+                  <div className="absolute top-3 left-[6%] right-[6%] h-0.5 bg-secondary" />
+                  <div className="absolute top-3 left-[6%] h-0.5 bg-primary transition-all" style={{ width: `${((TIMELINE.filter(t => t.done).length - 1) / (TIMELINE.length - 1)) * 88}%` }} />
+                  {TIMELINE.map((step) => (
+                    <div key={step.label} className="flex flex-col items-center relative z-10 flex-1">
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center border-2 ${step.done ? "bg-primary border-primary text-primary-foreground" : step.current ? "bg-card border-primary text-primary" : "bg-card border-border text-muted-foreground"}`}>
+                        {step.done ? <Check className="h-3 w-3" /> : <Circle className="h-2 w-2 fill-current" />}
+                      </div>
+                      <div className="text-[10px] font-semibold mt-2 text-center">{step.label}</div>
+                      <div className="text-[10px] text-muted-foreground num text-center">{step.date}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="ejb-card p-5">
                 <h3 className="text-sm font-semibold mb-2">About</h3>
                 <p className="text-sm text-muted-foreground">{member.about}</p>
