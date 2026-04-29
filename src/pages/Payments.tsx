@@ -400,7 +400,7 @@ export default function Payments() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Record payment</DialogTitle>
-            <DialogDescription>{activeMember ? `For ${activeMember} · Cycle ${CYCLE}` : `Cycle ${CYCLE}`}</DialogDescription>
+            <DialogDescription>{activeMember ? `For ${activeMember.name} · Cycle ${selectedCycle}` : `Cycle ${selectedCycle}`}</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 text-sm">
             <div>
