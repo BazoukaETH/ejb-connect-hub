@@ -532,3 +532,116 @@ export const FINANCIAL_SNAPSHOT = {
     { m: "Jul", inc: 1.6, exp: 0.5 }, { m: "Aug", inc: 0.0, exp: 0.4 },
   ],
 };
+
+// ---------- Aging report ----------
+export const AGING_BUCKETS = [
+  { bucket: "0-30 days",  count: 48, amount: 720_000 },
+  { bucket: "31-60 days", count: 42, amount: 630_000 },
+  { bucket: "61-90 days", count: 24, amount: 360_000 },
+  { bucket: "90+ days",   count: 14, amount: 210_000 },
+];
+
+// ---------- Sponsor pipeline ----------
+export type SponsorStage = "Prospect" | "Pitched" | "Negotiating" | "Contracted" | "Live" | "Renewal due";
+
+export interface SponsorDeal {
+  id: string;
+  name: string;
+  tier: "Platinum" | "Gold" | "Silver" | "Community";
+  stage: SponsorStage;
+  value: number;
+  owner: string;
+  daysInStage: number;
+  renewalDate?: string;
+}
+
+export const SPONSOR_PIPELINE: SponsorDeal[] = [
+  { id: "sd-1", name: "QNB Al Ahli",          tier: "Platinum", stage: "Prospect",     value: 600_000, owner: "Mona",  daysInStage: 6 },
+  { id: "sd-2", name: "Etisalat Misr",        tier: "Gold",     stage: "Pitched",      value: 350_000, owner: "Tarek", daysInStage: 14 },
+  { id: "sd-3", name: "Banque du Caire",      tier: "Gold",     stage: "Negotiating",  value: 320_000, owner: "Mona",  daysInStage: 22 },
+  { id: "sd-4", name: "Souq Distribution",    tier: "Silver",   stage: "Contracted",   value: 180_000, owner: "Tarek", daysInStage: 4 },
+  { id: "sd-5", name: "Commercial International Bank", tier: "Platinum", stage: "Live", value: 500_000, owner: "Mona", daysInStage: 90, renewalDate: "2026-12-31" },
+  { id: "sd-6", name: "EFG Hermes",           tier: "Gold",     stage: "Live",         value: 350_000, owner: "Mona",  daysInStage: 90, renewalDate: "2026-12-31" },
+  { id: "sd-7", name: "Vodafone Egypt",       tier: "Silver",   stage: "Renewal due",  value: 150_000, owner: "Tarek", daysInStage: 12, renewalDate: "2026-06-30" },
+  { id: "sd-8", name: "Hassan Allam Holding", tier: "Silver",   stage: "Live",         value: 150_000, owner: "Mona",  daysInStage: 90, renewalDate: "2026-12-31" },
+];
+
+// ---------- Boardroom ----------
+export const BOARDROOM_KPIS = {
+  cashPosition:     8_700_000,
+  reserve:          6_200_000,
+  ytdSponsorRev:    1_400_000,
+  ytdMemberDues:    5_580_000,
+  retentionRate:    91,
+  netNewMembers:    27,
+  avgEventTurnout:  78,
+  burnRate:         620_000,
+};
+
+export const BOARD_DECISIONS = [
+  { id: "bd-1", title: "Approve Karim Ezzat (Misr Capital) for Founding tier",     type: "Application",  amount: null,        urgency: "High",   raisedBy: "Mona Allam",  raisedAt: "3 days ago" },
+  { id: "bd-2", title: "Approve QNB Al Ahli sponsorship at Platinum tier",         type: "Sponsorship",  amount: 600_000,     urgency: "High",   raisedBy: "Mona Allam",  raisedAt: "1 week ago" },
+  { id: "bd-3", title: "Reserve allocation: open EGP 4M time deposit at CIB",      type: "Treasury",     amount: 4_000_000,   urgency: "Medium", raisedBy: "Nour Hegazy", raisedAt: "2 days ago" },
+  { id: "bd-4", title: "Update Bylaws Article 7 - Committee chair tenure",         type: "Governance",   amount: null,        urgency: "Medium", raisedBy: "Mona Allam",  raisedAt: "2 weeks ago" },
+  { id: "bd-5", title: "Annual audit firm renewal - PwC Egypt",                    type: "Operations",   amount: 280_000,     urgency: "Low",    raisedBy: "Nour Hegazy", raisedAt: "5 days ago" },
+];
+
+export const STRATEGIC_KPIS = [
+  { name: "Member growth",     target: 50,   actual: 27,  unit: "net new",   pct: 54 },
+  { name: "Retention rate",    target: 95,   actual: 91,  unit: "%",         pct: 96 },
+  { name: "Sponsor revenue",   target: 2.0,  actual: 1.4, unit: "M EGP",     pct: 70 },
+  { name: "Event attendance",  target: 80,   actual: 78,  unit: "% avg",     pct: 98 },
+  { name: "Cycle paid by Q2",  target: 90,   actual: 74,  unit: "%",         pct: 82 },
+];
+
+export const NEXT_90_DAYS = [
+  { date: "2026-05-08", title: "Technology Innovation Workshop", type: "Workshop",    notes: "41 RSVPs" },
+  { date: "2026-05-15", title: "Annual Business Summit 2026",    type: "Conference",  notes: "247 RSVPs · flagship" },
+  { date: "2026-06-02", title: "Board Strategy Offsite",         type: "Board",       notes: "Closed-door · 19 confirmed" },
+  { date: "2026-06-30", title: "Vodafone sponsorship renewal",   type: "Renewal",     notes: "EGP 150K decision needed" },
+  { date: "2026-07-10", title: "Mid-year network mixer",         type: "Networking",  notes: "Draft" },
+  { date: "2026-07-31", title: "Cycle 2026/27 close",            type: "Cycle",       notes: "Lock new payments after this" },
+];
+
+export const TOP_LAPSED = [
+  { name: "Hossam El-Sayed",    company: "Eastern Company",       cycles: 2, lastPaid: "2024/25", amount: 30_000 },
+  { name: "Marwa Naguib",       company: "MM Group",              cycles: 1, lastPaid: "2024/25", amount: 15_000 },
+  { name: "Ihab Diab",          company: "Sphinx Tech",           cycles: 1, lastPaid: "2024/25", amount: 15_000 },
+  { name: "Sameh Tantawy",      company: "Delta Foods",           cycles: 2, lastPaid: "2023/24", amount: 30_000 },
+  { name: "Bassem Sharif",      company: "Nile Logistics",        cycles: 1, lastPaid: "2024/25", amount: 15_000 },
+  { name: "Soha Badr",          company: "Heliopolis Real Estate",cycles: 1, lastPaid: "2024/25", amount: 7_500  },
+  { name: "Amira Ghoneim",      company: "Telecom Egypt",         cycles: 1, lastPaid: "2024/25", amount: 15_000 },
+  { name: "Khaled Hegazy",      company: "Orange Egypt",          cycles: 1, lastPaid: "2024/25", amount: 15_000 },
+  { name: "Mostafa Allam",      company: "Raya Holding",          cycles: 2, lastPaid: "2023/24", amount: 30_000 },
+  { name: "Reem Said",          company: "Vodafone Egypt",        cycles: 1, lastPaid: "2024/25", amount: 15_000 },
+];
+
+export const BOARD_RISKS = [
+  { kind: "Risk", text: "Sponsor pipeline below 70% of annual target with 8 months remaining", severity: "high" },
+  { kind: "Risk", text: "12 members lapsed >30 days, no payment plan in place", severity: "med" },
+  { kind: "Risk", text: "Reserve ratio (cash / annual burn) at 1.17x. Board target is 1.5x", severity: "med" },
+];
+export const BOARD_WINS = [
+  { text: "Annual Sohour attendance up 18% YoY (167 vs 142)" },
+  { text: "Renewals retained 91%, vs board target of 90%" },
+  { text: "Membership officer resolved 9 of 12 stalled applications this quarter" },
+];
+
+// ---------- Notifications ----------
+export const NOTIFICATIONS = [
+  { id: "nt-1", type: "danger",  title: "12 members lapsed >30 days",            sub: "Last reminder sent 5 days ago", href: "/payments", ts: "10 min ago", unread: true },
+  { id: "nt-2", type: "warn",    title: "Annual Business Summit at 71% capacity", sub: "247 of 350 RSVPs confirmed",     href: "/events",   ts: "1 hour ago", unread: true },
+  { id: "nt-3", type: "info",    title: "5 announcements scheduled in next 7 days", sub: "Comms team queue",              href: "/announcements", ts: "2 hours ago" },
+  { id: "nt-4", type: "warn",    title: "Vodafone sponsorship renewal in 62 days", sub: "EGP 150K · Owner: Tarek",        href: "/partners", ts: "yesterday" },
+  { id: "nt-5", type: "info",    title: "Karim Ezzat application awaiting board",  sub: "3 days in queue",                href: "/applicants", ts: "3 days ago" },
+  { id: "nt-6", type: "neutral", title: "Cycle 2025/26 closed by Nour",            sub: "91% paid · archived",            href: "/audit",    ts: "5 days ago" },
+];
+
+// ---------- Member tiers (Founding / Standard / Honorary) ----------
+export type MemberTier = "Founding" | "Standard" | "Honorary";
+export function memberTier(memberId: string): MemberTier {
+  const idx = parseInt(memberId.replace(/\D/g, ""), 10) || 1;
+  if (idx <= 8) return "Founding";
+  if (idx % 17 === 0) return "Honorary";
+  return "Standard";
+}
