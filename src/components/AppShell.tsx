@@ -1,23 +1,21 @@
 import { Outlet, useLocation, Link } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Search, Bell, ChevronRight, Sparkles } from "lucide-react";
+import { Search, ChevronRight, Sparkles } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState, useRef } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { RoleProvider, useRole } from "@/context/RoleContext";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
+import { NotificationsBell } from "@/components/NotificationsBell";
 
 const labels: Record<string, string> = {
-  "": "Dashboard",
+  "": "Cockpit",
   members: "Members",
   applicants: "Applicants & Prospects",
   onboarding: "Onboarding Queue",
@@ -36,13 +34,17 @@ const labels: Record<string, string> = {
   taxonomies: "Taxonomies",
   audit: "Audit Log",
   settings: "Settings",
+  boardroom: "Boardroom",
+  decisions: "Decisions queue",
+  strategic: "Strategic KPIs",
+  treasury: "Cash & Investments",
 };
 
 function Breadcrumbs() {
   const { pathname } = useLocation();
   const parts = pathname.split("/").filter(Boolean);
   if (parts.length === 0) {
-    return <span className="text-sm font-medium">Dashboard</span>;
+    return <span className="text-sm font-medium">Cockpit</span>;
   }
   return (
     <nav className="flex items-center gap-1.5 text-sm">
@@ -66,10 +68,11 @@ function Breadcrumbs() {
   );
 }
 
-export function AppShell() {
+function ShellInner() {
   const [demoOpen, setDemoOpen] = useState(false);
   const [demoLabel, setDemoLabel] = useState("Action");
   const mainRef = useRef<HTMLElement>(null);
+  const { role } = useRole();
 
   useEffect(() => {
     const main = mainRef.current;
@@ -79,17 +82,15 @@ export function AppShell() {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      const btn = target.closest<HTMLElement>(
-        'button, [role="button"]'
-      );
+      const btn = target.closest<HTMLElement>('button, [role="button"]');
       if (!btn) return;
       if (!main.contains(btn)) return;
 
-      // Skip elements that already have built-in behavior
       if (btn.closest("a")) return;
       if (btn.hasAttribute("data-demo-skip")) return;
+      if (btn.closest("[data-demo-skip]")) return;
       if (btn.getAttribute("type") === "submit") return;
-      if (btn.hasAttribute("data-state")) return; // radix triggers
+      if (btn.hasAttribute("data-state")) return;
       if (btn.closest("[data-radix-popper-content-wrapper]")) return;
       if (btn.closest('[role="dialog"]')) return;
       if (btn.closest('[role="menu"]')) return;
@@ -102,8 +103,6 @@ export function AppShell() {
         btn.textContent?.trim().replace(/\s+/g, " ").slice(0, 60) ||
         "Action";
 
-      // Defer: let any React onClick run first. If it opened a dialog/sheet/popover
-      // or navigated, skip the demo modal.
       const beforeUrl = window.location.href;
       setTimeout(() => {
         if (window.location.href !== beforeUrl) return;
@@ -119,6 +118,19 @@ export function AppShell() {
     main.addEventListener("click", handler);
     return () => main.removeEventListener("click", handler);
   }, []);
+
+  // Choose user persona based on previewed role for the top bar
+  const personas: Record<string, { name: string; hue: number }> = {
+    "Super Admin":        { name: "Mona Allam",   hue: 220 },
+    "Finance":            { name: "Nour Hegazy",  hue: 140 },
+    "Membership Officer": { name: "Yasmin Allam", hue: 320 },
+    "Comms":              { name: "Tarek Mostafa",hue: 30  },
+    "Employee":           { name: "Karim Said",   hue: 200 },
+    "Board":              { name: "Hussein Osman",hue: 250 },
+    "Chairman":           { name: "Hussein Osman",hue: 250 },
+    "Committee Chair":    { name: "Ahmed Hassan", hue: 180 },
+  };
+  const persona = personas[role];
 
   return (
     <SidebarProvider defaultOpen>
@@ -138,15 +150,13 @@ export function AppShell() {
               />
               <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground bg-card border border-border px-1.5 py-0.5 rounded">⌘K</kbd>
             </div>
-            <button className="h-9 w-9 rounded-md hover:bg-secondary flex items-center justify-center relative" aria-label="Notifications">
-              <Bell className="h-4 w-4 text-muted-foreground" strokeWidth={1.75} />
-              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-            </button>
+            <RoleSwitcher />
+            <NotificationsBell />
             <div className="flex items-center gap-2 pl-2 border-l border-border">
-              <Avatar name="Mona Allam" hue={220} size="sm" />
+              <Avatar name={persona.name} hue={persona.hue} size="sm" />
               <div className="hidden sm:flex flex-col leading-tight">
-                <span className="text-xs font-medium">Mona Allam</span>
-                <span className="text-[10px] text-muted-foreground">Super Admin</span>
+                <span className="text-xs font-medium">{persona.name}</span>
+                <span className="text-[10px] text-muted-foreground">{role}</span>
               </div>
             </div>
           </header>
@@ -164,20 +174,15 @@ export function AppShell() {
             </div>
             <DialogTitle className="text-left">{demoLabel}</DialogTitle>
             <DialogDescription className="text-left">
-              This is a prototype using mock data. In production, this action would open a full flow
-              (form, drawer, or confirmation) and persist changes to the backend.
+              This is a prototype using mock data. In production this opens a full flow (form, drawer, or confirmation) and persists to the backend.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="outline" onClick={() => setDemoOpen(false)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setDemoOpen(false)}>Cancel</Button>
             <Button
               onClick={() => {
                 setDemoOpen(false);
-                toast.success(`${demoLabel} - done`, {
-                  description: "Demo action completed.",
-                });
+                toast.success(`${demoLabel} - done`, { description: "Demo action completed." });
               }}
             >
               Confirm
@@ -186,5 +191,13 @@ export function AppShell() {
         </DialogContent>
       </Dialog>
     </SidebarProvider>
+  );
+}
+
+export function AppShell() {
+  return (
+    <RoleProvider>
+      <ShellInner />
+    </RoleProvider>
   );
 }
