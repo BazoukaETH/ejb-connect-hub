@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/EmptyState";
 import {
   MEMBERS, CYCLE, CYCLE_DUE_AMOUNT, CYCLE_CLOSE,
   TOTAL_MEMBERS, PAID_COUNT, UNPAID_COUNT, fmtEGP, CYCLE_WEEKLY,
+  AGING_BUCKETS,
 } from "@/data/mock";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -158,7 +159,7 @@ export default function Payments() {
 
       <Tabs defaultValue="member">
         <TabsList className="bg-transparent border-b border-border rounded-none w-full justify-start h-auto p-0 gap-1">
-          {[["member", "By Member"], ["payment", "By Payment"], ["month", "By Month"]].map(([v, l]) => (
+          {[["member", "By Member"], ["payment", "By Payment"], ["method", "By Method"], ["aging", "Aging"], ["month", "By Month"]].map(([v, l]) => (
             <TabsTrigger key={v} value={v} className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none px-3 py-2 text-sm shadow-none">
               {l}
             </TabsTrigger>
