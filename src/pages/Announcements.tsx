@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusChip, variantForPriority } from "@/components/StatusChip";
-import { ANNOUNCEMENTS, fmtDateTime } from "@/data/mock";
+import { fmtDateTime, Announcement } from "@/data/mock";
+import { useDemoStore } from "@/store/demo";
+import { useGlobalSearch } from "@/context/SearchContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/EmptyState";
 import { Plus, Bell, Pin, Image as ImageIcon, Link2, Send } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const PRIORITY_DOT: Record<string, string> = {
   Urgent: "bg-destructive",
@@ -16,26 +18,60 @@ const PRIORITY_DOT: Record<string, string> = {
 };
 
 export default function Announcements() {
-  const [title, setTitle] = useState("Last Call: EJB x CIF 2026 Registrations Close Friday");
-  const [body, setBody] = useState("Members who plan to attend the Cairo International Forum representing EJB must register by Friday 2 May. Limited delegate slots remain.");
-  const [priority, setPriority] = useState<"Urgent" | "High" | "Medium" | "Low">("Urgent");
+  const announcements = useDemoStore((s) => s.announcements);
+  const addAnnouncement = useDemoStore((s) => s.addAnnouncement);
+  const { query: globalQ } = useGlobalSearch();
+
+  const [tab, setTab] = useState<"published" | "scheduled" | "drafts" | "compose">("published");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [priority, setPriority] = useState<Announcement["priority"]>("Medium");
+  const [category, setCategory] = useState("General");
   const [audience, setAudience] = useState("All members");
+  const [scheduledFor, setScheduledFor] = useState("");
   const [pin, setPin] = useState(true);
   const [push, setPush] = useState(true);
 
   const audienceCount = audience === "Paid only" ? 372 : audience === "Board only" ? 12 : 500;
+
+  const filtered = useMemo(() => {
+    if (!globalQ) return announcements;
+    const q = globalQ.toLowerCase();
+    return announcements.filter((a) => `${a.title} ${a.body} ${a.category}`.toLowerCase().includes(q));
+  }, [announcements, globalQ]);
+
+  const reset = () => { setTitle(""); setBody(""); setScheduledFor(""); };
+
+  const publish = (status: "Published" | "Scheduled" | "Draft") => {
+    if (!title.trim() || !body.trim()) { toast.error("Title and body required"); return; }
+    if (status === "Scheduled" && !scheduledFor) { toast.error("Pick a schedule date/time"); return; }
+    addAnnouncement({
+      title, body, priority, category, audience, status,
+      scheduledFor: status === "Scheduled" ? scheduledFor : undefined,
+    });
+    const verb = status === "Published" ? "Published" : status === "Scheduled" ? "Scheduled" : "Draft saved";
+    const desc = status === "Published" ? `Sent to ${audienceCount} members${push ? " · push delivered" : ""}` : status === "Scheduled" ? `Will publish ${scheduledFor}` : "Available in Drafts";
+    toast.success(verb, { description: desc });
+    reset();
+    setTab(status === "Draft" ? "drafts" : status === "Scheduled" ? "scheduled" : "published");
+  };
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
       <PageHeader
         title="Announcements"
         description="Drives the Updates tab in the mobile app · push enabled members: 487"
-        actions={<Button size="sm" className="h-9"><Plus className="h-3.5 w-3.5 mr-1.5" /> New announcement</Button>}
+        actions={<Button size="sm" className="h-9" onClick={() => setTab("compose")}><Plus className="h-3.5 w-3.5 mr-1.5" /> New announcement</Button>}
       />
 
-      <Tabs defaultValue="published">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
         <TabsList className="bg-transparent border-b border-border rounded-none w-full justify-start h-auto p-0 gap-1 mb-4">
-          {[["published", "Published"], ["scheduled", "Scheduled"], ["drafts", "Drafts"], ["compose", "Compose"]].map(([v, l]) => (
+          {[
+            ["published", `Published · ${filtered.filter(a => a.status === "Published").length}`],
+            ["scheduled", `Scheduled · ${filtered.filter(a => a.status === "Scheduled").length}`],
+            ["drafts", `Drafts · ${filtered.filter(a => a.status === "Draft").length}`],
+            ["compose", "Compose"],
+          ].map(([v, l]) => (
             <TabsTrigger key={v} value={v} className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none px-3 py-2 text-sm shadow-none">
               {l}
             </TabsTrigger>
@@ -49,7 +85,7 @@ export default function Announcements() {
                 <tr><th>Title</th><th>Priority</th><th>Category</th><th>Audience</th><th>When</th><th>Author</th><th>Reach</th><th>Open rate</th><th>Status</th></tr>
               </thead>
               <tbody>
-                {ANNOUNCEMENTS.filter(a => a.status === "Published").map((a) => (
+                {filtered.filter(a => a.status === "Published").map((a) => (
                   <tr key={a.id} className="hover:bg-secondary/40 cursor-pointer">
                     <td><div className="font-medium text-sm max-w-[280px] truncate">{a.title}</div></td>
                     <td><StatusChip variant={variantForPriority(a.priority)} label={a.priority} dot /></td>
@@ -81,23 +117,45 @@ export default function Announcements() {
             <table className="w-full data-table">
               <thead className="bg-secondary/50"><tr><th>Title</th><th>Priority</th><th>Audience</th><th>Scheduled for</th><th>Author</th><th></th></tr></thead>
               <tbody>
-                {ANNOUNCEMENTS.filter(a => a.status === "Scheduled").map((a) => (
+                {filtered.filter(a => a.status === "Scheduled").map((a) => (
                   <tr key={a.id}>
                     <td className="font-medium text-sm">{a.title}</td>
                     <td><StatusChip variant={variantForPriority(a.priority)} label={a.priority} dot /></td>
                     <td className="text-xs">{a.audience}</td>
                     <td className="num text-xs text-muted-foreground">{a.scheduledFor && fmtDateTime(a.scheduledFor)}</td>
                     <td className="text-xs">{a.author}</td>
-                    <td><Button variant="ghost" size="sm" className="h-7 text-xs">Edit</Button></td>
+                    <td><Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => toast("Edit flow opened (demo only)")}>Edit</Button></td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {filtered.filter(a => a.status === "Scheduled").length === 0 && (
+              <div className="p-6"><EmptyState icon={Bell} title="No scheduled announcements" description="Schedule one from the Compose tab." compact /></div>
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="drafts">
-          <EmptyState icon={Bell} title="No drafts yet" description="Drafts you save in the composer will land here for the team to review before publishing." />
+          {filtered.filter(a => a.status === "Draft").length === 0 ? (
+            <EmptyState icon={Bell} title="No drafts yet" description="Drafts you save in the composer will land here for the team to review before publishing." />
+          ) : (
+            <div className="ejb-card overflow-hidden">
+              <table className="w-full data-table">
+                <thead className="bg-secondary/50"><tr><th>Title</th><th>Priority</th><th>Audience</th><th>Author</th><th></th></tr></thead>
+                <tbody>
+                  {filtered.filter(a => a.status === "Draft").map((a) => (
+                    <tr key={a.id}>
+                      <td className="font-medium text-sm">{a.title}</td>
+                      <td><StatusChip variant={variantForPriority(a.priority)} label={a.priority} dot /></td>
+                      <td className="text-xs">{a.audience}</td>
+                      <td className="text-xs">{a.author}</td>
+                      <td><Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setTab("compose")}>Open</Button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="compose">
@@ -119,13 +177,13 @@ export default function Announcements() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="ejb-eyebrow">Priority</label>
-                    <select value={priority} onChange={(e) => setPriority(e.target.value as any)} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm">
+                    <select value={priority} onChange={(e) => setPriority(e.target.value as Announcement["priority"])} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm">
                       <option>Urgent</option><option>High</option><option>Medium</option><option>Low</option>
                     </select>
                   </div>
                   <div>
                     <label className="ejb-eyebrow">Category</label>
-                    <select className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm">
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm">
                       <option>Event</option><option>Member benefit</option><option>Policy</option><option>Press</option><option>Partner news</option><option>General</option>
                     </select>
                   </div>
@@ -137,7 +195,7 @@ export default function Announcements() {
                   </div>
                   <div>
                     <label className="ejb-eyebrow">Schedule</label>
-                    <input type="datetime-local" className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm" />
+                    <input type="datetime-local" value={scheduledFor} onChange={(e) => setScheduledFor(e.target.value)} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm" />
                   </div>
                 </div>
 
@@ -153,9 +211,9 @@ export default function Announcements() {
                 </div>
 
                 <div className="flex justify-end gap-2 pt-2 border-t border-border">
-                  <Button variant="ghost" size="sm">Save draft</Button>
-                  <Button variant="outline" size="sm">Schedule</Button>
-                  <Button size="sm" onClick={() => toast({ title: "Announcement published", description: `Sent to ${audienceCount} members.` })}>
+                  <Button variant="ghost" size="sm" onClick={() => publish("Draft")}>Save draft</Button>
+                  <Button variant="outline" size="sm" onClick={() => publish("Scheduled")}>Schedule</Button>
+                  <Button size="sm" onClick={() => publish("Published")}>
                     <Send className="h-3.5 w-3.5 mr-1.5" /> Publish now
                   </Button>
                 </div>
@@ -168,7 +226,6 @@ export default function Announcements() {
                 <span className="text-[10px] text-muted-foreground">EJB Member App · iOS</span>
               </div>
               <div className="rounded-[36px] border-[10px] border-foreground/90 bg-[hsl(var(--ejb-light-gray))] p-3 max-w-[280px] mx-auto shadow-xl">
-                {/* notch */}
                 <div className="h-5 flex items-center justify-center">
                   <div className="h-1 w-12 rounded-full bg-foreground/20" />
                 </div>

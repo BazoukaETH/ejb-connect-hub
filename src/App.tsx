@@ -12,6 +12,7 @@ import Payments from "./pages/Payments";
 import Team from "./pages/Team";
 import Announcements from "./pages/Announcements";
 import Events from "./pages/Events";
+import EventDetail from "./pages/EventDetail";
 import Committees from "./pages/Committees";
 import Partners from "./pages/Partners";
 import Library from "./pages/Library";
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/committees" element={<Committees />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/documents" element={<Library />} />
             <Route path="/resources" element={<Library />} />

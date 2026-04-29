@@ -4,10 +4,12 @@ import { Avatar } from "@/components/Avatar";
 import { StatusChip } from "@/components/StatusChip";
 import { EmptyState } from "@/components/EmptyState";
 import {
-  MEMBERS, CYCLE, CYCLE_DUE_AMOUNT, CYCLE_CLOSE,
+  CYCLE_DUE_AMOUNT, CYCLE_CLOSE,
   TOTAL_MEMBERS, PAID_COUNT, UNPAID_COUNT, fmtEGP, CYCLE_WEEKLY,
   AGING_BUCKETS,
 } from "@/data/mock";
+import { useDemoStore, CYCLES, CycleName, Tx } from "@/store/demo";
+import { useGlobalSearch } from "@/context/SearchContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
@@ -17,21 +19,11 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, BarChart, Bar, CartesianGrid } from "recharts";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const collected = PAID_COUNT * CYCLE_DUE_AMOUNT;
 const expected = TOTAL_MEMBERS * CYCLE_DUE_AMOUNT;
 const outstanding = UNPAID_COUNT * CYCLE_DUE_AMOUNT;
-
-const TRANSACTIONS = [
-  { id: "tx-1", member: "Tarek Mostafa", amount: 15000, method: "Bank transfer", date: "2026-04-28 14:22", recordedBy: "Nour", ref: "TRX-99821" },
-  { id: "tx-2", member: "Hala Saleh",    amount: 15000, method: "Bank transfer", date: "2026-04-28 11:08", recordedBy: "Nour", ref: "TRX-99820" },
-  { id: "tx-3", member: "Yasmin Allam",  amount: 15000, method: "Cheque",        date: "2026-04-27 16:40", recordedBy: "Nour", ref: "CHQ-2455" },
-  { id: "tx-4", member: "Soha Badr",     amount:  7500, method: "Bank transfer", date: "2026-04-27 09:55", recordedBy: "Nour", ref: "TRX-99812" },
-  { id: "tx-5", member: "Karim Said",    amount: 15000, method: "Card",          date: "2026-04-26 17:12", recordedBy: "Mona",  ref: "CRD-77124" },
-  { id: "tx-6", member: "Ahmed Hassan",  amount: 15000, method: "Bank transfer", date: "2026-04-26 13:00", recordedBy: "Nour", ref: "TRX-99801" },
-  { id: "tx-7", member: "Mona Ezzat",    amount: 15000, method: "Cash",          date: "2026-04-25 10:35", recordedBy: "Nour", ref: "CSH-0142" },
-];
 
 const MONTHLY = [
   { m: "Feb", v: 0.4 }, { m: "Mar", v: 0.9 }, { m: "Apr", v: 2.1 },
@@ -39,55 +31,84 @@ const MONTHLY = [
 ];
 
 export default function Payments() {
+  const members = useDemoStore((s) => s.members);
+  const transactions = useDemoStore((s) => s.transactions);
+  const selectedCycle = useDemoStore((s) => s.selectedCycle);
+  const setSelectedCycle = useDemoStore((s) => s.setSelectedCycle);
+  const cyclesOpen = useDemoStore((s) => s.cyclesOpen);
+  const recordPayment = useDemoStore((s) => s.recordPayment);
+  const closeCycle = useDemoStore((s) => s.closeCycle);
+  const { query: globalQ } = useGlobalSearch();
+
   const [closeOpen, setCloseOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
-  const [activeMember, setActiveMember] = useState<string | null>(null);
+  const [activeMemberId, setActiveMemberId] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState("");
   const [nextDues, setNextDues] = useState(15000);
-  const [q, setQ] = useState("");
+  const [localQ, setLocalQ] = useState("");
+  const q = globalQ || localQ;
   const [filter, setFilter] = useState<"all" | "paid" | "unpaid">("all");
+  const [recordDraft, setRecordDraft] = useState({ amount: 15000, method: "Bank transfer" as Tx["method"], ref: "", date: "2026-04-28" });
 
   const paidPct = Math.round((PAID_COUNT / TOTAL_MEMBERS) * 100);
   const daysLeft = 94;
+  const isCycleOpen = cyclesOpen[selectedCycle];
+
+  const cycleIdx = CYCLES.indexOf(selectedCycle);
 
   const rows = useMemo(() => {
-    return MEMBERS.slice(0, 28).map((m, i) => ({
-      member: m,
-      paid: i < 21,
-      paidOn: i < 21 ? "2026-06-12" : null,
-      method: i < 21 ? "Bank transfer" : null,
-      reminder: i >= 21 && i % 2 === 0 ? "Sent 3 days ago" : null,
-      daysOverdue: i >= 21 ? 4 + (i - 21) * 3 : 0,
-    })).filter((r) => {
+    return members.slice(0, 28).map((m, i) => {
+      const tx = transactions.find((t) => t.cycle === selectedCycle && t.memberId === m.id);
+      const paid = !!tx || (selectedCycle === "2026 / 2027" && i < 21);
+      return {
+        member: m,
+        paid,
+        paidOn: tx?.date ?? (paid ? "2026-06-12" : null),
+        method: tx?.method ?? (paid ? "Bank transfer" : null),
+        reminder: !paid && i % 2 === 0 ? "Sent 3 days ago" : null,
+        daysOverdue: paid ? 0 : 4 + (i - 21) * 3,
+      };
+    }).filter((r) => {
       if (q && !`${r.member.name} ${r.member.company} ${r.member.membershipNo}`.toLowerCase().includes(q.toLowerCase())) return false;
       if (filter === "paid" && !r.paid) return false;
       if (filter === "unpaid" && r.paid) return false;
       return true;
     });
-  }, [q, filter]);
+  }, [members, transactions, selectedCycle, q, filter]);
 
   const handleClose = () => {
+    closeCycle();
     setCloseOpen(false);
     setConfirmText("");
-    toast({ title: "Cycle closed", description: `${UNPAID_COUNT} members moved to Lapsed. New cycle opened.` });
   };
 
   const handleRecord = () => {
+    if (!activeMemberId) return;
+    recordPayment(activeMemberId, recordDraft.amount, recordDraft.method, recordDraft.ref || `TRX-${Date.now()}`);
     setRecordOpen(false);
-    toast({ title: "Payment recorded", description: `EGP 15,000 logged for ${activeMember ?? "member"}.` });
+    setActiveMemberId(null);
   };
+
+  const openRecord = (memberId: string) => {
+    setActiveMemberId(memberId);
+    setRecordDraft({ amount: 15000, method: "Bank transfer", ref: "", date: new Date().toISOString().slice(0, 10) });
+    setRecordOpen(true);
+  };
+
+  const activeMember = members.find((m) => m.id === activeMemberId);
+
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
       <PageHeader
         title="Payments & Dues"
-        description={`Cycle ${CYCLE} · closes ${CYCLE_CLOSE} · ${daysLeft} days left`}
+        description={`Cycle ${selectedCycle} · ${isCycleOpen ? `closes ${CYCLE_CLOSE} · ${daysLeft} days left` : "closed"}`}
         actions={
           <>
             <Button variant="outline" size="sm" className="h-9"><Download className="h-3.5 w-3.5 mr-1.5" /> Export</Button>
             <Button variant="outline" size="sm" className="h-9"><Mail className="h-3.5 w-3.5 mr-1.5" /> Send reminders ({UNPAID_COUNT})</Button>
-            <Button variant="outline" size="sm" className="h-9 border-destructive/30 text-destructive hover:bg-destructive/10" onClick={() => setCloseOpen(true)}>
-              <Lock className="h-3.5 w-3.5 mr-1.5" /> Close cycle
+            <Button variant="outline" size="sm" className="h-9 border-destructive/30 text-destructive hover:bg-destructive/10" disabled={!isCycleOpen} onClick={() => setCloseOpen(true)}>
+              <Lock className="h-3.5 w-3.5 mr-1.5" /> {isCycleOpen ? "Close cycle" : "Cycle closed"}
             </Button>
           </>
         }
@@ -95,10 +116,16 @@ export default function Payments() {
 
       {/* Cycle selector + summary strip */}
       <div className="flex items-center gap-2 mb-4">
-        <Button variant="outline" size="sm" className="h-8 w-8 p-0"><ChevronLeft className="h-4 w-4" /></Button>
-        <div className="px-4 h-8 flex items-center bg-card border border-border rounded-md text-sm font-medium num">Cycle {CYCLE}</div>
-        <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled><ChevronRight className="h-4 w-4" /></Button>
-        <span className="text-xs text-muted-foreground ml-2">Compare: 2025/26 · 2024/25</span>
+        <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled={cycleIdx === CYCLES.length - 1} onClick={() => setSelectedCycle(CYCLES[Math.min(CYCLES.length - 1, cycleIdx + 1)])}>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <div className="px-4 h-8 flex items-center bg-card border border-border rounded-md text-sm font-medium num">
+          Cycle {selectedCycle} {!isCycleOpen && <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground">closed</span>}
+        </div>
+        <Button variant="outline" size="sm" className="h-8 w-8 p-0" disabled={cycleIdx === 0} onClick={() => setSelectedCycle(CYCLES[Math.max(0, cycleIdx - 1)])}>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <span className="text-xs text-muted-foreground ml-2">Use ← → to compare cycles</span>
       </div>
 
       {/* Summary */}
@@ -170,7 +197,7 @@ export default function Payments() {
           <div className="ejb-card p-3 mb-3 flex items-center gap-2 flex-wrap">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search member, company, M-#…" className="pl-8 h-8" />
+              <Input value={localQ} onChange={(e) => setLocalQ(e.target.value)} placeholder="Search member, company, M-#…" className="pl-8 h-8" />
             </div>
             <div className="flex items-center gap-1 bg-secondary rounded-md p-0.5">
               {(["all", "paid", "unpaid"] as const).map((f) => (
@@ -212,7 +239,7 @@ export default function Payments() {
                     <td className="text-[11px] text-muted-foreground">{r.reminder ?? (r.paid ? "-" : "Not sent")}</td>
                     <td>
                       {!r.paid && (
-                        <Button size="sm" className="h-7 text-xs" onClick={() => { setActiveMember(r.member.name); setRecordOpen(true); }}>
+                        <Button size="sm" className="h-7 text-xs" disabled={!isCycleOpen} onClick={() => openRecord(r.member.id)}>
                           <Plus className="h-3 w-3 mr-1" /> Record
                         </Button>
                       )}
@@ -234,10 +261,10 @@ export default function Payments() {
                 <tr><th>Date</th><th>Member</th><th>Amount</th><th>Method</th><th>Reference</th><th>Recorded by</th><th></th></tr>
               </thead>
               <tbody>
-                {TRANSACTIONS.map((t) => (
+                {transactions.filter((t) => t.cycle === selectedCycle).map((t) => (
                   <tr key={t.id} className="hover:bg-secondary/40">
                     <td className="num text-xs text-muted-foreground">{t.date}</td>
-                    <td className="font-medium text-sm">{t.member}</td>
+                    <td className="font-medium text-sm">{t.memberName}</td>
                     <td className="num font-medium">{fmtEGP(t.amount)}{t.amount < CYCLE_DUE_AMOUNT && <span className="ml-1.5 chip chip-pending">Partial</span>}</td>
                     <td className="text-xs">{t.method}</td>
                     <td className="num text-xs text-muted-foreground">{t.ref}</td>
@@ -329,7 +356,7 @@ export default function Payments() {
             <table className="w-full data-table">
               <thead className="bg-secondary/50"><tr><th>Member</th><th>Company</th><th>Days overdue</th><th>Amount</th><th>Last reminder</th><th></th></tr></thead>
               <tbody>
-                {MEMBERS.slice(48, 58).map((m, i) => (
+                {members.slice(48, 58).map((m, i) => (
                   <tr key={m.id} className="hover:bg-secondary/40">
                     <td>
                       <div className="flex items-center gap-2.5">
@@ -373,28 +400,28 @@ export default function Payments() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Record payment</DialogTitle>
-            <DialogDescription>{activeMember ? `For ${activeMember} · Cycle ${CYCLE}` : `Cycle ${CYCLE}`}</DialogDescription>
+            <DialogDescription>{activeMember ? `For ${activeMember.name} · Cycle ${selectedCycle}` : `Cycle ${selectedCycle}`}</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 text-sm">
             <div>
               <label className="text-xs text-muted-foreground">Amount (EGP)</label>
-              <input className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card num" defaultValue="15000" />
+              <input type="number" value={recordDraft.amount} onChange={(e) => setRecordDraft({ ...recordDraft, amount: parseInt(e.target.value) || 0 })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card num" />
               <div className="text-[11px] text-muted-foreground mt-1">Full cycle dues: {fmtEGP(CYCLE_DUE_AMOUNT)}</div>
             </div>
             <div>
               <label className="text-xs text-muted-foreground">Method</label>
-              <select className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card">
+              <select value={recordDraft.method} onChange={(e) => setRecordDraft({ ...recordDraft, method: e.target.value as Tx["method"] })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card">
                 <option>Bank transfer</option><option>Cheque</option><option>Card</option><option>Cash</option>
               </select>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground">Date</label>
-                <input type="date" defaultValue="2026-04-28" className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" />
+                <input type="date" value={recordDraft.date} onChange={(e) => setRecordDraft({ ...recordDraft, date: e.target.value })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">Reference</label>
-                <input className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" placeholder="TRX-…" />
+                <input value={recordDraft.ref} onChange={(e) => setRecordDraft({ ...recordDraft, ref: e.target.value })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" placeholder="TRX-…" />
               </div>
             </div>
             <div>
@@ -417,7 +444,7 @@ export default function Payments() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-destructive" /> Close cycle {CYCLE}
+              <Lock className="h-4 w-4 text-destructive" /> Close cycle {selectedCycle}
             </DialogTitle>
             <DialogDescription>Lock collections, lapse unpaid members, open the next cycle.</DialogDescription>
           </DialogHeader>
@@ -456,7 +483,7 @@ export default function Payments() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCloseOpen(false)}>Cancel</Button>
-            <Button disabled={confirmText !== "CLOSE CYCLE"} variant="destructive" onClick={handleClose}>Close cycle {CYCLE}</Button>
+            <Button disabled={confirmText !== "CLOSE CYCLE"} variant="destructive" onClick={handleClose}>Close cycle {selectedCycle}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

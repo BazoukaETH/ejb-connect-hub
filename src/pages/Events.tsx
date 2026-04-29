@@ -1,19 +1,55 @@
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusChip } from "@/components/StatusChip";
-import { EVENTS, fmtDate } from "@/data/mock";
+import { fmtDate, EjbEvent } from "@/data/mock";
+import { useDemoStore, rsvpCounts } from "@/store/demo";
+import { useGlobalSearch } from "@/context/SearchContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Plus, MapPin, Users, Clock, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Plus, MapPin, Users, Clock, Search } from "lucide-react";
+
+const TYPES: EjbEvent["type"][] = ["Conference", "Workshop", "Sohour", "Networking", "Board meeting"];
 
 export default function Events() {
-  const upcoming = EVENTS.filter(e => e.status === "Published" || e.status === "Draft");
-  const past = EVENTS.filter(e => e.status === "Past");
+  const events = useDemoStore((s) => s.events);
+  const rsvps = useDemoStore((s) => s.rsvps);
+  const addEvent = useDemoStore((s) => s.addEvent);
+  const nav = useNavigate();
+  const { query: globalQ } = useGlobalSearch();
 
-  const renderCard = (e: typeof EVENTS[number]) => {
+  const [typeFilter, setTypeFilter] = useState<"all" | EjbEvent["type"]>("all");
+  const [localQ, setLocalQ] = useState("");
+  const q = (globalQ || localQ).toLowerCase();
+
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState({
+    title: "", type: "Networking" as EjbEvent["type"],
+    date: "2026-06-01T19:00", location: "", capacity: 100, cost: 0,
+    description: "", status: "Draft" as EjbEvent["status"],
+  });
+
+  const filtered = useMemo(() => events.filter((e) => {
+    if (typeFilter !== "all" && e.type !== typeFilter) return false;
+    if (q && !`${e.title} ${e.location} ${e.type}`.toLowerCase().includes(q)) return false;
+    return true;
+  }), [events, typeFilter, q]);
+
+  const upcoming = filtered.filter(e => e.status === "Published" || e.status === "Draft");
+  const past = filtered.filter(e => e.status === "Past");
+
+  const renderCard = (e: EjbEvent) => {
+    const counts = rsvpCounts(rsvps, e.id);
     const pct = Math.round((e.registered / e.capacity) * 100);
     const nearFull = pct > 85;
     return (
-      <div key={e.id} className="ejb-card p-4 ejb-card-hover animate-fade-in">
+      <Link
+        key={e.id}
+        to={`/events/${e.id}`}
+        className="ejb-card p-4 ejb-card-hover animate-fade-in block"
+      >
         <div className="flex items-start justify-between mb-2">
           <StatusChip variant="brand" label={e.type} />
           <StatusChip variant={e.status === "Published" ? "paid" : e.status === "Past" ? "neutral" : e.status === "Draft" ? "pending" : "unpaid"} label={e.status} />
@@ -29,23 +65,34 @@ export default function Events() {
           <div className={`h-full ${nearFull ? "bg-[hsl(var(--ejb-amber))]" : "bg-primary"}`} style={{ width: `${pct}%` }} />
         </div>
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border text-[11px]">
-          <span className="text-muted-foreground">Cost {e.cost ? `EGP ${e.cost.toLocaleString()}` : "Free"}</span>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary">Open roster →</Button>
+          <span className="text-muted-foreground">Cost {e.cost ? `EGP ${e.cost.toLocaleString()}` : "Free"} · {counts.going} going</span>
+          <span className="text-primary">Open roster →</span>
         </div>
-      </div>
+      </Link>
     );
+  };
+
+  const submit = () => {
+    if (!draft.title.trim()) return;
+    const ev = addEvent({
+      ...draft,
+      date: new Date(draft.date).toISOString(),
+    });
+    setOpen(false);
+    setDraft({ ...draft, title: "", description: "", location: "" });
+    nav(`/events/${ev.id}`);
   };
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
       <PageHeader title="Events" description={`${upcoming.length} upcoming · ${past.length} past · drives the Events tab in the mobile app`}
-        actions={<Button size="sm" className="h-9"><Plus className="h-3.5 w-3.5 mr-1.5" /> New event</Button>} />
+        actions={<Button size="sm" className="h-9" onClick={() => setOpen(true)}><Plus className="h-3.5 w-3.5 mr-1.5" /> New event</Button>} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         {[
           { l: "Upcoming", v: upcoming.length, sub: "Next 60 days" },
           { l: "Avg attendance", v: "78%", sub: "Last 6 months" },
-          { l: "Total RSVPs", v: EVENTS.reduce((s, e) => s + e.registered, 0), sub: "Across all events" },
+          { l: "Total RSVPs", v: rsvps.length, sub: "Across all events" },
           { l: "Revenue (events)", v: "EGP 617K", sub: "From paid events" },
         ].map((s) => (
           <div key={s.l} className="ejb-card p-3">
@@ -54,6 +101,20 @@ export default function Events() {
             <div className="text-[11px] text-muted-foreground">{s.sub}</div>
           </div>
         ))}
+      </div>
+
+      <div className="ejb-card p-3 mb-4 flex items-center gap-2 flex-wrap">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input value={localQ} onChange={(e) => setLocalQ(e.target.value)} placeholder="Search events…" className="pl-8 h-8" />
+        </div>
+        <div className="flex items-center gap-1 bg-secondary rounded-md p-0.5 flex-wrap">
+          {(["all", ...TYPES] as const).map((t) => (
+            <button key={t} onClick={() => setTypeFilter(t)} className={`h-7 px-2.5 text-xs rounded ${typeFilter === t ? "bg-card shadow-sm font-medium" : "text-muted-foreground"}`}>
+              {t}
+            </button>
+          ))}
+        </div>
       </div>
 
       <Tabs defaultValue="upcoming">
@@ -70,15 +131,15 @@ export default function Events() {
         </TabsContent>
         <TabsContent value="calendar">
           {(() => {
-            const year = 2026, month = 4; // May 2026
+            const year = 2026, month = 4;
             const firstDow = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const cells: (number | null)[] = [];
             for (let i = 0; i < firstDow; i++) cells.push(null);
             for (let d = 1; d <= daysInMonth; d++) cells.push(d);
             while (cells.length % 7) cells.push(null);
-            const eventsByDay: Record<number, typeof EVENTS> = {};
-            EVENTS.forEach((e) => {
+            const eventsByDay: Record<number, EjbEvent[]> = {};
+            filtered.forEach((e) => {
               const d = new Date(e.date);
               if (d.getFullYear() === year && d.getMonth() === month) {
                 const day = d.getDate();
@@ -111,9 +172,9 @@ export default function Events() {
                               : e.status === "Past" ? "bg-secondary text-muted-foreground border-border"
                               : "bg-primary/10 text-primary border-primary/30";
                             return (
-                              <button key={e.id} className={`w-full text-left text-[10px] leading-tight px-1.5 py-1 rounded border ${tone} truncate`} title={e.title}>
+                              <Link key={e.id} to={`/events/${e.id}`} className={`block text-left text-[10px] leading-tight px-1.5 py-1 rounded border ${tone} truncate`} title={e.title}>
                                 {e.title}
-                              </button>
+                              </Link>
                             );
                           })}
                         </div>
@@ -126,6 +187,60 @@ export default function Events() {
           })()}
         </TabsContent>
       </Tabs>
+
+      {/* New event modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>New event</DialogTitle>
+            <DialogDescription>Goes live in the mobile app once published.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>
+              <label className="ejb-eyebrow">Title</label>
+              <Input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="Annual Member Sohour" className="h-9 mt-1" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="ejb-eyebrow">Type</label>
+                <select value={draft.type} onChange={(e) => setDraft({ ...draft, type: e.target.value as EjbEvent["type"] })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                  {TYPES.map((t) => <option key={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="ejb-eyebrow">Status</label>
+                <select value={draft.status} onChange={(e) => setDraft({ ...draft, status: e.target.value as EjbEvent["status"] })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                  <option>Draft</option><option>Published</option>
+                </select>
+              </div>
+              <div>
+                <label className="ejb-eyebrow">Date</label>
+                <input type="datetime-local" value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card text-sm" />
+              </div>
+              <div>
+                <label className="ejb-eyebrow">Capacity</label>
+                <input type="number" value={draft.capacity} onChange={(e) => setDraft({ ...draft, capacity: parseInt(e.target.value) || 0 })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card num" />
+              </div>
+              <div className="col-span-2">
+                <label className="ejb-eyebrow">Location</label>
+                <Input value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })} placeholder="Four Seasons Nile Plaza" className="h-9 mt-1" />
+              </div>
+              <div>
+                <label className="ejb-eyebrow">Cost (EGP)</label>
+                <input type="number" value={draft.cost} onChange={(e) => setDraft({ ...draft, cost: parseInt(e.target.value) || 0 })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card num" />
+              </div>
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Description</label>
+              <textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} className="w-full h-20 mt-1 px-3 py-2 border border-border rounded-md bg-card text-sm" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button disabled={!draft.title.trim()} onClick={submit}>Create event</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
