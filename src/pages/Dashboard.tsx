@@ -6,6 +6,8 @@ import {
   CYCLE_WEEKLY, PIPELINE_STAGES, RECENT_ACTIVITY, FINANCIAL_SNAPSHOT,
   ACTIVE_MEMBERS, MEMBER_CAP, fmtEGP,
 } from "@/data/mock";
+import { useDemoStore } from "@/store/demo";
+import { formatDistanceToNow } from "date-fns";
 import {
   ArrowRight, ArrowUpRight, ArrowDownRight, Users, BadgeCheck,
   AlertCircle, FileSearch, CalendarDays, Handshake, RefreshCw, Pencil, Megaphone,
@@ -123,6 +125,9 @@ export default function Dashboard() {
   const { can, role } = useRole();
   const [period, setPeriod] = useState<"cycle" | "ytd" | "12m">("cycle");
   const [activityFilter, setActivityFilter] = useState<string>("all");
+  const lastRefreshed = useDemoStore((s) => s.lastRefreshed);
+  const kpiNudge = useDemoStore((s) => s.kpiNudge);
+  const refresh = useDemoStore((s) => s.refreshCockpit);
 
   const filteredActivity = activityFilter === "all"
     ? RECENT_ACTIVITY
@@ -130,6 +135,12 @@ export default function Dashboard() {
 
   const attentionCount = 7;
   const urgentCount = 2;
+
+  const periodMul = period === "cycle" ? 1 : period === "ytd" ? 1.4 : 2.1;
+  const adj = (n: number) => Math.round(n * kpiNudge * periodMul);
+  const refreshedAgo = (() => {
+    try { return formatDistanceToNow(lastRefreshed, { addSuffix: true }); } catch { return "just now"; }
+  })();
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
@@ -145,21 +156,21 @@ export default function Dashboard() {
                 </button>
               ))}
             </div>
-            <button data-demo-skip className="h-8 w-8 rounded-md hover:bg-secondary flex items-center justify-center text-muted-foreground" aria-label="Refresh data">
+            <button onClick={refresh} className="h-8 w-8 rounded-md hover:bg-secondary flex items-center justify-center text-muted-foreground" aria-label="Refresh data">
               <RefreshCw className="h-3.5 w-3.5" />
             </button>
-            <span className="text-[11px] text-muted-foreground hidden md:inline">2 min ago</span>
+            <span className="text-[11px] text-muted-foreground hidden md:inline">{refreshedAgo}</span>
           </div>
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-5">
-        <KPI label="Active members" value={`${ACTIVE_MEMBERS}`} sub={`of ${MEMBER_CAP} cap`} trend={{ dir: "up", text: "+8 vs last cycle" }} href="/members" icon={Users} />
-        <KPI label="% paid this cycle" value={`${paidPct}%`} sub={`${PAID_COUNT} of ${TOTAL_MEMBERS}`} trend={{ dir: "up", text: fmtEGP(collected, { compact: true }) }} href="/payments" icon={BadgeCheck} />
-        <KPI label="Outstanding dues" value={fmtEGP(outstanding, { compact: true })} sub={`${UNPAID_COUNT} unpaid`} trend={{ dir: "neutral", text: `Closes ${CYCLE_CLOSE}` }} href="/payments?filter=unpaid" icon={AlertCircle} highlight />
-        <KPI label="Pending applications" value="9" sub="Oldest: 12 days" trend={{ dir: "down", text: "-3 wk over wk" }} href="/applicants" icon={FileSearch} />
-        <KPI label="Upcoming events" value="3" sub="Next 30 days" trend={{ dir: "up", text: "147 RSVPs" }} href="/events" icon={CalendarDays} />
-        <KPI label="Sponsor revenue" value="1.4M EGP" sub="5 active deals" trend={{ dir: "up", text: "+12% YoY" }} href="/partners" icon={Handshake} />
+        <KPI label="Active members" value={`${adj(ACTIVE_MEMBERS)}`} sub={`of ${MEMBER_CAP} cap`} trend={{ dir: "up", text: "+8 vs last cycle" }} href="/members" icon={Users} />
+        <KPI label="% paid this cycle" value={`${Math.min(100, Math.round(paidPct * kpiNudge))}%`} sub={`${adj(PAID_COUNT)} of ${TOTAL_MEMBERS}`} trend={{ dir: "up", text: fmtEGP(adj(collected), { compact: true }) }} href="/payments" icon={BadgeCheck} />
+        <KPI label="Outstanding dues" value={fmtEGP(adj(outstanding), { compact: true })} sub={`${adj(UNPAID_COUNT)} unpaid`} trend={{ dir: "neutral", text: `Closes ${CYCLE_CLOSE}` }} href="/members?view=Lapsed%20unpaid&bulk=1" icon={AlertCircle} highlight />
+        <KPI label="Pending applications" value={`${adj(9)}`} sub="Oldest: 12 days" trend={{ dir: "down", text: "-3 wk over wk" }} href="/applicants" icon={FileSearch} />
+        <KPI label="Upcoming events" value={`${adj(3)}`} sub="Next 30 days" trend={{ dir: "up", text: "147 RSVPs" }} href="/events" icon={CalendarDays} />
+        <KPI label="Sponsor revenue" value={fmtEGP(adj(1400000), { compact: true })} sub="5 active deals" trend={{ dir: "up", text: "+12% YoY" }} href="/partners" icon={Handshake} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-5">
@@ -172,7 +183,7 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="divide-y divide-border/60">
-            <AttentionItem icon={AlertCircle} count={12} text="members lapsed >30 days, no payment" action="Send reminders" href="/payments" severity="danger" />
+            <AttentionItem icon={AlertCircle} count={12} text="members lapsed >30 days, no payment" action="Send reminders" href="/members?view=Lapsed%20unpaid&bulk=1" severity="danger" />
             <AttentionItem icon={Wallet} count={1} text="partners with outstanding payment (Hassan Allam)" action="Open partners" href="/partners" severity="danger" />
             <AttentionItem icon={FileSearch} count={9} text="applicants awaiting decision" action="View pipeline" href="/applicants" severity="info" />
             <AttentionItem icon={CalendarDays} count={3} text="events this week need final headcount" action="Open roster" href="/events" severity="warn" />
