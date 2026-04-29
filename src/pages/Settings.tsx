@@ -94,9 +94,9 @@ export default function Settings() {
         <TabsContent value="notifications">
           <Section icon={BellRing} title="Notifications" desc="Which events email which roles">
             <Field label="Daily digest"><label className="flex items-center gap-2 text-xs"><Switch checked={reminders} onCheckedChange={setReminders} /> Email daily summary at 08:00</label></Field>
-            <Field label="Sponsor renewal alerts"><span className="text-xs">90, 60, 30, 7 days before contract end → Finance + Comms</span></Field>
-            <Field label="Lapsed member alerts"><span className="text-xs">30, 60, 90 days overdue → Membership Officer</span></Field>
-            <Field label="Application aging"><span className="text-xs">14d in stage → Membership Officer · 30d → Super Admin</span></Field>
+            <Field label="Sponsor renewal alerts"><span className="text-xs">90, 60, 30, 7 days before contract end → Finance + EJB Admin</span></Field>
+            <Field label="Lapsed member alerts"><span className="text-xs">30, 60, 90 days overdue → EJB Admin</span></Field>
+            <Field label="Application aging"><span className="text-xs">14d in stage → EJB Admin · 30d → escalate to Chairman</span></Field>
           </Section>
         </TabsContent>
 

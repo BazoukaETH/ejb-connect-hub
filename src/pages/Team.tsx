@@ -6,12 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Plus, ShieldCheck } from "lucide-react";
 
 const ROLE_PERMS: Record<string, string[]> = {
-  "Super Admin": ["All access", "Manage admins", "Close cycle", "Audit log"],
-  "Finance": ["Payments", "Expenses", "Cycle close", "Read members"],
-  "Membership Officer": ["Members", "Applicants", "Onboarding", "Notes"],
-  "Comms": ["Announcements", "App content", "Documents", "Events"],
-  "Employee": ["Read-only", "Limited notes", "Library"],
-  "Board": ["Read dashboards", "Read financials"],
+  "Chairman": ["Read-only across all", "Boardroom view", "Cash & Investments", "Strategic KPIs"],
+  "Board Members": ["Read-only across all", "Boardroom view", "Decisions queue", "Financial snapshot"],
+  "Committee Heads": ["Read-only dashboard", "Write inside own committee", "Committee members & meetings", "Committee announcements"],
+  "EJB Admin": ["Full write access", "Manage admins", "Close cycle", "Audit log"],
+  "Finance": ["Write: Payments, Expenses, Sponsors", "Read elsewhere", "Cycle close", "Reconciliation"],
 };
 
 export default function Team() {
