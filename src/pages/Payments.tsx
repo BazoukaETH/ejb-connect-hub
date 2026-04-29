@@ -4,10 +4,12 @@ import { Avatar } from "@/components/Avatar";
 import { StatusChip } from "@/components/StatusChip";
 import { EmptyState } from "@/components/EmptyState";
 import {
-  MEMBERS, CYCLE, CYCLE_DUE_AMOUNT, CYCLE_CLOSE,
+  CYCLE_DUE_AMOUNT, CYCLE_CLOSE,
   TOTAL_MEMBERS, PAID_COUNT, UNPAID_COUNT, fmtEGP, CYCLE_WEEKLY,
   AGING_BUCKETS,
 } from "@/data/mock";
+import { useDemoStore, CYCLES, CycleName, Tx } from "@/store/demo";
+import { useGlobalSearch } from "@/context/SearchContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
@@ -17,21 +19,11 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, BarChart, Bar, CartesianGrid } from "recharts";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const collected = PAID_COUNT * CYCLE_DUE_AMOUNT;
 const expected = TOTAL_MEMBERS * CYCLE_DUE_AMOUNT;
 const outstanding = UNPAID_COUNT * CYCLE_DUE_AMOUNT;
-
-const TRANSACTIONS = [
-  { id: "tx-1", member: "Tarek Mostafa", amount: 15000, method: "Bank transfer", date: "2026-04-28 14:22", recordedBy: "Nour", ref: "TRX-99821" },
-  { id: "tx-2", member: "Hala Saleh",    amount: 15000, method: "Bank transfer", date: "2026-04-28 11:08", recordedBy: "Nour", ref: "TRX-99820" },
-  { id: "tx-3", member: "Yasmin Allam",  amount: 15000, method: "Cheque",        date: "2026-04-27 16:40", recordedBy: "Nour", ref: "CHQ-2455" },
-  { id: "tx-4", member: "Soha Badr",     amount:  7500, method: "Bank transfer", date: "2026-04-27 09:55", recordedBy: "Nour", ref: "TRX-99812" },
-  { id: "tx-5", member: "Karim Said",    amount: 15000, method: "Card",          date: "2026-04-26 17:12", recordedBy: "Mona",  ref: "CRD-77124" },
-  { id: "tx-6", member: "Ahmed Hassan",  amount: 15000, method: "Bank transfer", date: "2026-04-26 13:00", recordedBy: "Nour", ref: "TRX-99801" },
-  { id: "tx-7", member: "Mona Ezzat",    amount: 15000, method: "Cash",          date: "2026-04-25 10:35", recordedBy: "Nour", ref: "CSH-0142" },
-];
 
 const MONTHLY = [
   { m: "Feb", v: 0.4 }, { m: "Mar", v: 0.9 }, { m: "Apr", v: 2.1 },
@@ -39,43 +31,72 @@ const MONTHLY = [
 ];
 
 export default function Payments() {
+  const members = useDemoStore((s) => s.members);
+  const transactions = useDemoStore((s) => s.transactions);
+  const selectedCycle = useDemoStore((s) => s.selectedCycle);
+  const setSelectedCycle = useDemoStore((s) => s.setSelectedCycle);
+  const cyclesOpen = useDemoStore((s) => s.cyclesOpen);
+  const recordPayment = useDemoStore((s) => s.recordPayment);
+  const closeCycle = useDemoStore((s) => s.closeCycle);
+  const { query: globalQ } = useGlobalSearch();
+
   const [closeOpen, setCloseOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
-  const [activeMember, setActiveMember] = useState<string | null>(null);
+  const [activeMemberId, setActiveMemberId] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState("");
   const [nextDues, setNextDues] = useState(15000);
-  const [q, setQ] = useState("");
+  const [localQ, setLocalQ] = useState("");
+  const q = globalQ || localQ;
   const [filter, setFilter] = useState<"all" | "paid" | "unpaid">("all");
+  const [recordDraft, setRecordDraft] = useState({ amount: 15000, method: "Bank transfer" as Tx["method"], ref: "", date: "2026-04-28" });
 
   const paidPct = Math.round((PAID_COUNT / TOTAL_MEMBERS) * 100);
   const daysLeft = 94;
+  const isCycleOpen = cyclesOpen[selectedCycle];
+
+  const cycleIdx = CYCLES.indexOf(selectedCycle);
 
   const rows = useMemo(() => {
-    return MEMBERS.slice(0, 28).map((m, i) => ({
-      member: m,
-      paid: i < 21,
-      paidOn: i < 21 ? "2026-06-12" : null,
-      method: i < 21 ? "Bank transfer" : null,
-      reminder: i >= 21 && i % 2 === 0 ? "Sent 3 days ago" : null,
-      daysOverdue: i >= 21 ? 4 + (i - 21) * 3 : 0,
-    })).filter((r) => {
+    return members.slice(0, 28).map((m, i) => {
+      const tx = transactions.find((t) => t.cycle === selectedCycle && t.memberId === m.id);
+      const paid = !!tx || (selectedCycle === "2026 / 2027" && i < 21);
+      return {
+        member: m,
+        paid,
+        paidOn: tx?.date ?? (paid ? "2026-06-12" : null),
+        method: tx?.method ?? (paid ? "Bank transfer" : null),
+        reminder: !paid && i % 2 === 0 ? "Sent 3 days ago" : null,
+        daysOverdue: paid ? 0 : 4 + (i - 21) * 3,
+      };
+    }).filter((r) => {
       if (q && !`${r.member.name} ${r.member.company} ${r.member.membershipNo}`.toLowerCase().includes(q.toLowerCase())) return false;
       if (filter === "paid" && !r.paid) return false;
       if (filter === "unpaid" && r.paid) return false;
       return true;
     });
-  }, [q, filter]);
+  }, [members, transactions, selectedCycle, q, filter]);
 
   const handleClose = () => {
+    closeCycle();
     setCloseOpen(false);
     setConfirmText("");
-    toast({ title: "Cycle closed", description: `${UNPAID_COUNT} members moved to Lapsed. New cycle opened.` });
   };
 
   const handleRecord = () => {
+    if (!activeMemberId) return;
+    recordPayment(activeMemberId, recordDraft.amount, recordDraft.method, recordDraft.ref || `TRX-${Date.now()}`);
     setRecordOpen(false);
-    toast({ title: "Payment recorded", description: `EGP 15,000 logged for ${activeMember ?? "member"}.` });
+    setActiveMemberId(null);
   };
+
+  const openRecord = (memberId: string) => {
+    setActiveMemberId(memberId);
+    setRecordDraft({ amount: 15000, method: "Bank transfer", ref: "", date: new Date().toISOString().slice(0, 10) });
+    setRecordOpen(true);
+  };
+
+  const activeMember = members.find((m) => m.id === activeMemberId);
+
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
