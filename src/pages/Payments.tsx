@@ -405,23 +405,23 @@ export default function Payments() {
           <div className="space-y-3 text-sm">
             <div>
               <label className="text-xs text-muted-foreground">Amount (EGP)</label>
-              <input className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card num" defaultValue="15000" />
+              <input type="number" value={recordDraft.amount} onChange={(e) => setRecordDraft({ ...recordDraft, amount: parseInt(e.target.value) || 0 })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card num" />
               <div className="text-[11px] text-muted-foreground mt-1">Full cycle dues: {fmtEGP(CYCLE_DUE_AMOUNT)}</div>
             </div>
             <div>
               <label className="text-xs text-muted-foreground">Method</label>
-              <select className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card">
+              <select value={recordDraft.method} onChange={(e) => setRecordDraft({ ...recordDraft, method: e.target.value as Tx["method"] })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card">
                 <option>Bank transfer</option><option>Cheque</option><option>Card</option><option>Cash</option>
               </select>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground">Date</label>
-                <input type="date" defaultValue="2026-04-28" className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" />
+                <input type="date" value={recordDraft.date} onChange={(e) => setRecordDraft({ ...recordDraft, date: e.target.value })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">Reference</label>
-                <input className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" placeholder="TRX-…" />
+                <input value={recordDraft.ref} onChange={(e) => setRecordDraft({ ...recordDraft, ref: e.target.value })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card" placeholder="TRX-…" />
               </div>
             </div>
             <div>
@@ -444,7 +444,7 @@ export default function Payments() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-destructive" /> Close cycle {CYCLE}
+              <Lock className="h-4 w-4 text-destructive" /> Close cycle {selectedCycle}
             </DialogTitle>
             <DialogDescription>Lock collections, lapse unpaid members, open the next cycle.</DialogDescription>
           </DialogHeader>
@@ -483,7 +483,7 @@ export default function Payments() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCloseOpen(false)}>Cancel</Button>
-            <Button disabled={confirmText !== "CLOSE CYCLE"} variant="destructive" onClick={handleClose}>Close cycle {CYCLE}</Button>
+            <Button disabled={confirmText !== "CLOSE CYCLE"} variant="destructive" onClick={handleClose}>Close cycle {selectedCycle}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
