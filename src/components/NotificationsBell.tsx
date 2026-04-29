@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Bell, AlertCircle, Clock, Info, CheckCircle2 } from "lucide-react";
-import { NOTIFICATIONS } from "@/data/mock";
-import {
-  Popover, PopoverTrigger, PopoverContent,
-} from "@/components/ui/popover";
-import { Link } from "react-router-dom";
+import { useDemoStore } from "@/store/demo";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const ICON: Record<string, any> = {
@@ -19,13 +17,15 @@ const TONE: Record<string, string> = {
 
 export function NotificationsBell() {
   const [open, setOpen] = useState(false);
-  const unread = NOTIFICATIONS.filter((n) => n.unread).length;
+  const navigate = useNavigate();
+  const notifications = useDemoStore((s) => s.notifications);
+  const markAllRead = useDemoStore((s) => s.markAllNotificationsRead);
+  const unread = notifications.filter((n) => n.unread).length;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          data-demo-skip
           className="h-9 w-9 rounded-md hover:bg-secondary flex items-center justify-center relative"
           aria-label="Notifications"
         >
@@ -40,18 +40,17 @@ export function NotificationsBell() {
       <PopoverContent align="end" className="w-[360px] p-0 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
           <span className="text-sm font-semibold">Notifications</span>
-          <button className="text-[11px] text-primary hover:underline" data-demo-skip>Mark all read</button>
+          <button onClick={markAllRead} className="text-[11px] text-primary hover:underline">Mark all read</button>
         </div>
         <div className="max-h-[420px] overflow-y-auto">
-          {NOTIFICATIONS.map((n) => {
+          {notifications.map((n) => {
             const Icon = ICON[n.type];
             return (
-              <Link
+              <button
                 key={n.id}
-                to={n.href}
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); navigate(n.href); }}
                 className={cn(
-                  "flex gap-2.5 px-3 py-2.5 hover:bg-secondary/60 border-b border-border/60 last:border-0",
+                  "w-full text-left flex gap-2.5 px-3 py-2.5 hover:bg-secondary/60 border-b border-border/60 last:border-0",
                   n.unread && "bg-accent/30",
                 )}
               >
@@ -64,14 +63,14 @@ export function NotificationsBell() {
                   <div className="text-[10px] text-muted-foreground mt-0.5">{n.ts}</div>
                 </div>
                 {n.unread && <span className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0" />}
-              </Link>
+              </button>
             );
           })}
         </div>
         <div className="px-3 py-2 border-t border-border bg-secondary/40">
-          <Link to="/audit" onClick={() => setOpen(false)} className="text-[11px] text-primary hover:underline">
+          <button onClick={() => { setOpen(false); navigate("/audit"); }} className="text-[11px] text-primary hover:underline">
             View all activity →
-          </Link>
+          </button>
         </div>
       </PopoverContent>
     </Popover>
