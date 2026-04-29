@@ -6,9 +6,10 @@ import { EmptyState } from "@/components/EmptyState";
 import { APPLICANTS, Applicant } from "@/data/mock";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { toast } from "@/hooks/use-toast";
 import {
   Plus, LayoutGrid, List, AlertTriangle, ArrowRight, ArrowLeft,
-  UserPlus, Mail, Phone, Linkedin, Building2,
+  UserPlus, Mail, Phone, Linkedin, Building2, Flame, CheckCircle2,
 } from "lucide-react";
 
 const STAGES: Applicant["stage"][] = ["Lead", "Prospect", "Referred", "Applicant", "Pending Payment"];
@@ -89,11 +90,12 @@ export default function Applicants() {
                     <EmptyState icon={UserPlus} title="No one here yet" description={STAGE_HINTS[stage]} compact className="!py-6 !px-3" />
                   ) : stageItems.map((a) => {
                     const stale = a.daysInStage > 14;
+                    const veryStale = a.daysInStage > 30;
                     return (
                       <button
                         key={a.id}
                         onClick={() => setActive(a)}
-                        className="ejb-card ejb-card-hover w-full text-left p-3 cursor-pointer animate-fade-in"
+                        className={`ejb-card ejb-card-hover w-full text-left p-3 cursor-pointer animate-fade-in ${veryStale ? "ring-1 ring-destructive/40" : ""}`}
                       >
                         <div className="flex items-start gap-2.5">
                           <Avatar name={a.name} hue={a.avatarHue} size="sm" />
@@ -102,13 +104,14 @@ export default function Applicants() {
                             <div className="text-[11px] text-muted-foreground truncate">{a.company}</div>
                             <div className="text-[10px] text-muted-foreground mt-1 truncate">{a.position}</div>
                           </div>
+                          {veryStale && <Flame className="h-3.5 w-3.5 text-destructive shrink-0" aria-label="Stalled >30 days" />}
                         </div>
                         <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-border">
                           <span className="text-[10px] text-muted-foreground truncate">
                             {a.referredBy ? `via ${a.referredBy}` : a.source}
                           </span>
-                          <span className={`text-[10px] flex items-center gap-1 num ${stale ? "text-[hsl(var(--ejb-amber))]" : "text-muted-foreground"}`}>
-                            {stale && <AlertTriangle className="h-2.5 w-2.5" />}
+                          <span className={`text-[10px] flex items-center gap-1 num font-medium ${veryStale ? "text-destructive" : stale ? "text-[hsl(var(--ejb-amber))]" : "text-muted-foreground"}`}>
+                            {(stale || veryStale) && <AlertTriangle className="h-2.5 w-2.5" />}
                             {a.daysInStage}d
                           </span>
                         </div>
@@ -205,9 +208,24 @@ export default function Applicants() {
                   <div className="flex justify-end mt-2"><Button size="sm" variant="outline">Save note</Button></div>
                 </div>
 
-                <div className="flex gap-2 pt-2 border-t border-border">
-                  <Button variant="outline" size="sm" className="flex-1">Reject</Button>
-                  <Button size="sm" className="flex-1">Approve & invoice</Button>
+                <div className="space-y-2 pt-2 border-t border-border">
+                  {active.stage === "Pending Payment" && (
+                    <Button
+                      size="sm"
+                      className="w-full bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white"
+                      onClick={() => {
+                        toast({ title: "Converted to Member", description: `${active.name} is now an active EJB member. Welcome email queued.` });
+                        setItems((prev) => prev.filter((x) => x.id !== active.id));
+                        setActive(null);
+                      }}
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Convert to Member
+                    </Button>
+                  )}
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1">Reject</Button>
+                    <Button size="sm" className="flex-1">Approve & invoice</Button>
+                  </div>
                 </div>
               </div>
             </>
