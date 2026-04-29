@@ -1,47 +1,36 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
+  SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton,
+  SidebarMenuItem, useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  LayoutDashboard,
-  Users,
-  UserPlus,
-  ClipboardList,
-  ShieldCheck,
-  Wallet,
-  Handshake,
-  Receipt,
-  UsersRound,
-  Calendar,
-  Megaphone,
-  FileText,
-  BookOpen,
-  FileCode2,
-  Smartphone,
-  MessageSquare,
-  Tags,
-  History,
-  Settings,
+  LayoutDashboard, Users, UserPlus, ClipboardList, ShieldCheck, Wallet,
+  Handshake, Receipt, UsersRound, Calendar, Megaphone, FileText, BookOpen,
+  FileCode2, Smartphone, MessageSquare, Tags, History, Settings, Crown,
+  Gavel, Target, Landmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRole } from "@/context/RoleContext";
 
-type Item = { title: string; url: string; icon: any; syncs?: boolean; unpublished?: boolean };
-type Group = { label: string; items: Item[] };
+type Item = { title: string; url: string; icon: any; syncs?: boolean; unpublished?: boolean; cap?: string };
+type Group = { label: string; items: Item[]; cap?: string };
 
 const groups: Group[] = [
   {
+    label: "Boardroom",
+    cap: "view:boardroom",
+    items: [
+      { title: "Boardroom",       url: "/boardroom",            icon: Crown },
+      { title: "Decisions queue", url: "/boardroom/decisions",  icon: Gavel },
+      { title: "Strategic KPIs",  url: "/boardroom/strategic",  icon: Target },
+      { title: "Cash & Investments", url: "/boardroom/treasury", icon: Landmark, cap: "view:chairmanOnly" },
+    ],
+  },
+  {
     label: "People",
     items: [
-      { title: "Dashboard", url: "/", icon: LayoutDashboard },
+      { title: "Cockpit", url: "/", icon: LayoutDashboard },
       { title: "Members", url: "/members", icon: Users, syncs: true },
       { title: "Applicants & Prospects", url: "/applicants", icon: UserPlus },
       { title: "Onboarding Queue", url: "/onboarding", icon: ClipboardList },
@@ -93,7 +82,8 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
-  const isActive = (url: string) => (url === "/" ? pathname === "/" : pathname.startsWith(url));
+  const { can, role } = useRole();
+  const isActive = (url: string) => (url === "/" ? pathname === "/" : pathname === url || pathname.startsWith(url + "/"));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -116,47 +106,63 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="gap-0 pt-1">
-        {groups.map((g) => (
-          <SidebarGroup key={g.label} className="py-1">
-            {!collapsed && (
-              <SidebarGroupLabel className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground px-3 py-1">
-                {g.label}
-              </SidebarGroupLabel>
-            )}
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {g.items.map((item) => {
-                  const active = isActive(item.url);
-                  return (
-                    <SidebarMenuItem key={item.url}>
-                      <SidebarMenuButton asChild isActive={active} className="h-8">
-                        <NavLink
-                          to={item.url}
-                          className={cn(
-                            "flex items-center gap-2 px-2 rounded-md text-[13px]",
-                            active
-                              ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                              : "text-sidebar-foreground hover:bg-sidebar-accent/60",
-                          )}
-                        >
-                          <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-                          {!collapsed && (
-                            <>
-                              <span className="flex-1 truncate">{item.title}</span>
-                              {item.syncs && item.unpublished && (
-                                <span className="h-1.5 w-1.5 rounded-full bg-primary" title="Unpublished changes" />
-                              )}
-                            </>
-                          )}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {groups.map((g) => {
+          // Hide whole group if no capability
+          if (g.cap && !can(g.cap as any)) return null;
+          // Filter items by capability
+          const visibleItems = g.items.filter((i) => !i.cap || can(i.cap as any));
+          if (visibleItems.length === 0) return null;
+          return (
+            <SidebarGroup key={g.label} className="py-1">
+              {!collapsed && (
+                <SidebarGroupLabel className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground px-3 py-1 flex items-center gap-1.5">
+                  {g.label}
+                  {g.label === "Boardroom" && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--ejb-neon-yellow))]" />
+                  )}
+                </SidebarGroupLabel>
+              )}
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {visibleItems.map((item) => {
+                    const active = isActive(item.url);
+                    return (
+                      <SidebarMenuItem key={item.url}>
+                        <SidebarMenuButton asChild isActive={active} className="h-8">
+                          <NavLink
+                            to={item.url}
+                            end={item.url === "/" || item.url === "/boardroom"}
+                            className={cn(
+                              "flex items-center gap-2 px-2 rounded-md text-[13px]",
+                              active
+                                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent/60",
+                            )}
+                          >
+                            <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+                            {!collapsed && (
+                              <>
+                                <span className="flex-1 truncate">{item.title}</span>
+                                {item.syncs && item.unpublished && (
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary" title="Unpublished changes" />
+                                )}
+                              </>
+                            )}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
+        {!collapsed && (
+          <div className="mt-auto px-3 py-2 text-[10px] text-muted-foreground border-t border-sidebar-border/60">
+            Viewing as <span className="font-semibold text-foreground">{role}</span>
+          </div>
+        )}
       </SidebarContent>
     </Sidebar>
   );

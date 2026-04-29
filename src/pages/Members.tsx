@@ -153,7 +153,7 @@ export default function Members() {
           </div>
         )}
         <div className="flex items-center justify-between px-3 py-2.5 border-t border-border bg-secondary/30 text-xs">
-          <span className="text-muted-foreground">Showing 1–{filtered.length} of 500</span>
+          <span className="text-muted-foreground">Showing 1-{filtered.length} of 500</span>
           <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" className="h-7 text-xs">Prev</Button>
             <Button variant="outline" size="sm" className="h-7 text-xs">Next</Button>

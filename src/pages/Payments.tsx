@@ -206,9 +206,9 @@ export default function Payments() {
                         r.daysOverdue > 30 ? <StatusChip variant="unpaid" label={`${r.daysOverdue}d overdue`} dot /> :
                         <StatusChip variant="pending" label={`${r.daysOverdue}d unpaid`} dot />}
                     </td>
-                    <td className="num text-xs text-muted-foreground">{r.paidOn ?? "—"}</td>
-                    <td className="text-xs text-muted-foreground">{r.method ?? "—"}</td>
-                    <td className="text-[11px] text-muted-foreground">{r.reminder ?? (r.paid ? "—" : "Not sent")}</td>
+                    <td className="num text-xs text-muted-foreground">{r.paidOn ?? "-"}</td>
+                    <td className="text-xs text-muted-foreground">{r.method ?? "-"}</td>
+                    <td className="text-[11px] text-muted-foreground">{r.reminder ?? (r.paid ? "-" : "Not sent")}</td>
                     <td>
                       {!r.paid && (
                         <Button size="sm" className="h-7 text-xs" onClick={() => { setActiveMember(r.member.name); setRecordOpen(true); }}>
