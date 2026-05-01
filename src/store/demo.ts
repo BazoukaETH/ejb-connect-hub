@@ -8,6 +8,7 @@ import {
   EVENTS as SEED_EVENTS,
   ANNOUNCEMENTS as SEED_ANNOUNCEMENTS,
   PARTNERS as SEED_PARTNERS,
+  HISTORICAL_PARTNERS as SEED_HISTORICAL_PARTNERS,
   ADMIN_TEAM as SEED_ADMIN_TEAM,
   AREAS_OF_FOCUS,
   PRODUCTS_SERVICES,
@@ -17,6 +18,11 @@ import {
   type Announcement,
   type Partner,
   type AdminUser,
+  type BoardApproval,
+  type ReEngagement,
+  type SponsorPackage,
+  type SponsorTier,
+  type SponsorStatus,
 } from "@/data/mock";
 
 // ---------------- RSVP ----------------
