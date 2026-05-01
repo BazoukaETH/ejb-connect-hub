@@ -349,12 +349,42 @@ export const ANNOUNCEMENTS: Announcement[] = [
 ];
 
 export const PARTNERS: Partner[] = [
-  { id: "p-1", name: "Commercial International Bank", tier: "Platinum", active: true, website: "cibeg.com", description: "Banking partner.", contactName: "Hassan Mansour", contactEmail: "h.mansour@cibeg.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 500000, paymentStatus: "Paid", order: 1 },
-  { id: "p-2", name: "EFG Hermes", tier: "Gold", active: true, website: "efghermes.com", description: "Investment partner.", contactName: "Dina Sharif", contactEmail: "d.sharif@efghermes.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 350000, paymentStatus: "Paid", order: 2 },
-  { id: "p-3", name: "Orascom Construction", tier: "Gold", active: true, website: "orascom.com", description: "Infrastructure partner.", contactName: "Khaled Hegazy", contactEmail: "k.hegazy@orascom.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 300000, paymentStatus: "Invoiced", order: 3 },
-  { id: "p-4", name: "Vodafone Egypt", tier: "Silver", active: true, website: "vodafone.com.eg", description: "Connectivity partner.", contactName: "Reem Said", contactEmail: "r.said@vodafone.com.eg", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Paid", order: 4 },
-  { id: "p-5", name: "Hassan Allam Holding", tier: "Silver", active: true, website: "hassanallam.com", description: "Construction partner.", contactName: "Sherif Allam", contactEmail: "s.allam@hassanallam.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Outstanding", order: 5 },
+  { id: "p-1", name: "Commercial International Bank", tier: "Platinum", active: true, website: "cibeg.com", description: "Banking partner.", contactName: "Hassan Mansour", contactEmail: "h.mansour@cibeg.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 500000, paymentStatus: "Paid", order: 1, packages: ["Annual"], sponsorStatus: "Active" },
+  { id: "p-2", name: "EFG Hermes", tier: "Gold", active: true, website: "efghermes.com", description: "Investment partner.", contactName: "Dina Sharif", contactEmail: "d.sharif@efghermes.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 350000, paymentStatus: "Paid", order: 2, packages: ["Annual", "Sohour"], sponsorStatus: "Active" },
+  { id: "p-3", name: "Orascom Construction", tier: "Gold", active: true, website: "orascom.com", description: "Infrastructure partner.", contactName: "Khaled Hegazy", contactEmail: "k.hegazy@orascom.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 300000, paymentStatus: "Invoiced", order: 3, packages: ["Event-specific"], sponsorStatus: "Pending" },
+  { id: "p-4", name: "Vodafone Egypt", tier: "Silver", active: true, website: "vodafone.com.eg", description: "Connectivity partner.", contactName: "Reem Said", contactEmail: "r.said@vodafone.com.eg", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Paid", order: 4, packages: ["Annual"], sponsorStatus: "Active" },
+  { id: "p-5", name: "Hassan Allam Holding", tier: "Bronze", active: true, website: "hassanallam.com", description: "Construction partner.", contactName: "Sherif Allam", contactEmail: "s.allam@hassanallam.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Outstanding", order: 5, packages: ["Sohour", "Custom"], sponsorStatus: "Active" },
 ];
+
+export const HISTORICAL_PARTNERS: Partner[] = [
+  { id: "hp-1", name: "Telecom Egypt", tier: "Gold", active: false, website: "telecomegypt.com.eg", description: "Former connectivity sponsor.", contactName: "Mostafa Diab", contactEmail: "m.diab@te.eg", contractStart: "2022-01-01", contractEnd: "2024-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Annual"], sponsorStatus: "Historical", yearsSponsored: [2022, 2023, 2024], lastPackage: "Annual", lastTier: "Gold", lastContact: "2025-02-12", lifetimeValue: 1_050_000, reEngagements: [] },
+  { id: "hp-2", name: "Banque Misr", tier: "Silver", active: false, website: "banquemisr.com", description: "Former banking sponsor.", contactName: "Heba Ezz", contactEmail: "h.ezz@banquemisr.com", contractStart: "2021-01-01", contractEnd: "2023-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Sohour"], sponsorStatus: "Historical", yearsSponsored: [2021, 2022, 2023], lastPackage: "Sohour", lastTier: "Silver", lastContact: "2024-08-04", lifetimeValue: 450_000, reEngagements: [] },
+  { id: "hp-3", name: "Juhayna Food Industries", tier: "Bronze", active: false, website: "juhayna.com", description: "Former event-specific sponsor.", contactName: "Salma Tantawy", contactEmail: "s.tantawy@juhayna.com", contractStart: "2023-01-01", contractEnd: "2023-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Event-specific"], sponsorStatus: "Historical", yearsSponsored: [2023], lastPackage: "Event-specific", lastTier: "Bronze", lastContact: "2024-03-20", lifetimeValue: 120_000, reEngagements: [] },
+  { id: "hp-4", name: "Raya Holding", tier: "Silver", active: false, website: "rayacorp.com", description: "Former tech sponsor.", contactName: "Omar Naguib", contactEmail: "o.naguib@rayacorp.com", contractStart: "2020-01-01", contractEnd: "2022-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Annual", "Sohour"], sponsorStatus: "Historical", yearsSponsored: [2020, 2021, 2022], lastPackage: "Annual", lastTier: "Silver", lastContact: "2023-11-10", lifetimeValue: 600_000, reEngagements: [] },
+];
+
+// Member-base value (for sponsor proposals)
+export const MEMBER_BASE_VALUE = {
+  totalMembers: 500,
+  seniorDecisionMakers: 500,
+  industryBreakdown: [
+    { industry: "Finance, Investment & Law", count: 92 },
+    { industry: "Construction & Real Estate", count: 78 },
+    { industry: "Consulting & Technology", count: 71 },
+    { industry: "Industry & Energy", count: 64 },
+    { industry: "Agriculture & Food Processing", count: 47 },
+    { industry: "Healthcare & Pharmaceuticals", count: 38 },
+    { industry: "Tourism & Hospitality", count: 35 },
+    { industry: "Education & Training", count: 41 },
+    { industry: "Media & Communications", count: 34 },
+  ],
+  estimatedCombinedRevenue: 480_000_000_000, // EGP combined member-company revenue
+  avgSeniority: "C-suite / Founder",
+  avgEventAttendance: 187,
+  announcementReach: { sent: 500, openRate: 71 },
+};
+
+
 
 export const ADMIN_TEAM: AdminUser[] = [
   { id: "u-1", name: "Mona Allam",    email: "mona@ejb.org.eg",   role: "EJB Admin",       lastLogin: "2 min ago",   active: true, avatarHue: 220 },
