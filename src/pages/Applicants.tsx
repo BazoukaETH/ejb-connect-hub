@@ -20,13 +20,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const STAGES: Applicant["stage"][] = ["Lead", "Prospect", "Referred", "Applicant", "Pending Payment"];
+const STAGES: Applicant["stage"][] = ["Leads", "Applied", "Referred", "Accepted", "Pending Payment"];
 const STAGE_HINTS: Record<Applicant["stage"], string> = {
-  "Lead": "No leads here yet. Drag a card in or click Add applicant.",
-  "Prospect": "Move qualified leads here after a first conversation.",
+  "Leads": "No leads here yet. Drag a card in or click Add applicant.",
+  "Applied": "Submitted application form. Awaiting board decision.",
   "Referred": "Endorsed by an existing EJB member.",
-  "Applicant": "Submitted application form. Awaiting board decision.",
-  "Pending Payment": "Approved. Awaiting first cycle dues to activate.",
+  "Accepted": "Approved by the board. Awaiting first cycle dues.",
+  "Pending Payment": "Approved. Recording payment activates the member.",
 };
 
 function ApplicantCard({ a, onOpen, dragging }: { a: Applicant; onOpen: () => void; dragging?: boolean }) {
