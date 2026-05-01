@@ -40,17 +40,27 @@ export interface Committee {
   category?: string;
 }
 
+export type ApplicantStage = "Leads" | "Applied" | "Referred" | "Accepted" | "Pending Payment";
+
+export interface BoardApproval {
+  meetingDate: string;
+  decision: "Approved" | "Conditional" | "Deferred";
+  minutesRef: string;
+  approvedBy?: string;
+}
+
 export interface Applicant {
   id: string;
   name: string;
   company: string;
   position: string;
   source: string;
-  stage: "Lead" | "Prospect" | "Referred" | "Applicant" | "Pending Payment";
+  stage: ApplicantStage;
   daysInStage: number;
   appliedDate: string;
   referredBy?: string;
   avatarHue: number;
+  boardApproval?: BoardApproval;
 }
 
 export interface EjbEvent {
@@ -67,13 +77,41 @@ export interface EjbEvent {
   cost: number;
 }
 
+export type AudienceType =
+  | "All members"
+  | "Paid only"
+  | "Specific committee"
+  | "Specific Area of Focus"
+  | "Specific city"
+  | "Specific person"
+  | "Custom segment";
+
+export interface AudienceSpec {
+  type: AudienceType;
+  committeeId?: string;
+  areaOfFocus?: string;
+  city?: string;
+  memberIds?: string[];
+  customLabel?: string;
+}
+
+export interface RecipientDelivery {
+  memberId: string;
+  delivered: boolean;
+  opened: boolean;
+  openedAt?: string;
+}
+
 export interface Announcement {
   id: string;
   title: string;
   body: string;
   priority: "Urgent" | "High" | "Medium" | "Low";
   category: string;
-  audience: string;
+  audience: string; // human-readable summary
+  audienceSpec?: AudienceSpec;
+  recipientCount?: number;
+  perRecipient?: RecipientDelivery[];
   status: "Draft" | "Scheduled" | "Published" | "Archived";
   publishedAt?: string;
   scheduledFor?: string;
@@ -82,10 +120,22 @@ export interface Announcement {
   openRate?: number;
 }
 
+export type SponsorPackage = "Annual" | "Sohour" | "Event-specific" | "Custom";
+export type SponsorTier = "Platinum" | "Gold" | "Silver" | "Bronze";
+export type SponsorStatus = "Active" | "Pending" | "Expired" | "Historical";
+
+export interface ReEngagement {
+  id: string;
+  date: string;
+  owner: string;
+  status: "Pitched" | "Negotiating" | "Lost" | "Won-back";
+  notes: string;
+}
+
 export interface Partner {
   id: string;
   name: string;
-  tier: "Platinum" | "Gold" | "Silver" | "Community";
+  tier: SponsorTier;
   active: boolean;
   website: string;
   description: string;
@@ -96,6 +146,15 @@ export interface Partner {
   value: number;
   paymentStatus: "Invoiced" | "Paid" | "Outstanding";
   order: number;
+  packages?: SponsorPackage[];
+  sponsorStatus?: SponsorStatus;
+  // Historical-only fields
+  yearsSponsored?: number[];
+  lastPackage?: SponsorPackage;
+  lastTier?: SponsorTier;
+  lastContact?: string;
+  lifetimeValue?: number;
+  reEngagements?: ReEngagement[];
 }
 
 export interface Payment {
