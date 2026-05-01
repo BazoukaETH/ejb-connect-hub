@@ -376,6 +376,82 @@ export default function Applicants() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Board approval modal (drag → Accepted) */}
+      <Dialog open={!!approvalFor} onOpenChange={(o) => !o && setApprovalFor(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Board approval required</DialogTitle>
+            <DialogDescription>
+              {approvalFor?.name} needs a board decision before moving to Accepted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>
+              <label className="ejb-eyebrow">Board meeting date</label>
+              <Input type="date" value={approvalDraft.meetingDate} onChange={(e) => setApprovalDraft({ ...approvalDraft, meetingDate: e.target.value })} className="h-9 mt-1" />
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Decision</label>
+              <select value={approvalDraft.decision} onChange={(e) => setApprovalDraft({ ...approvalDraft, decision: e.target.value as any })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                <option>Approved</option><option>Conditional</option><option>Deferred</option>
+              </select>
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Minutes reference</label>
+              <Input value={approvalDraft.minutesRef} onChange={(e) => setApprovalDraft({ ...approvalDraft, minutesRef: e.target.value })} placeholder="BM-2026-04" className="h-9 mt-1" />
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Notes (optional)</label>
+              <textarea value={approvalDraft.notes} onChange={(e) => setApprovalDraft({ ...approvalDraft, notes: e.target.value })} className="w-full h-16 mt-1 px-3 py-2 border border-border rounded-md bg-card text-sm" />
+            </div>
+            <div className="text-[11px] text-muted-foreground">An audit log entry will be written on confirm.</div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApprovalFor(null)}>Cancel</Button>
+            <Button disabled={!approvalDraft.minutesRef.trim()} onClick={() => {
+              if (!approvalFor) return;
+              setApplicantApproval(approvalFor.id, { meetingDate: approvalDraft.meetingDate, decision: approvalDraft.decision, minutesRef: approvalDraft.minutesRef, approvedBy: "Board" });
+              setActive((p) => p && p.id === approvalFor.id ? { ...p, stage: "Accepted", daysInStage: 0, boardApproval: { meetingDate: approvalDraft.meetingDate, decision: approvalDraft.decision, minutesRef: approvalDraft.minutesRef } } : p);
+              setApprovalFor(null);
+            }}>Confirm decision</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Record payment → auto-activate */}
+      <Dialog open={!!payFor} onOpenChange={(o) => !o && setPayFor(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Record payment</DialogTitle>
+            <DialogDescription>{payFor?.name} will become an Active member and enter the Onboarding Queue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>
+              <label className="ejb-eyebrow">Amount (EGP)</label>
+              <input type="number" value={payDraft.amount} onChange={(e) => setPayDraft({ ...payDraft, amount: parseInt(e.target.value) || 0 })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card num" />
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Method</label>
+              <select value={payDraft.method} onChange={(e) => setPayDraft({ ...payDraft, method: e.target.value as any })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                <option>Bank transfer</option><option>Cheque</option><option>Card</option><option>Cash</option>
+              </select>
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Reference</label>
+              <Input value={payDraft.ref} onChange={(e) => setPayDraft({ ...payDraft, ref: e.target.value })} placeholder="TRX-…" className="h-9 mt-1" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPayFor(null)}>Cancel</Button>
+            <Button onClick={() => {
+              if (!payFor) return;
+              recordApplicantPayment(payFor.id, payDraft.amount, payDraft.method, payDraft.ref || `TRX-${Date.now()}`);
+              setPayFor(null); setActive(null);
+            }}>Record & activate</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
