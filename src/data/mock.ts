@@ -638,7 +638,7 @@ export type SponsorStage = "Prospect" | "Pitched" | "Negotiating" | "Contracted"
 export interface SponsorDeal {
   id: string;
   name: string;
-  tier: "Platinum" | "Gold" | "Silver" | "Community";
+  tier: SponsorTier;
   stage: SponsorStage;
   value: number;
   owner: string;
