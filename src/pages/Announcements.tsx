@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusChip, variantForPriority } from "@/components/StatusChip";
-import { fmtDateTime, Announcement } from "@/data/mock";
+import { fmtDateTime, Announcement, COMMITTEES, AREAS_OF_FOCUS, AudienceType } from "@/data/mock";
 import { useDemoStore } from "@/store/demo";
 import { useGlobalSearch } from "@/context/SearchContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/EmptyState";
-import { Plus, Bell, Pin, Image as ImageIcon, Link2, Send } from "lucide-react";
+import { Plus, Bell, Pin, Image as ImageIcon, Link2, Send, X, Search } from "lucide-react";
+import { Avatar } from "@/components/Avatar";
 import { toast } from "sonner";
 
 const PRIORITY_DOT: Record<string, string> = {

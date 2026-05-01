@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 const tierColor = (t: string) => t === "Platinum" ? "neutral" : t === "Gold" ? "pending" : t === "Silver" ? "info" : "brand";
 const STAGES: SponsorStage[] = ["Prospect", "Pitched", "Negotiating", "Contracted", "Live", "Renewal due"];
-const TIERS: Partner["tier"][] = ["Platinum", "Gold", "Silver", "Community"];
+const TIERS: Partner["tier"][] = ["Platinum", "Gold", "Silver", "Bronze"];
 
 export default function Partners() {
   const partners = useDemoStore((s) => s.partners);

@@ -8,6 +8,7 @@ import {
   EVENTS as SEED_EVENTS,
   ANNOUNCEMENTS as SEED_ANNOUNCEMENTS,
   PARTNERS as SEED_PARTNERS,
+  HISTORICAL_PARTNERS as SEED_HISTORICAL_PARTNERS,
   ADMIN_TEAM as SEED_ADMIN_TEAM,
   AREAS_OF_FOCUS,
   PRODUCTS_SERVICES,
@@ -17,6 +18,11 @@ import {
   type Announcement,
   type Partner,
   type AdminUser,
+  type BoardApproval,
+  type ReEngagement,
+  type SponsorPackage,
+  type SponsorTier,
+  type SponsorStatus,
 } from "@/data/mock";
 
 // ---------------- RSVP ----------------
@@ -168,6 +174,7 @@ interface DemoState {
   events: EjbEvent[];
   announcements: Announcement[];
   partners: Partner[];
+  historicalPartners: Partner[];
   team: AdminUser[];
   rsvps: Rsvp[];
   transactions: Tx[];
@@ -186,6 +193,7 @@ interface DemoState {
   // Applicants
   addApplicant: (a: Partial<Applicant> & { name: string; company: string }) => Applicant;
   moveApplicantStage: (id: string, stage: Applicant["stage"]) => void;
+  setApplicantApproval: (id: string, approval: BoardApproval) => void;
   removeApplicant: (id: string) => void;
   convertApplicant: (id: string) => void;
   // Events
@@ -199,11 +207,14 @@ interface DemoState {
   addAnnouncement: (a: Partial<Announcement> & { title: string; body: string }) => Announcement;
   // Partners
   addPartner: (p: Partial<Partner> & { name: string }) => Partner;
+  updatePartner: (id: string, patch: Partial<Partner>) => void;
   reorderPartners: (orderedIds: string[]) => void;
+  addReEngagement: (partnerId: string, entry: Omit<ReEngagement, "id">) => void;
   // Team
   addTeamMember: (u: Partial<AdminUser> & { name: string; email: string; role: AdminUser["role"] }) => AdminUser;
   // Payments / cycles
   recordPayment: (memberId: string, amount: number, method: Tx["method"], ref: string) => void;
+  recordApplicantPayment: (applicantId: string, amount: number, method: Tx["method"], ref: string) => void;
   closeCycle: () => void;
   openNextCycle: () => void;
   setSelectedCycle: (c: CycleName) => void;
@@ -230,6 +241,7 @@ export const useDemoStore = create<DemoState>((set, get) => ({
   events: SEED_EVENTS,
   announcements: SEED_ANNOUNCEMENTS,
   partners: SEED_PARTNERS,
+  historicalPartners: SEED_HISTORICAL_PARTNERS,
   team: SEED_ADMIN_TEAM,
   rsvps: seedRsvps(),
   transactions: SEED_TX,
@@ -261,7 +273,7 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     const applicant: Applicant = {
       id, name: a.name, company: a.company,
       position: a.position ?? "Founder", source: a.source ?? "Cold inbound",
-      stage: a.stage ?? "Lead", daysInStage: 0, appliedDate: new Date().toISOString().slice(0, 10),
+      stage: a.stage ?? "Leads", daysInStage: 0, appliedDate: new Date().toISOString().slice(0, 10),
       referredBy: a.referredBy, avatarHue: a.avatarHue ?? Math.floor(Math.random() * 360),
     };
     set((s) => ({ applicants: [applicant, ...s.applicants] }));
@@ -271,6 +283,15 @@ export const useDemoStore = create<DemoState>((set, get) => ({
 
   moveApplicantStage: (id, stage) => {
     set((s) => ({ applicants: s.applicants.map((a) => a.id === id ? { ...a, stage, daysInStage: 0 } : a) }));
+  },
+
+  setApplicantApproval: (id, approval) => {
+    set((s) => ({
+      applicants: s.applicants.map((a) =>
+        a.id === id ? { ...a, stage: "Accepted", daysInStage: 0, boardApproval: approval } : a
+      ),
+    }));
+    toast.success("Board decision recorded", { description: `${approval.decision} · ${approval.minutesRef}` });
   },
 
   removeApplicant: (id) => {
@@ -382,6 +403,24 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     });
   },
 
+  updatePartner: (id, patch) => {
+    set((s) => ({
+      partners: s.partners.map((p) => p.id === id ? { ...p, ...patch } : p),
+      historicalPartners: s.historicalPartners.map((p) => p.id === id ? { ...p, ...patch } : p),
+    }));
+    toast.success("Partner updated");
+  },
+
+  addReEngagement: (partnerId, entry) => {
+    const e: ReEngagement = { ...entry, id: `re-${Date.now()}` };
+    set((s) => ({
+      historicalPartners: s.historicalPartners.map((p) =>
+        p.id === partnerId ? { ...p, reEngagements: [e, ...(p.reEngagements ?? [])] } : p
+      ),
+    }));
+    toast.success("Re-engagement logged", { description: `${entry.status} · ${entry.date}` });
+  },
+
   addTeamMember: (u) => {
     const id = `u-${get().team.length + 1}-${Date.now()}`;
     const tm: AdminUser = {
@@ -404,6 +443,22 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     };
     set((s) => ({ transactions: [tx, ...s.transactions] }));
     toast.success("Payment recorded", { description: `EGP ${amount.toLocaleString()} from ${tx.memberName} via ${method}.` });
+  },
+
+  recordApplicantPayment: (applicantId, amount, method, ref) => {
+    const a = get().applicants.find((x) => x.id === applicantId);
+    if (!a) return;
+    // Convert to active member, then record payment under new id
+    const newMember = get().addMember({
+      name: a.name, email: `${a.name.toLowerCase().replace(/\s/g, ".")}@${a.company.split(" ")[0].toLowerCase()}.com`,
+      phone: "+20 100 000 0000", company: a.company, position: a.position, city: "Cairo",
+      status: "Active", paymentStatus: "Paid", committees: [],
+      joinedDate: new Date().toISOString().slice(0, 10), areasOfFocus: ["Strategy"],
+      productsServices: [], avatarHue: a.avatarHue,
+    });
+    get().recordPayment(newMember.id, amount, method, ref);
+    set((s) => ({ applicants: s.applicants.filter((x) => x.id !== applicantId) }));
+    toast.success("Activated", { description: `${a.name} is now an Active member · routed to Onboarding Queue.` });
   },
 
   closeCycle: () => {

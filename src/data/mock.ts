@@ -40,17 +40,27 @@ export interface Committee {
   category?: string;
 }
 
+export type ApplicantStage = "Leads" | "Applied" | "Referred" | "Accepted" | "Pending Payment";
+
+export interface BoardApproval {
+  meetingDate: string;
+  decision: "Approved" | "Conditional" | "Deferred";
+  minutesRef: string;
+  approvedBy?: string;
+}
+
 export interface Applicant {
   id: string;
   name: string;
   company: string;
   position: string;
   source: string;
-  stage: "Lead" | "Prospect" | "Referred" | "Applicant" | "Pending Payment";
+  stage: ApplicantStage;
   daysInStage: number;
   appliedDate: string;
   referredBy?: string;
   avatarHue: number;
+  boardApproval?: BoardApproval;
 }
 
 export interface EjbEvent {
@@ -67,13 +77,41 @@ export interface EjbEvent {
   cost: number;
 }
 
+export type AudienceType =
+  | "All members"
+  | "Paid only"
+  | "Specific committee"
+  | "Specific Area of Focus"
+  | "Specific city"
+  | "Specific person"
+  | "Custom segment";
+
+export interface AudienceSpec {
+  type: AudienceType;
+  committeeId?: string;
+  areaOfFocus?: string;
+  city?: string;
+  memberIds?: string[];
+  customLabel?: string;
+}
+
+export interface RecipientDelivery {
+  memberId: string;
+  delivered: boolean;
+  opened: boolean;
+  openedAt?: string;
+}
+
 export interface Announcement {
   id: string;
   title: string;
   body: string;
   priority: "Urgent" | "High" | "Medium" | "Low";
   category: string;
-  audience: string;
+  audience: string; // human-readable summary
+  audienceSpec?: AudienceSpec;
+  recipientCount?: number;
+  perRecipient?: RecipientDelivery[];
   status: "Draft" | "Scheduled" | "Published" | "Archived";
   publishedAt?: string;
   scheduledFor?: string;
@@ -82,10 +120,22 @@ export interface Announcement {
   openRate?: number;
 }
 
+export type SponsorPackage = "Annual" | "Sohour" | "Event-specific" | "Custom";
+export type SponsorTier = "Platinum" | "Gold" | "Silver" | "Bronze";
+export type SponsorStatus = "Active" | "Pending" | "Expired" | "Historical";
+
+export interface ReEngagement {
+  id: string;
+  date: string;
+  owner: string;
+  status: "Pitched" | "Negotiating" | "Lost" | "Won-back";
+  notes: string;
+}
+
 export interface Partner {
   id: string;
   name: string;
-  tier: "Platinum" | "Gold" | "Silver" | "Community";
+  tier: SponsorTier;
   active: boolean;
   website: string;
   description: string;
@@ -96,6 +146,15 @@ export interface Partner {
   value: number;
   paymentStatus: "Invoiced" | "Paid" | "Outstanding";
   order: number;
+  packages?: SponsorPackage[];
+  sponsorStatus?: SponsorStatus;
+  // Historical-only fields
+  yearsSponsored?: number[];
+  lastPackage?: SponsorPackage;
+  lastTier?: SponsorTier;
+  lastContact?: string;
+  lifetimeValue?: number;
+  reEngagements?: ReEngagement[];
 }
 
 export interface Payment {
@@ -214,13 +273,13 @@ function makeMembers(): Member[] {
 export const MEMBERS: Member[] = makeMembers();
 
 export const APPLICANTS: Applicant[] = [
-  { id: "a-1", name: "Karim Ezzat", company: "Misr Capital", position: "Managing Partner", source: "Referred", stage: "Lead", daysInStage: 4, appliedDate: "2026-04-24", referredBy: "Ahmed Hassan", avatarHue: 30 },
-  { id: "a-2", name: "Hala Naguib", company: "Pyramids Hospitality", position: "CEO", source: "Cold inbound", stage: "Lead", daysInStage: 9, appliedDate: "2026-04-19", avatarHue: 60 },
-  { id: "a-3", name: "Bassem Sharif", company: "Nile Logistics", position: "Founder", source: "Event", stage: "Prospect", daysInStage: 12, appliedDate: "2026-04-16", avatarHue: 90 },
-  { id: "a-4", name: "Reem Mansour", company: "Cairo Medtech", position: "Co-founder", source: "Referred", stage: "Prospect", daysInStage: 18, appliedDate: "2026-04-10", referredBy: "Mona Allam", avatarHue: 120 },
+  { id: "a-1", name: "Karim Ezzat", company: "Misr Capital", position: "Managing Partner", source: "Referred", stage: "Leads", daysInStage: 4, appliedDate: "2026-04-24", referredBy: "Ahmed Hassan", avatarHue: 30 },
+  { id: "a-2", name: "Hala Naguib", company: "Pyramids Hospitality", position: "CEO", source: "Cold inbound", stage: "Leads", daysInStage: 9, appliedDate: "2026-04-19", avatarHue: 60 },
+  { id: "a-3", name: "Bassem Sharif", company: "Nile Logistics", position: "Founder", source: "Event", stage: "Leads", daysInStage: 12, appliedDate: "2026-04-16", avatarHue: 90 },
+  { id: "a-4", name: "Reem Mansour", company: "Cairo Medtech", position: "Co-founder", source: "Referred", stage: "Applied", daysInStage: 18, appliedDate: "2026-04-10", referredBy: "Mona Allam", avatarHue: 120 },
   { id: "a-5", name: "Sameh Tantawy", company: "Delta Foods", position: "Chairman", source: "Referred", stage: "Referred", daysInStage: 6, appliedDate: "2026-04-22", referredBy: "Tarek Mostafa", avatarHue: 150 },
-  { id: "a-6", name: "Nadia Saleh", company: "Alex Marine", position: "CFO", source: "Cold inbound", stage: "Applicant", daysInStage: 11, appliedDate: "2026-04-17", avatarHue: 180 },
-  { id: "a-7", name: "Ihab Diab", company: "Sphinx Tech", position: "CEO", source: "Referred", stage: "Applicant", daysInStage: 22, appliedDate: "2026-04-06", referredBy: "Yasmin Allam", avatarHue: 210 },
+  { id: "a-6", name: "Nadia Saleh", company: "Alex Marine", position: "CFO", source: "Cold inbound", stage: "Applied", daysInStage: 11, appliedDate: "2026-04-17", avatarHue: 180 },
+  { id: "a-7", name: "Ihab Diab", company: "Sphinx Tech", position: "CEO", source: "Referred", stage: "Accepted", daysInStage: 3, appliedDate: "2026-04-06", referredBy: "Yasmin Allam", avatarHue: 210, boardApproval: { meetingDate: "2026-04-25", decision: "Approved", minutesRef: "BM-2026-04", approvedBy: "Board" } },
   { id: "a-8", name: "Soha Badr", company: "Heliopolis Real Estate", position: "Partner", source: "Event", stage: "Pending Payment", daysInStage: 5, appliedDate: "2026-04-23", avatarHue: 240 },
   { id: "a-9", name: "Ayman Khalil", company: "Cairo FinServ", position: "Founder", source: "Referred", stage: "Pending Payment", daysInStage: 8, appliedDate: "2026-04-20", referredBy: "Hassan Allam", avatarHue: 270 },
 ];
@@ -290,12 +349,42 @@ export const ANNOUNCEMENTS: Announcement[] = [
 ];
 
 export const PARTNERS: Partner[] = [
-  { id: "p-1", name: "Commercial International Bank", tier: "Platinum", active: true, website: "cibeg.com", description: "Banking partner.", contactName: "Hassan Mansour", contactEmail: "h.mansour@cibeg.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 500000, paymentStatus: "Paid", order: 1 },
-  { id: "p-2", name: "EFG Hermes", tier: "Gold", active: true, website: "efghermes.com", description: "Investment partner.", contactName: "Dina Sharif", contactEmail: "d.sharif@efghermes.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 350000, paymentStatus: "Paid", order: 2 },
-  { id: "p-3", name: "Orascom Construction", tier: "Gold", active: true, website: "orascom.com", description: "Infrastructure partner.", contactName: "Khaled Hegazy", contactEmail: "k.hegazy@orascom.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 300000, paymentStatus: "Invoiced", order: 3 },
-  { id: "p-4", name: "Vodafone Egypt", tier: "Silver", active: true, website: "vodafone.com.eg", description: "Connectivity partner.", contactName: "Reem Said", contactEmail: "r.said@vodafone.com.eg", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Paid", order: 4 },
-  { id: "p-5", name: "Hassan Allam Holding", tier: "Silver", active: true, website: "hassanallam.com", description: "Construction partner.", contactName: "Sherif Allam", contactEmail: "s.allam@hassanallam.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Outstanding", order: 5 },
+  { id: "p-1", name: "Commercial International Bank", tier: "Platinum", active: true, website: "cibeg.com", description: "Banking partner.", contactName: "Hassan Mansour", contactEmail: "h.mansour@cibeg.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 500000, paymentStatus: "Paid", order: 1, packages: ["Annual"], sponsorStatus: "Active" },
+  { id: "p-2", name: "EFG Hermes", tier: "Gold", active: true, website: "efghermes.com", description: "Investment partner.", contactName: "Dina Sharif", contactEmail: "d.sharif@efghermes.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 350000, paymentStatus: "Paid", order: 2, packages: ["Annual", "Sohour"], sponsorStatus: "Active" },
+  { id: "p-3", name: "Orascom Construction", tier: "Gold", active: true, website: "orascom.com", description: "Infrastructure partner.", contactName: "Khaled Hegazy", contactEmail: "k.hegazy@orascom.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 300000, paymentStatus: "Invoiced", order: 3, packages: ["Event-specific"], sponsorStatus: "Pending" },
+  { id: "p-4", name: "Vodafone Egypt", tier: "Silver", active: true, website: "vodafone.com.eg", description: "Connectivity partner.", contactName: "Reem Said", contactEmail: "r.said@vodafone.com.eg", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Paid", order: 4, packages: ["Annual"], sponsorStatus: "Active" },
+  { id: "p-5", name: "Hassan Allam Holding", tier: "Bronze", active: true, website: "hassanallam.com", description: "Construction partner.", contactName: "Sherif Allam", contactEmail: "s.allam@hassanallam.com", contractStart: "2026-01-01", contractEnd: "2026-12-31", value: 150000, paymentStatus: "Outstanding", order: 5, packages: ["Sohour", "Custom"], sponsorStatus: "Active" },
 ];
+
+export const HISTORICAL_PARTNERS: Partner[] = [
+  { id: "hp-1", name: "Telecom Egypt", tier: "Gold", active: false, website: "telecomegypt.com.eg", description: "Former connectivity sponsor.", contactName: "Mostafa Diab", contactEmail: "m.diab@te.eg", contractStart: "2022-01-01", contractEnd: "2024-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Annual"], sponsorStatus: "Historical", yearsSponsored: [2022, 2023, 2024], lastPackage: "Annual", lastTier: "Gold", lastContact: "2025-02-12", lifetimeValue: 1_050_000, reEngagements: [] },
+  { id: "hp-2", name: "Banque Misr", tier: "Silver", active: false, website: "banquemisr.com", description: "Former banking sponsor.", contactName: "Heba Ezz", contactEmail: "h.ezz@banquemisr.com", contractStart: "2021-01-01", contractEnd: "2023-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Sohour"], sponsorStatus: "Historical", yearsSponsored: [2021, 2022, 2023], lastPackage: "Sohour", lastTier: "Silver", lastContact: "2024-08-04", lifetimeValue: 450_000, reEngagements: [] },
+  { id: "hp-3", name: "Juhayna Food Industries", tier: "Bronze", active: false, website: "juhayna.com", description: "Former event-specific sponsor.", contactName: "Salma Tantawy", contactEmail: "s.tantawy@juhayna.com", contractStart: "2023-01-01", contractEnd: "2023-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Event-specific"], sponsorStatus: "Historical", yearsSponsored: [2023], lastPackage: "Event-specific", lastTier: "Bronze", lastContact: "2024-03-20", lifetimeValue: 120_000, reEngagements: [] },
+  { id: "hp-4", name: "Raya Holding", tier: "Silver", active: false, website: "rayacorp.com", description: "Former tech sponsor.", contactName: "Omar Naguib", contactEmail: "o.naguib@rayacorp.com", contractStart: "2020-01-01", contractEnd: "2022-12-31", value: 0, paymentStatus: "Paid", order: 99, packages: ["Annual", "Sohour"], sponsorStatus: "Historical", yearsSponsored: [2020, 2021, 2022], lastPackage: "Annual", lastTier: "Silver", lastContact: "2023-11-10", lifetimeValue: 600_000, reEngagements: [] },
+];
+
+// Member-base value (for sponsor proposals)
+export const MEMBER_BASE_VALUE = {
+  totalMembers: 500,
+  seniorDecisionMakers: 500,
+  industryBreakdown: [
+    { industry: "Finance, Investment & Law", count: 92 },
+    { industry: "Construction & Real Estate", count: 78 },
+    { industry: "Consulting & Technology", count: 71 },
+    { industry: "Industry & Energy", count: 64 },
+    { industry: "Agriculture & Food Processing", count: 47 },
+    { industry: "Healthcare & Pharmaceuticals", count: 38 },
+    { industry: "Tourism & Hospitality", count: 35 },
+    { industry: "Education & Training", count: 41 },
+    { industry: "Media & Communications", count: 34 },
+  ],
+  estimatedCombinedRevenue: 480_000_000_000, // EGP combined member-company revenue
+  avgSeniority: "C-suite / Founder",
+  avgEventAttendance: 187,
+  announcementReach: { sent: 500, openRate: 71 },
+};
+
+
 
 export const ADMIN_TEAM: AdminUser[] = [
   { id: "u-1", name: "Mona Allam",    email: "mona@ejb.org.eg",   role: "EJB Admin",       lastLogin: "2 min ago",   active: true, avatarHue: 220 },
@@ -549,7 +638,7 @@ export type SponsorStage = "Prospect" | "Pitched" | "Negotiating" | "Contracted"
 export interface SponsorDeal {
   id: string;
   name: string;
-  tier: "Platinum" | "Gold" | "Silver" | "Community";
+  tier: SponsorTier;
   stage: SponsorStage;
   value: number;
   owner: string;

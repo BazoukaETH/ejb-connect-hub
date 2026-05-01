@@ -20,13 +20,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const STAGES: Applicant["stage"][] = ["Lead", "Prospect", "Referred", "Applicant", "Pending Payment"];
+const STAGES: Applicant["stage"][] = ["Leads", "Applied", "Referred", "Accepted", "Pending Payment"];
 const STAGE_HINTS: Record<Applicant["stage"], string> = {
-  "Lead": "No leads here yet. Drag a card in or click Add applicant.",
-  "Prospect": "Move qualified leads here after a first conversation.",
+  "Leads": "No leads here yet. Drag a card in or click Add applicant.",
+  "Applied": "Submitted application form. Awaiting board decision.",
   "Referred": "Endorsed by an existing EJB member.",
-  "Applicant": "Submitted application form. Awaiting board decision.",
-  "Pending Payment": "Approved. Awaiting first cycle dues to activate.",
+  "Accepted": "Approved by the board. Awaiting first cycle dues.",
+  "Pending Payment": "Approved. Recording payment activates the member.",
 };
 
 function ApplicantCard({ a, onOpen, dragging }: { a: Applicant; onOpen: () => void; dragging?: boolean }) {
@@ -95,14 +95,20 @@ export default function Applicants() {
   const removeApplicant = useDemoStore((s) => s.removeApplicant);
   const convertApplicant = useDemoStore((s) => s.convertApplicant);
   const addApplicant = useDemoStore((s) => s.addApplicant);
+  const setApplicantApproval = useDemoStore((s) => s.setApplicantApproval);
+  const recordApplicantPayment = useDemoStore((s) => s.recordApplicantPayment);
   const { query: globalQ } = useGlobalSearch();
 
   const [view, setView] = useState<"kanban" | "table">("kanban");
   const [active, setActive] = useState<Applicant | null>(null);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [draft, setDraft] = useState({ name: "", company: "", position: "", source: "Cold inbound", stage: "Lead" as Applicant["stage"], referredBy: "" });
+  const [draft, setDraft] = useState({ name: "", company: "", position: "", source: "Cold inbound", stage: "Leads" as Applicant["stage"], referredBy: "" });
   const [confirmDelete, setConfirmDelete] = useState<Applicant | null>(null);
+  const [approvalFor, setApprovalFor] = useState<Applicant | null>(null);
+  const [approvalDraft, setApprovalDraft] = useState({ meetingDate: new Date().toISOString().slice(0, 10), decision: "Approved" as "Approved" | "Conditional" | "Deferred", minutesRef: "", notes: "" });
+  const [payFor, setPayFor] = useState<Applicant | null>(null);
+  const [payDraft, setPayDraft] = useState({ amount: 15000, method: "Bank transfer" as "Bank transfer" | "Cash" | "Cheque" | "Card", ref: "" });
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -112,15 +118,24 @@ export default function Applicants() {
     return items.filter((a) => `${a.name} ${a.company} ${a.position}`.toLowerCase().includes(q));
   }, [items, globalQ]);
 
+  const requestMove = (a: Applicant, next: Applicant["stage"]) => {
+    if (next === a.stage) return;
+    if (next === "Accepted") {
+      setApprovalFor(a);
+      setApprovalDraft({ meetingDate: new Date().toISOString().slice(0, 10), decision: "Approved", minutesRef: `BM-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`, notes: "" });
+      return;
+    }
+    moveApplicantStage(a.id, next);
+    setActive((p) => p && p.id === a.id ? { ...p, stage: next, daysInStage: 0 } : p);
+    toast.success("Moved", { description: `${a.name} → ${next}` });
+  };
+
   const move = (id: string, dir: 1 | -1) => {
     const a = items.find((x) => x.id === id);
     if (!a) return;
     const i = STAGES.indexOf(a.stage);
     const next = STAGES[Math.max(0, Math.min(STAGES.length - 1, i + dir))];
-    if (next === a.stage) return;
-    moveApplicantStage(id, next);
-    setActive((p) => p && p.id === id ? { ...p, stage: next, daysInStage: 0 } : p);
-    toast.success("Moved", { description: `${a.name} → ${next}` });
+    requestMove(a, next);
   };
 
   const handleDragEnd = (e: DragEndEvent) => {
@@ -131,8 +146,7 @@ export default function Applicants() {
     if (!STAGES.includes(overId as Applicant["stage"])) return;
     const a = items.find((x) => x.id === aId);
     if (!a || a.stage === overId) return;
-    moveApplicantStage(aId, overId as Applicant["stage"]);
-    toast.success("Moved", { description: `${a.name} → ${overId}` });
+    requestMove(a, overId as Applicant["stage"]);
   };
 
   const totals = useMemo(() => STAGES.map((s) => filtered.filter((a) => a.stage === s).length), [filtered]);
@@ -141,7 +155,7 @@ export default function Applicants() {
     if (!draft.name.trim() || !draft.company.trim()) return;
     addApplicant({ ...draft, referredBy: draft.referredBy || undefined });
     setAddOpen(false);
-    setDraft({ name: "", company: "", position: "", source: "Cold inbound", stage: "Lead", referredBy: "" });
+    setDraft({ name: "", company: "", position: "", source: "Cold inbound", stage: "Leads", referredBy: "" });
   };
 
   const draggingItem = activeDragId ? items.find((x) => x.id === activeDragId) : null;
@@ -285,14 +299,17 @@ export default function Applicants() {
                     <Button
                       size="sm"
                       className="w-full bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white"
-                      onClick={() => {
-                        convertApplicant(active.id);
-                        toast.success("Converted to Member", { description: `${active.name} is now an active EJB member.` });
-                        setActive(null);
-                      }}
+                      onClick={() => { setPayFor(active); setPayDraft({ amount: 15000, method: "Bank transfer", ref: "" }); }}
                     >
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Convert to Member
+                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Record payment & activate
                     </Button>
+                  )}
+                  {active.stage === "Accepted" && active.boardApproval && (
+                    <div className="rounded-md border border-border bg-secondary/40 p-2.5 text-[11px] space-y-0.5">
+                      <div className="font-semibold text-foreground">Board approval</div>
+                      <div className="text-muted-foreground">{active.boardApproval.decision} · {active.boardApproval.meetingDate}</div>
+                      <div className="text-muted-foreground num">Minutes: {active.boardApproval.minutesRef}</div>
+                    </div>
                   )}
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" className="flex-1 text-destructive border-destructive/30" onClick={() => setConfirmDelete(active)}>
@@ -356,6 +373,82 @@ export default function Applicants() {
               if (confirmDelete) { removeApplicant(confirmDelete.id); toast.success("Applicant rejected", { description: confirmDelete.name }); }
               setConfirmDelete(null); setActive(null);
             }}>Reject</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Board approval modal (drag → Accepted) */}
+      <Dialog open={!!approvalFor} onOpenChange={(o) => !o && setApprovalFor(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Board approval required</DialogTitle>
+            <DialogDescription>
+              {approvalFor?.name} needs a board decision before moving to Accepted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>
+              <label className="ejb-eyebrow">Board meeting date</label>
+              <Input type="date" value={approvalDraft.meetingDate} onChange={(e) => setApprovalDraft({ ...approvalDraft, meetingDate: e.target.value })} className="h-9 mt-1" />
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Decision</label>
+              <select value={approvalDraft.decision} onChange={(e) => setApprovalDraft({ ...approvalDraft, decision: e.target.value as any })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                <option>Approved</option><option>Conditional</option><option>Deferred</option>
+              </select>
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Minutes reference</label>
+              <Input value={approvalDraft.minutesRef} onChange={(e) => setApprovalDraft({ ...approvalDraft, minutesRef: e.target.value })} placeholder="BM-2026-04" className="h-9 mt-1" />
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Notes (optional)</label>
+              <textarea value={approvalDraft.notes} onChange={(e) => setApprovalDraft({ ...approvalDraft, notes: e.target.value })} className="w-full h-16 mt-1 px-3 py-2 border border-border rounded-md bg-card text-sm" />
+            </div>
+            <div className="text-[11px] text-muted-foreground">An audit log entry will be written on confirm.</div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApprovalFor(null)}>Cancel</Button>
+            <Button disabled={!approvalDraft.minutesRef.trim()} onClick={() => {
+              if (!approvalFor) return;
+              setApplicantApproval(approvalFor.id, { meetingDate: approvalDraft.meetingDate, decision: approvalDraft.decision, minutesRef: approvalDraft.minutesRef, approvedBy: "Board" });
+              setActive((p) => p && p.id === approvalFor.id ? { ...p, stage: "Accepted", daysInStage: 0, boardApproval: { meetingDate: approvalDraft.meetingDate, decision: approvalDraft.decision, minutesRef: approvalDraft.minutesRef } } : p);
+              setApprovalFor(null);
+            }}>Confirm decision</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Record payment → auto-activate */}
+      <Dialog open={!!payFor} onOpenChange={(o) => !o && setPayFor(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Record payment</DialogTitle>
+            <DialogDescription>{payFor?.name} will become an Active member and enter the Onboarding Queue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>
+              <label className="ejb-eyebrow">Amount (EGP)</label>
+              <input type="number" value={payDraft.amount} onChange={(e) => setPayDraft({ ...payDraft, amount: parseInt(e.target.value) || 0 })} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card num" />
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Method</label>
+              <select value={payDraft.method} onChange={(e) => setPayDraft({ ...payDraft, method: e.target.value as any })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                <option>Bank transfer</option><option>Cheque</option><option>Card</option><option>Cash</option>
+              </select>
+            </div>
+            <div>
+              <label className="ejb-eyebrow">Reference</label>
+              <Input value={payDraft.ref} onChange={(e) => setPayDraft({ ...payDraft, ref: e.target.value })} placeholder="TRX-…" className="h-9 mt-1" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPayFor(null)}>Cancel</Button>
+            <Button onClick={() => {
+              if (!payFor) return;
+              recordApplicantPayment(payFor.id, payDraft.amount, payDraft.method, payDraft.ref || `TRX-${Date.now()}`);
+              setPayFor(null); setActive(null);
+            }}>Record & activate</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
