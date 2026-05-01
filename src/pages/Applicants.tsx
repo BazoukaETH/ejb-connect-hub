@@ -95,6 +95,8 @@ export default function Applicants() {
   const removeApplicant = useDemoStore((s) => s.removeApplicant);
   const convertApplicant = useDemoStore((s) => s.convertApplicant);
   const addApplicant = useDemoStore((s) => s.addApplicant);
+  const setApplicantApproval = useDemoStore((s) => s.setApplicantApproval);
+  const recordApplicantPayment = useDemoStore((s) => s.recordApplicantPayment);
   const { query: globalQ } = useGlobalSearch();
 
   const [view, setView] = useState<"kanban" | "table">("kanban");
@@ -103,6 +105,10 @@ export default function Applicants() {
   const [addOpen, setAddOpen] = useState(false);
   const [draft, setDraft] = useState({ name: "", company: "", position: "", source: "Cold inbound", stage: "Leads" as Applicant["stage"], referredBy: "" });
   const [confirmDelete, setConfirmDelete] = useState<Applicant | null>(null);
+  const [approvalFor, setApprovalFor] = useState<Applicant | null>(null);
+  const [approvalDraft, setApprovalDraft] = useState({ meetingDate: new Date().toISOString().slice(0, 10), decision: "Approved" as "Approved" | "Conditional" | "Deferred", minutesRef: "", notes: "" });
+  const [payFor, setPayFor] = useState<Applicant | null>(null);
+  const [payDraft, setPayDraft] = useState({ amount: 15000, method: "Bank transfer" as "Bank transfer" | "Cash" | "Cheque" | "Card", ref: "" });
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -112,15 +118,24 @@ export default function Applicants() {
     return items.filter((a) => `${a.name} ${a.company} ${a.position}`.toLowerCase().includes(q));
   }, [items, globalQ]);
 
+  const requestMove = (a: Applicant, next: Applicant["stage"]) => {
+    if (next === a.stage) return;
+    if (next === "Accepted") {
+      setApprovalFor(a);
+      setApprovalDraft({ meetingDate: new Date().toISOString().slice(0, 10), decision: "Approved", minutesRef: `BM-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`, notes: "" });
+      return;
+    }
+    moveApplicantStage(a.id, next);
+    setActive((p) => p && p.id === a.id ? { ...p, stage: next, daysInStage: 0 } : p);
+    toast.success("Moved", { description: `${a.name} → ${next}` });
+  };
+
   const move = (id: string, dir: 1 | -1) => {
     const a = items.find((x) => x.id === id);
     if (!a) return;
     const i = STAGES.indexOf(a.stage);
     const next = STAGES[Math.max(0, Math.min(STAGES.length - 1, i + dir))];
-    if (next === a.stage) return;
-    moveApplicantStage(id, next);
-    setActive((p) => p && p.id === id ? { ...p, stage: next, daysInStage: 0 } : p);
-    toast.success("Moved", { description: `${a.name} → ${next}` });
+    requestMove(a, next);
   };
 
   const handleDragEnd = (e: DragEndEvent) => {
@@ -131,8 +146,7 @@ export default function Applicants() {
     if (!STAGES.includes(overId as Applicant["stage"])) return;
     const a = items.find((x) => x.id === aId);
     if (!a || a.stage === overId) return;
-    moveApplicantStage(aId, overId as Applicant["stage"]);
-    toast.success("Moved", { description: `${a.name} → ${overId}` });
+    requestMove(a, overId as Applicant["stage"]);
   };
 
   const totals = useMemo(() => STAGES.map((s) => filtered.filter((a) => a.stage === s).length), [filtered]);
