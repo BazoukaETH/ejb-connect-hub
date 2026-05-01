@@ -242,15 +242,91 @@ export default function Announcements() {
                     </select>
                   </div>
                   <div>
-                    <label className="ejb-eyebrow">Audience</label>
-                    <select value={audience} onChange={(e) => setAudience(e.target.value)} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm">
-                      <option>All members</option><option>Paid only</option><option>Specific committee</option><option>Board only</option>
-                    </select>
-                  </div>
-                  <div>
                     <label className="ejb-eyebrow">Schedule</label>
                     <input type="datetime-local" value={scheduledFor} onChange={(e) => setScheduledFor(e.target.value)} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm" />
                   </div>
+                </div>
+
+                {/* Audience picker */}
+                <div className="rounded-md border border-border p-3 space-y-3 bg-secondary/30">
+                  <div className="flex items-center justify-between">
+                    <label className="ejb-eyebrow">Audience</label>
+                    <span className="text-[11px] text-muted-foreground">Resolved: <strong className="text-foreground num">{audienceCount}</strong> recipient{audienceCount === 1 ? "" : "s"}</span>
+                  </div>
+                  <select value={audienceType} onChange={(e) => setAudienceType(e.target.value as AudienceType)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                    <option>All members</option>
+                    <option>Paid only</option>
+                    <option>Specific committee</option>
+                    <option>Specific Area of Focus</option>
+                    <option>Specific city</option>
+                    <option>Specific person</option>
+                  </select>
+
+                  {audienceType === "Specific committee" && (
+                    <select value={committeeId} onChange={(e) => setCommitteeId(e.target.value)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                      {COMMITTEES.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  )}
+
+                  {audienceType === "Specific Area of Focus" && (
+                    <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                      {AREAS_OF_FOCUS.map((a) => <option key={a}>{a}</option>)}
+                    </select>
+                  )}
+
+                  {audienceType === "Specific city" && (
+                    <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                      {cities.map((c) => <option key={c}>{c}</option>)}
+                    </select>
+                  )}
+
+                  {audienceType === "Specific person" && (
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                        <Input value={memberPickerQ} onChange={(e) => setMemberPickerQ(e.target.value)} placeholder="Search by name, company, email…" className="pl-8 h-8" />
+                      </div>
+                      {memberPickerQ.trim() && (
+                        <div className="max-h-44 overflow-y-auto border border-border rounded-md bg-card divide-y divide-border">
+                          {members
+                            .filter((m) => !memberIds.includes(m.id))
+                            .filter((m) => `${m.name} ${m.company} ${m.email}`.toLowerCase().includes(memberPickerQ.toLowerCase()))
+                            .slice(0, 8)
+                            .map((m) => (
+                              <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => { setMemberIds([...memberIds, m.id]); setMemberPickerQ(""); }}
+                                className="w-full flex items-center gap-2 p-2 text-left hover:bg-secondary/60"
+                              >
+                                <Avatar name={m.name} hue={m.avatarHue} size="sm" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-xs font-medium truncate">{m.name}</div>
+                                  <div className="text-[10px] text-muted-foreground truncate">{m.company} · {m.email}</div>
+                                </div>
+                              </button>
+                            ))}
+                        </div>
+                      )}
+                      {memberIds.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {memberIds.map((id) => {
+                            const m = members.find((mm) => mm.id === id);
+                            if (!m) return null;
+                            return (
+                              <span key={id} className="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 bg-card border border-border rounded-full text-[11px]">
+                                <Avatar name={m.name} hue={m.avatarHue} size="sm" />
+                                {m.name}
+                                <button type="button" onClick={() => setMemberIds(memberIds.filter((x) => x !== id))} className="text-muted-foreground hover:text-destructive">
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="rounded-md bg-secondary/40 border border-border p-3 space-y-2">
