@@ -22,6 +22,7 @@ const PRIORITY_DOT: Record<string, string> = {
 export default function Announcements() {
   const announcements = useDemoStore((s) => s.announcements);
   const addAnnouncement = useDemoStore((s) => s.addAnnouncement);
+  const members = useDemoStore((s) => s.members);
   const { query: globalQ } = useGlobalSearch();
 
   const [tab, setTab] = useState<"published" | "scheduled" | "drafts" | "compose">("published");
@@ -29,12 +30,47 @@ export default function Announcements() {
   const [body, setBody] = useState("");
   const [priority, setPriority] = useState<Announcement["priority"]>("Medium");
   const [category, setCategory] = useState("General");
-  const [audience, setAudience] = useState("All members");
+  const [audienceType, setAudienceType] = useState<AudienceType>("All members");
+  const [committeeId, setCommitteeId] = useState<string>(COMMITTEES[0].id);
+  const [areaOfFocus, setAreaOfFocus] = useState<string>(AREAS_OF_FOCUS[0]);
+  const [city, setCity] = useState<string>("Cairo");
+  const [memberIds, setMemberIds] = useState<string[]>([]);
+  const [memberPickerQ, setMemberPickerQ] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
   const [pin, setPin] = useState(true);
   const [push, setPush] = useState(true);
 
-  const audienceCount = audience === "Paid only" ? 372 : audience === "Board only" ? 12 : 500;
+  const cities = useMemo(() => Array.from(new Set(members.map((m) => m.city))).sort(), [members]);
+
+  // Resolve recipients
+  const resolvedRecipients = useMemo(() => {
+    switch (audienceType) {
+      case "All members": return members;
+      case "Paid only": return members.filter((m) => m.paymentStatus === "Paid");
+      case "Specific committee": return members.filter((m) => m.committees.some((c) => c.id === committeeId));
+      case "Specific Area of Focus": return members.filter((m) => m.areasOfFocus.includes(areaOfFocus));
+      case "Specific city": return members.filter((m) => m.city === city);
+      case "Specific person": return members.filter((m) => memberIds.includes(m.id));
+      default: return members;
+    }
+  }, [audienceType, members, committeeId, areaOfFocus, city, memberIds]);
+  const audienceCount = resolvedRecipients.length;
+
+  const audienceSummary = (): string => {
+    switch (audienceType) {
+      case "All members": return `All members (${audienceCount})`;
+      case "Paid only": return `Paid members (${audienceCount})`;
+      case "Specific committee": return `${COMMITTEES.find(c => c.id === committeeId)?.name ?? ""} committee (${audienceCount})`;
+      case "Specific Area of Focus": return `${areaOfFocus} focus (${audienceCount})`;
+      case "Specific city": return `${city} (${audienceCount})`;
+      case "Specific person": {
+        if (memberIds.length === 0) return "0 recipients";
+        const first = members.find((m) => m.id === memberIds[0])?.name ?? "Recipient";
+        return memberIds.length === 1 ? first : `${first} + ${memberIds.length - 1} other${memberIds.length > 2 ? "s" : ""}`;
+      }
+      default: return `${audienceCount} recipients`;
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!globalQ) return announcements;
@@ -42,13 +78,29 @@ export default function Announcements() {
     return announcements.filter((a) => `${a.title} ${a.body} ${a.category}`.toLowerCase().includes(q));
   }, [announcements, globalQ]);
 
-  const reset = () => { setTitle(""); setBody(""); setScheduledFor(""); };
+  const reset = () => { setTitle(""); setBody(""); setScheduledFor(""); setMemberIds([]); setMemberPickerQ(""); };
 
   const publish = (status: "Published" | "Scheduled" | "Draft") => {
     if (!title.trim() || !body.trim()) { toast.error("Title and body required"); return; }
     if (status === "Scheduled" && !scheduledFor) { toast.error("Pick a schedule date/time"); return; }
+    if (audienceType === "Specific person" && memberIds.length === 0) { toast.error("Pick at least one recipient"); return; }
+    const audienceSpec = {
+      type: audienceType,
+      committeeId: audienceType === "Specific committee" ? committeeId : undefined,
+      areaOfFocus: audienceType === "Specific Area of Focus" ? areaOfFocus : undefined,
+      city: audienceType === "Specific city" ? city : undefined,
+      memberIds: audienceType === "Specific person" ? memberIds : undefined,
+    };
+    const perRecipient = audienceType === "Specific person"
+      ? resolvedRecipients.map((m) => ({ memberId: m.id, delivered: status === "Published", opened: false }))
+      : undefined;
     addAnnouncement({
-      title, body, priority, category, audience, status,
+      title, body, priority, category,
+      audience: audienceSummary(),
+      audienceSpec,
+      recipientCount: audienceCount,
+      perRecipient,
+      status,
       scheduledFor: status === "Scheduled" ? scheduledFor : undefined,
     });
     const verb = status === "Published" ? "Published" : status === "Scheduled" ? "Scheduled" : "Draft saved";
@@ -190,15 +242,91 @@ export default function Announcements() {
                     </select>
                   </div>
                   <div>
-                    <label className="ejb-eyebrow">Audience</label>
-                    <select value={audience} onChange={(e) => setAudience(e.target.value)} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm">
-                      <option>All members</option><option>Paid only</option><option>Specific committee</option><option>Board only</option>
-                    </select>
-                  </div>
-                  <div>
                     <label className="ejb-eyebrow">Schedule</label>
                     <input type="datetime-local" value={scheduledFor} onChange={(e) => setScheduledFor(e.target.value)} className="w-full mt-1 h-9 px-3 border border-border rounded-md bg-card text-sm" />
                   </div>
+                </div>
+
+                {/* Audience picker */}
+                <div className="rounded-md border border-border p-3 space-y-3 bg-secondary/30">
+                  <div className="flex items-center justify-between">
+                    <label className="ejb-eyebrow">Audience</label>
+                    <span className="text-[11px] text-muted-foreground">Resolved: <strong className="text-foreground num">{audienceCount}</strong> recipient{audienceCount === 1 ? "" : "s"}</span>
+                  </div>
+                  <select value={audienceType} onChange={(e) => setAudienceType(e.target.value as AudienceType)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                    <option>All members</option>
+                    <option>Paid only</option>
+                    <option>Specific committee</option>
+                    <option>Specific Area of Focus</option>
+                    <option>Specific city</option>
+                    <option>Specific person</option>
+                  </select>
+
+                  {audienceType === "Specific committee" && (
+                    <select value={committeeId} onChange={(e) => setCommitteeId(e.target.value)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                      {COMMITTEES.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  )}
+
+                  {audienceType === "Specific Area of Focus" && (
+                    <select value={areaOfFocus} onChange={(e) => setAreaOfFocus(e.target.value)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                      {AREAS_OF_FOCUS.map((a) => <option key={a}>{a}</option>)}
+                    </select>
+                  )}
+
+                  {audienceType === "Specific city" && (
+                    <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full h-9 px-3 border border-border rounded-md bg-card text-sm">
+                      {cities.map((c) => <option key={c}>{c}</option>)}
+                    </select>
+                  )}
+
+                  {audienceType === "Specific person" && (
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                        <Input value={memberPickerQ} onChange={(e) => setMemberPickerQ(e.target.value)} placeholder="Search by name, company, email…" className="pl-8 h-8" />
+                      </div>
+                      {memberPickerQ.trim() && (
+                        <div className="max-h-44 overflow-y-auto border border-border rounded-md bg-card divide-y divide-border">
+                          {members
+                            .filter((m) => !memberIds.includes(m.id))
+                            .filter((m) => `${m.name} ${m.company} ${m.email}`.toLowerCase().includes(memberPickerQ.toLowerCase()))
+                            .slice(0, 8)
+                            .map((m) => (
+                              <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => { setMemberIds([...memberIds, m.id]); setMemberPickerQ(""); }}
+                                className="w-full flex items-center gap-2 p-2 text-left hover:bg-secondary/60"
+                              >
+                                <Avatar name={m.name} hue={m.avatarHue} size="sm" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-xs font-medium truncate">{m.name}</div>
+                                  <div className="text-[10px] text-muted-foreground truncate">{m.company} · {m.email}</div>
+                                </div>
+                              </button>
+                            ))}
+                        </div>
+                      )}
+                      {memberIds.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {memberIds.map((id) => {
+                            const m = members.find((mm) => mm.id === id);
+                            if (!m) return null;
+                            return (
+                              <span key={id} className="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 bg-card border border-border rounded-full text-[11px]">
+                                <Avatar name={m.name} hue={m.avatarHue} size="sm" />
+                                {m.name}
+                                <button type="button" onClick={() => setMemberIds(memberIds.filter((x) => x !== id))} className="text-muted-foreground hover:text-destructive">
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="rounded-md bg-secondary/40 border border-border p-3 space-y-2">
@@ -252,7 +380,7 @@ export default function Announcements() {
                   <div className="text-[10px] text-muted-foreground mt-1.5 line-clamp-3">{body || "Announcement body preview."}</div>
                   <div className="flex items-center justify-between text-[9px] text-muted-foreground mt-2 pt-2 border-t border-border">
                     <span>Now · EJB</span>
-                    <span>{audience}</span>
+                    <span className="truncate max-w-[140px]">{audienceSummary()}</span>
                   </div>
                 </div>
                 {push && (

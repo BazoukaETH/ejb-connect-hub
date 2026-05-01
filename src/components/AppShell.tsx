@@ -11,7 +11,7 @@ import { NotificationsBell } from "@/components/NotificationsBell";
 
 const labels: Record<string, string> = {
   "": "Cockpit", members: "Members", applicants: "Applicants & Prospects",
-  onboarding: "Onboarding Queue", team: "Team", payments: "Payments & Dues",
+  onboarding: "Onboarding Queue", team: "Team", payments: "Revenue", revenue: "Revenue",
   partners: "Partners & Sponsors", expenses: "Expenses", committees: "Committees",
   events: "Events", announcements: "Announcements", documents: "Documents",
   resources: "Resources", templates: "Templates", "app-content": "App Content",
@@ -50,7 +50,7 @@ function GlobalSearchBar() {
   const placeholder = pathname.startsWith("/members") ? "Filter members on this page…"
     : pathname.startsWith("/applicants") ? "Filter applicants…"
     : pathname.startsWith("/events") ? "Filter events…"
-    : pathname.startsWith("/payments") ? "Filter payments…"
+    : pathname.startsWith("/payments") || pathname.startsWith("/revenue") ? "Filter revenue…"
     : pathname.startsWith("/partners") ? "Filter partners…"
     : pathname.startsWith("/announcements") ? "Filter announcements…"
     : "Search members, payments, events…";
