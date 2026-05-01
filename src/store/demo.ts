@@ -174,6 +174,7 @@ interface DemoState {
   events: EjbEvent[];
   announcements: Announcement[];
   partners: Partner[];
+  historicalPartners: Partner[];
   team: AdminUser[];
   rsvps: Rsvp[];
   transactions: Tx[];
@@ -192,6 +193,7 @@ interface DemoState {
   // Applicants
   addApplicant: (a: Partial<Applicant> & { name: string; company: string }) => Applicant;
   moveApplicantStage: (id: string, stage: Applicant["stage"]) => void;
+  setApplicantApproval: (id: string, approval: BoardApproval) => void;
   removeApplicant: (id: string) => void;
   convertApplicant: (id: string) => void;
   // Events
@@ -205,11 +207,14 @@ interface DemoState {
   addAnnouncement: (a: Partial<Announcement> & { title: string; body: string }) => Announcement;
   // Partners
   addPartner: (p: Partial<Partner> & { name: string }) => Partner;
+  updatePartner: (id: string, patch: Partial<Partner>) => void;
   reorderPartners: (orderedIds: string[]) => void;
+  addReEngagement: (partnerId: string, entry: Omit<ReEngagement, "id">) => void;
   // Team
   addTeamMember: (u: Partial<AdminUser> & { name: string; email: string; role: AdminUser["role"] }) => AdminUser;
   // Payments / cycles
   recordPayment: (memberId: string, amount: number, method: Tx["method"], ref: string) => void;
+  recordApplicantPayment: (applicantId: string, amount: number, method: Tx["method"], ref: string) => void;
   closeCycle: () => void;
   openNextCycle: () => void;
   setSelectedCycle: (c: CycleName) => void;
@@ -236,6 +241,7 @@ export const useDemoStore = create<DemoState>((set, get) => ({
   events: SEED_EVENTS,
   announcements: SEED_ANNOUNCEMENTS,
   partners: SEED_PARTNERS,
+  historicalPartners: SEED_HISTORICAL_PARTNERS,
   team: SEED_ADMIN_TEAM,
   rsvps: seedRsvps(),
   transactions: SEED_TX,
