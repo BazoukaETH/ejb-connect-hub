@@ -299,14 +299,17 @@ export default function Applicants() {
                     <Button
                       size="sm"
                       className="w-full bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90 text-white"
-                      onClick={() => {
-                        convertApplicant(active.id);
-                        toast.success("Converted to Member", { description: `${active.name} is now an active EJB member.` });
-                        setActive(null);
-                      }}
+                      onClick={() => { setPayFor(active); setPayDraft({ amount: 15000, method: "Bank transfer", ref: "" }); }}
                     >
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Convert to Member
+                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Record payment & activate
                     </Button>
+                  )}
+                  {active.stage === "Accepted" && active.boardApproval && (
+                    <div className="rounded-md border border-border bg-secondary/40 p-2.5 text-[11px] space-y-0.5">
+                      <div className="font-semibold text-foreground">Board approval</div>
+                      <div className="text-muted-foreground">{active.boardApproval.decision} · {active.boardApproval.meetingDate}</div>
+                      <div className="text-muted-foreground num">Minutes: {active.boardApproval.minutesRef}</div>
+                    </div>
                   )}
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" className="flex-1 text-destructive border-destructive/30" onClick={() => setConfirmDelete(active)}>
