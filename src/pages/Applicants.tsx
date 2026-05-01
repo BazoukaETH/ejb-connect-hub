@@ -101,7 +101,7 @@ export default function Applicants() {
   const [active, setActive] = useState<Applicant | null>(null);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [draft, setDraft] = useState({ name: "", company: "", position: "", source: "Cold inbound", stage: "Lead" as Applicant["stage"], referredBy: "" });
+  const [draft, setDraft] = useState({ name: "", company: "", position: "", source: "Cold inbound", stage: "Leads" as Applicant["stage"], referredBy: "" });
   const [confirmDelete, setConfirmDelete] = useState<Applicant | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
