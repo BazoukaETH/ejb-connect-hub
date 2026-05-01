@@ -433,6 +433,7 @@ export default function Payments() {
           </div>
         </TabsContent>
       </Tabs>
+      </>)}
 
       {/* Record payment modal */}
       <Dialog open={recordOpen} onOpenChange={setRecordOpen}>
