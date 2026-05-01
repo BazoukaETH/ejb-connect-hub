@@ -40,7 +40,7 @@ const groups: Group[] = [
   {
     label: "Money",
     items: [
-      { title: "Payments & Dues", url: "/payments", icon: Wallet },
+      { title: "Revenue", url: "/payments", icon: Wallet },
       { title: "Partners & Sponsors", url: "/partners", icon: Handshake, syncs: true, unpublished: true },
       { title: "Expenses", url: "/expenses", icon: Receipt },
     ],
