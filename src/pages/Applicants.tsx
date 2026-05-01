@@ -141,7 +141,7 @@ export default function Applicants() {
     if (!draft.name.trim() || !draft.company.trim()) return;
     addApplicant({ ...draft, referredBy: draft.referredBy || undefined });
     setAddOpen(false);
-    setDraft({ name: "", company: "", position: "", source: "Cold inbound", stage: "Lead", referredBy: "" });
+    setDraft({ name: "", company: "", position: "", source: "Cold inbound", stage: "Leads", referredBy: "" });
   };
 
   const draggingItem = activeDragId ? items.find((x) => x.id === activeDragId) : null;
