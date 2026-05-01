@@ -150,9 +150,7 @@ export default function Payments() {
           Event revenue is recognised on registration. Total this cycle: <strong className="text-foreground num">{fmtEGP(eventRevenue)}</strong> from {events.filter(e => e.cost > 0).length} ticketed events.
         </div>
       )}
-      {(scope === "all" || scope === "membership") && (
-        <></>
-      )}
+      {(scope === "all" || scope === "membership") && (<>
 
 
       {/* Cycle selector + summary strip */}
