@@ -22,6 +22,7 @@ const PRIORITY_DOT: Record<string, string> = {
 export default function Announcements() {
   const announcements = useDemoStore((s) => s.announcements);
   const addAnnouncement = useDemoStore((s) => s.addAnnouncement);
+  const members = useDemoStore((s) => s.members);
   const { query: globalQ } = useGlobalSearch();
 
   const [tab, setTab] = useState<"published" | "scheduled" | "drafts" | "compose">("published");
@@ -29,12 +30,47 @@ export default function Announcements() {
   const [body, setBody] = useState("");
   const [priority, setPriority] = useState<Announcement["priority"]>("Medium");
   const [category, setCategory] = useState("General");
-  const [audience, setAudience] = useState("All members");
+  const [audienceType, setAudienceType] = useState<AudienceType>("All members");
+  const [committeeId, setCommitteeId] = useState<string>(COMMITTEES[0].id);
+  const [areaOfFocus, setAreaOfFocus] = useState<string>(AREAS_OF_FOCUS[0]);
+  const [city, setCity] = useState<string>("Cairo");
+  const [memberIds, setMemberIds] = useState<string[]>([]);
+  const [memberPickerQ, setMemberPickerQ] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
   const [pin, setPin] = useState(true);
   const [push, setPush] = useState(true);
 
-  const audienceCount = audience === "Paid only" ? 372 : audience === "Board only" ? 12 : 500;
+  const cities = useMemo(() => Array.from(new Set(members.map((m) => m.city))).sort(), [members]);
+
+  // Resolve recipients
+  const resolvedRecipients = useMemo(() => {
+    switch (audienceType) {
+      case "All members": return members;
+      case "Paid only": return members.filter((m) => m.paymentStatus === "Paid");
+      case "Specific committee": return members.filter((m) => m.committees.some((c) => c.id === committeeId));
+      case "Specific Area of Focus": return members.filter((m) => m.areasOfFocus.includes(areaOfFocus));
+      case "Specific city": return members.filter((m) => m.city === city);
+      case "Specific person": return members.filter((m) => memberIds.includes(m.id));
+      default: return members;
+    }
+  }, [audienceType, members, committeeId, areaOfFocus, city, memberIds]);
+  const audienceCount = resolvedRecipients.length;
+
+  const audienceSummary = (): string => {
+    switch (audienceType) {
+      case "All members": return `All members (${audienceCount})`;
+      case "Paid only": return `Paid members (${audienceCount})`;
+      case "Specific committee": return `${COMMITTEES.find(c => c.id === committeeId)?.name ?? ""} committee (${audienceCount})`;
+      case "Specific Area of Focus": return `${areaOfFocus} focus (${audienceCount})`;
+      case "Specific city": return `${city} (${audienceCount})`;
+      case "Specific person": {
+        if (memberIds.length === 0) return "0 recipients";
+        const first = members.find((m) => m.id === memberIds[0])?.name ?? "Recipient";
+        return memberIds.length === 1 ? first : `${first} + ${memberIds.length - 1} other${memberIds.length > 2 ? "s" : ""}`;
+      }
+      default: return `${audienceCount} recipients`;
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!globalQ) return announcements;
@@ -42,13 +78,29 @@ export default function Announcements() {
     return announcements.filter((a) => `${a.title} ${a.body} ${a.category}`.toLowerCase().includes(q));
   }, [announcements, globalQ]);
 
-  const reset = () => { setTitle(""); setBody(""); setScheduledFor(""); };
+  const reset = () => { setTitle(""); setBody(""); setScheduledFor(""); setMemberIds([]); setMemberPickerQ(""); };
 
   const publish = (status: "Published" | "Scheduled" | "Draft") => {
     if (!title.trim() || !body.trim()) { toast.error("Title and body required"); return; }
     if (status === "Scheduled" && !scheduledFor) { toast.error("Pick a schedule date/time"); return; }
+    if (audienceType === "Specific person" && memberIds.length === 0) { toast.error("Pick at least one recipient"); return; }
+    const audienceSpec = {
+      type: audienceType,
+      committeeId: audienceType === "Specific committee" ? committeeId : undefined,
+      areaOfFocus: audienceType === "Specific Area of Focus" ? areaOfFocus : undefined,
+      city: audienceType === "Specific city" ? city : undefined,
+      memberIds: audienceType === "Specific person" ? memberIds : undefined,
+    };
+    const perRecipient = audienceType === "Specific person"
+      ? resolvedRecipients.map((m) => ({ memberId: m.id, delivered: status === "Published", opened: false }))
+      : undefined;
     addAnnouncement({
-      title, body, priority, category, audience, status,
+      title, body, priority, category,
+      audience: audienceSummary(),
+      audienceSpec,
+      recipientCount: audienceCount,
+      perRecipient,
+      status,
       scheduledFor: status === "Scheduled" ? scheduledFor : undefined,
     });
     const verb = status === "Published" ? "Published" : status === "Scheduled" ? "Scheduled" : "Draft saved";
