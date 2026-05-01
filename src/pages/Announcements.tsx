@@ -380,7 +380,7 @@ export default function Announcements() {
                   <div className="text-[10px] text-muted-foreground mt-1.5 line-clamp-3">{body || "Announcement body preview."}</div>
                   <div className="flex items-center justify-between text-[9px] text-muted-foreground mt-2 pt-2 border-t border-border">
                     <span>Now · EJB</span>
-                    <span>{audience}</span>
+                    <span className="truncate max-w-[140px]">{audienceSummary()}</span>
                   </div>
                 </div>
                 {push && (
