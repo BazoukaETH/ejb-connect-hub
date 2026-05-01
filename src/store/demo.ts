@@ -403,6 +403,24 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     });
   },
 
+  updatePartner: (id, patch) => {
+    set((s) => ({
+      partners: s.partners.map((p) => p.id === id ? { ...p, ...patch } : p),
+      historicalPartners: s.historicalPartners.map((p) => p.id === id ? { ...p, ...patch } : p),
+    }));
+    toast.success("Partner updated");
+  },
+
+  addReEngagement: (partnerId, entry) => {
+    const e: ReEngagement = { ...entry, id: `re-${Date.now()}` };
+    set((s) => ({
+      historicalPartners: s.historicalPartners.map((p) =>
+        p.id === partnerId ? { ...p, reEngagements: [e, ...(p.reEngagements ?? [])] } : p
+      ),
+    }));
+    toast.success("Re-engagement logged", { description: `${entry.status} · ${entry.date}` });
+  },
+
   addTeamMember: (u) => {
     const id = `u-${get().team.length + 1}-${Date.now()}`;
     const tm: AdminUser = {
