@@ -273,13 +273,13 @@ function makeMembers(): Member[] {
 export const MEMBERS: Member[] = makeMembers();
 
 export const APPLICANTS: Applicant[] = [
-  { id: "a-1", name: "Karim Ezzat", company: "Misr Capital", position: "Managing Partner", source: "Referred", stage: "Lead", daysInStage: 4, appliedDate: "2026-04-24", referredBy: "Ahmed Hassan", avatarHue: 30 },
-  { id: "a-2", name: "Hala Naguib", company: "Pyramids Hospitality", position: "CEO", source: "Cold inbound", stage: "Lead", daysInStage: 9, appliedDate: "2026-04-19", avatarHue: 60 },
-  { id: "a-3", name: "Bassem Sharif", company: "Nile Logistics", position: "Founder", source: "Event", stage: "Prospect", daysInStage: 12, appliedDate: "2026-04-16", avatarHue: 90 },
-  { id: "a-4", name: "Reem Mansour", company: "Cairo Medtech", position: "Co-founder", source: "Referred", stage: "Prospect", daysInStage: 18, appliedDate: "2026-04-10", referredBy: "Mona Allam", avatarHue: 120 },
+  { id: "a-1", name: "Karim Ezzat", company: "Misr Capital", position: "Managing Partner", source: "Referred", stage: "Leads", daysInStage: 4, appliedDate: "2026-04-24", referredBy: "Ahmed Hassan", avatarHue: 30 },
+  { id: "a-2", name: "Hala Naguib", company: "Pyramids Hospitality", position: "CEO", source: "Cold inbound", stage: "Leads", daysInStage: 9, appliedDate: "2026-04-19", avatarHue: 60 },
+  { id: "a-3", name: "Bassem Sharif", company: "Nile Logistics", position: "Founder", source: "Event", stage: "Leads", daysInStage: 12, appliedDate: "2026-04-16", avatarHue: 90 },
+  { id: "a-4", name: "Reem Mansour", company: "Cairo Medtech", position: "Co-founder", source: "Referred", stage: "Applied", daysInStage: 18, appliedDate: "2026-04-10", referredBy: "Mona Allam", avatarHue: 120 },
   { id: "a-5", name: "Sameh Tantawy", company: "Delta Foods", position: "Chairman", source: "Referred", stage: "Referred", daysInStage: 6, appliedDate: "2026-04-22", referredBy: "Tarek Mostafa", avatarHue: 150 },
-  { id: "a-6", name: "Nadia Saleh", company: "Alex Marine", position: "CFO", source: "Cold inbound", stage: "Applicant", daysInStage: 11, appliedDate: "2026-04-17", avatarHue: 180 },
-  { id: "a-7", name: "Ihab Diab", company: "Sphinx Tech", position: "CEO", source: "Referred", stage: "Applicant", daysInStage: 22, appliedDate: "2026-04-06", referredBy: "Yasmin Allam", avatarHue: 210 },
+  { id: "a-6", name: "Nadia Saleh", company: "Alex Marine", position: "CFO", source: "Cold inbound", stage: "Applied", daysInStage: 11, appliedDate: "2026-04-17", avatarHue: 180 },
+  { id: "a-7", name: "Ihab Diab", company: "Sphinx Tech", position: "CEO", source: "Referred", stage: "Accepted", daysInStage: 3, appliedDate: "2026-04-06", referredBy: "Yasmin Allam", avatarHue: 210, boardApproval: { meetingDate: "2026-04-25", decision: "Approved", minutesRef: "BM-2026-04", approvedBy: "Board" } },
   { id: "a-8", name: "Soha Badr", company: "Heliopolis Real Estate", position: "Partner", source: "Event", stage: "Pending Payment", daysInStage: 5, appliedDate: "2026-04-23", avatarHue: 240 },
   { id: "a-9", name: "Ayman Khalil", company: "Cairo FinServ", position: "Founder", source: "Referred", stage: "Pending Payment", daysInStage: 8, appliedDate: "2026-04-20", referredBy: "Hassan Allam", avatarHue: 270 },
 ];
