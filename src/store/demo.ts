@@ -445,6 +445,22 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     toast.success("Payment recorded", { description: `EGP ${amount.toLocaleString()} from ${tx.memberName} via ${method}.` });
   },
 
+  recordApplicantPayment: (applicantId, amount, method, ref) => {
+    const a = get().applicants.find((x) => x.id === applicantId);
+    if (!a) return;
+    // Convert to active member, then record payment under new id
+    const newMember = get().addMember({
+      name: a.name, email: `${a.name.toLowerCase().replace(/\s/g, ".")}@${a.company.split(" ")[0].toLowerCase()}.com`,
+      phone: "+20 100 000 0000", company: a.company, position: a.position, city: "Cairo",
+      status: "Active", paymentStatus: "Paid", committees: [],
+      joinedDate: new Date().toISOString().slice(0, 10), areasOfFocus: ["Strategy"],
+      productsServices: [], avatarHue: a.avatarHue,
+    });
+    get().recordPayment(newMember.id, amount, method, ref);
+    set((s) => ({ applicants: s.applicants.filter((x) => x.id !== applicantId) }));
+    toast.success("Activated", { description: `${a.name} is now an Active member · routed to Onboarding Queue.` });
+  },
+
   closeCycle: () => {
     const cur = get().selectedCycle;
     set((s) => ({ cyclesOpen: { ...s.cyclesOpen, [cur]: false } }));
