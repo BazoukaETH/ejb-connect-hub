@@ -285,6 +285,15 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     set((s) => ({ applicants: s.applicants.map((a) => a.id === id ? { ...a, stage, daysInStage: 0 } : a) }));
   },
 
+  setApplicantApproval: (id, approval) => {
+    set((s) => ({
+      applicants: s.applicants.map((a) =>
+        a.id === id ? { ...a, stage: "Accepted", daysInStage: 0, boardApproval: approval } : a
+      ),
+    }));
+    toast.success("Board decision recorded", { description: `${approval.decision} · ${approval.minutesRef}` });
+  },
+
   removeApplicant: (id) => {
     set((s) => ({ applicants: s.applicants.filter((a) => a.id !== id) }));
   },
