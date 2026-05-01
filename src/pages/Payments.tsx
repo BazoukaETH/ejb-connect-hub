@@ -98,10 +98,18 @@ export default function Payments() {
   const activeMember = members.find((m) => m.id === activeMemberId);
 
 
+  // Revenue scope tabs - simulates scoping KPIs to a revenue stream
+  const [scope, setScope] = useState<"all" | "membership" | "sponsors" | "events">("membership");
+  const partners = useDemoStore((s) => s.partners);
+  const events = useDemoStore((s) => s.events);
+  const sponsorRevenue = partners.filter((p) => p.active).reduce((s, p) => s + p.value, 0);
+  const eventRevenue = events.filter((e) => e.cost > 0).reduce((s, e) => s + e.cost * e.registered, 0);
+  const allRevenue = collected + sponsorRevenue + eventRevenue;
+
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
       <PageHeader
-        title="Payments & Dues"
+        title="Revenue"
         description={`Cycle ${selectedCycle} · ${isCycleOpen ? `closes ${CYCLE_CLOSE} · ${daysLeft} days left` : "closed"}`}
         actions={
           <>
@@ -113,6 +121,39 @@ export default function Payments() {
           </>
         }
       />
+
+      {/* Revenue scope tabs */}
+      <div className="flex items-center gap-1 mb-4 border-b border-border">
+        {([
+          ["all", `All revenue · ${fmtEGP(allRevenue, { compact: true })}`],
+          ["membership", `Membership · ${fmtEGP(collected, { compact: true })}`],
+          ["sponsors", `Sponsors · ${fmtEGP(sponsorRevenue, { compact: true })}`],
+          ["events", `Events · ${fmtEGP(eventRevenue, { compact: true })}`],
+        ] as const).map(([v, l]) => (
+          <button
+            key={v}
+            onClick={() => setScope(v)}
+            className={`px-3 py-2 text-sm border-b-2 -mb-px ${scope === v ? "border-primary text-primary font-medium" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+
+      {scope === "sponsors" && (
+        <div className="ejb-card p-6 text-sm text-muted-foreground">
+          Sponsor revenue is managed in <a href="/partners" className="text-primary hover:underline">Partners & Sponsors</a>. Active contracted value: <strong className="text-foreground num">{fmtEGP(sponsorRevenue)}</strong> across {partners.filter(p => p.active).length} partners.
+        </div>
+      )}
+      {scope === "events" && (
+        <div className="ejb-card p-6 text-sm text-muted-foreground">
+          Event revenue is recognised on registration. Total this cycle: <strong className="text-foreground num">{fmtEGP(eventRevenue)}</strong> from {events.filter(e => e.cost > 0).length} ticketed events.
+        </div>
+      )}
+      {(scope === "all" || scope === "membership") && (
+        <></>
+      )}
+
 
       {/* Cycle selector + summary strip */}
       <div className="flex items-center gap-2 mb-4">
