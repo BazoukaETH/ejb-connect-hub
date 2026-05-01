@@ -261,7 +261,7 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     const applicant: Applicant = {
       id, name: a.name, company: a.company,
       position: a.position ?? "Founder", source: a.source ?? "Cold inbound",
-      stage: a.stage ?? "Lead", daysInStage: 0, appliedDate: new Date().toISOString().slice(0, 10),
+      stage: a.stage ?? "Leads", daysInStage: 0, appliedDate: new Date().toISOString().slice(0, 10),
       referredBy: a.referredBy, avatarHue: a.avatarHue ?? Math.floor(Math.random() * 360),
     };
     set((s) => ({ applicants: [applicant, ...s.applicants] }));
