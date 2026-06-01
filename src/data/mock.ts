@@ -600,18 +600,18 @@ export interface AuditEntry {
 }
 
 export const AUDIT: AuditEntry[] = [
-  { id: "au-1",  actor: "Nour Hegazy",   hue: 140, role: "Finance",         type: "payment", action: "Recorded payment",          entity: "Tarek Mostafa · M-0023", before: "Unpaid", after: "Paid · EGP 15,000", ts: "12 min ago", ip: "156.193.44.12" },
-  { id: "au-2",  actor: "Yasmin Allam",  hue: 320, role: "EJB Admin",       type: "stage",   action: "Moved applicant",           entity: "Reem Mansour", before: "Applicant", after: "Pending Payment", ts: "1 hour ago", ip: "156.193.44.12" },
-  { id: "au-3",  actor: "Tarek Mostafa", hue: 30,  role: "EJB Admin",       type: "publish", action: "Published announcement",    entity: "Last Call: EJB x CIF 2026", ts: "2 hours ago", ip: "41.34.221.5" },
-  { id: "au-4",  actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "update",  action: "Updated committee chair",   entity: "Consulting & Technology", before: "Karim Said", after: "Yasmin Allam", ts: "3 hours ago", ip: "156.193.44.12" },
-  { id: "au-5",  actor: "Nour Hegazy",   hue: 140, role: "Finance",         type: "payment", action: "Recorded partial payment",  entity: "Soha Badr · M-0044", before: "Unpaid", after: "Partial · EGP 7,500", ts: "yesterday", ip: "156.193.44.12" },
-  { id: "au-6",  actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "create",  action: "Added member",              entity: "Karim Ezzat · M-0061", ts: "yesterday", ip: "156.193.44.12" },
-  { id: "au-7",  actor: "Tarek Mostafa", hue: 30,  role: "EJB Admin",       type: "update",  action: "Reordered partners strip",  entity: "App content", before: "CIB · EFG · Orascom", after: "CIB · Orascom · EFG", ts: "2 days ago", ip: "41.34.221.5" },
-  { id: "au-8",  actor: "Yasmin Allam",  hue: 320, role: "EJB Admin",       type: "update",  action: "Edited member profile",     entity: "Hassan Allam · M-0005", ts: "2 days ago", ip: "156.193.44.12" },
-  { id: "au-9",  actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "auth",    action: "Signed in",                 entity: "Web · Chrome / macOS", ts: "3 days ago", ip: "156.193.44.12" },
-  { id: "au-10", actor: "Ahmed Hassan",  hue: 180, role: "Committee Heads", type: "update",  action: "Uploaded document",         entity: "CIB Premium Banking Benefit.pdf", ts: "3 days ago", ip: "156.193.44.12" },
-  { id: "au-11", actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "delete",  action: "Removed taxonomy term",     entity: "Areas of Focus → 'Misc'", ts: "4 days ago", ip: "156.193.44.12" },
-  { id: "au-12", actor: "Nour Hegazy",   hue: 140, role: "Finance",         type: "publish", action: "Closed cycle",              entity: "Cycle 2025/2026 · 91% paid", ts: "5 days ago", ip: "156.193.44.12" },
+  { id: "au-1",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "payment", action: "Recorded payment",          entity: "Tarek Mostafa · M-0023", before: "Unpaid", after: "Paid · EGP 15,000", ts: "12 min ago", ip: "156.193.44.12" },
+  { id: "au-2",  actor: "Mariana Shinouda", hue: 280, role: "EJB Admin", type: "stage",   action: "Moved applicant",           entity: "Reem Mansour", before: "Applicant", after: "Pending Payment", ts: "1 hour ago", ip: "156.193.44.12" },
+  { id: "au-3",  actor: "Nourhan Abbas",    hue: 30,  role: "EJB Admin", type: "publish", action: "Published announcement",    entity: "Last Call: EJB x CIF 2026", ts: "2 hours ago", ip: "41.34.221.5" },
+  { id: "au-4",  actor: "Nourhan Abbas",    hue: 30,  role: "EJB Admin", type: "update",  action: "Updated committee chair",   entity: "Consulting & Technology", before: "Karim Said", after: "Yasmin Allam", ts: "3 hours ago", ip: "156.193.44.12" },
+  { id: "au-5",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "payment", action: "Recorded partial payment",  entity: "Soha Badr · M-0044", before: "Unpaid", after: "Partial · EGP 7,500", ts: "yesterday", ip: "156.193.44.12" },
+  { id: "au-6",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "create",  action: "Added member",              entity: "Karim Ezzat · M-0061", ts: "yesterday", ip: "156.193.44.12" },
+  { id: "au-7",  actor: "Nermine Elmahdy",  hue: 140, role: "EJB Admin", type: "update",  action: "Reordered partners strip",  entity: "App content", before: "CIB · EFG · Orascom", after: "CIB · Orascom · EFG", ts: "2 days ago", ip: "41.34.221.5" },
+  { id: "au-8",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "update",  action: "Edited member profile",     entity: "Hassan Allam · M-0005", ts: "2 days ago", ip: "156.193.44.12" },
+  { id: "au-9",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "auth",    action: "Signed in",                 entity: "Web · Chrome / macOS", ts: "3 days ago", ip: "156.193.44.12" },
+  { id: "au-10", actor: "Laila El-Sayed",   hue: 180, role: "Committee Heads", type: "update",  action: "Uploaded document",   entity: "CIB Premium Banking Benefit.pdf", ts: "3 days ago", ip: "156.193.44.12" },
+  { id: "au-11", actor: "Nourhan Abbas",    hue: 30,  role: "EJB Admin", type: "delete",  action: "Removed taxonomy term",     entity: "Areas of Focus → 'Misc'", ts: "4 days ago", ip: "156.193.44.12" },
+  { id: "au-12", actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "publish", action: "Closed cycle",              entity: "Cycle 2025/2026 · 91% paid", ts: "5 days ago", ip: "156.193.44.12" },
 ];
 
 // Per-member quick stats helper
