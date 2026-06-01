@@ -323,28 +323,28 @@ export const ANNOUNCEMENTS: Announcement[] = [
     body: "Members who plan to attend the Cairo International Forum representing EJB must register by Friday 2 May. Limited delegate slots remain.",
     priority: "Urgent", category: "Event", audience: "All members",
     status: "Published", publishedAt: "2026-04-26T10:30:00",
-    author: "Mona Allam", reach: { sent: 500, total: 500 }, openRate: 71,
+    author: "Nourhan Abbas", reach: { sent: 500, total: 500 }, openRate: 71,
   },
   {
     id: "an-2", title: "New Member Benefit: CIB Premium Banking Tier",
     body: "EJB members are now eligible for fast-track access to CIB's Premium Banking tier. See benefit details in the Hub.",
     priority: "High", category: "Member benefit", audience: "Paid only",
     status: "Published", publishedAt: "2026-04-22T09:00:00",
-    author: "Nour Hegazy", reach: { sent: 372, total: 372 }, openRate: 58,
+    author: "Amany Fikry", reach: { sent: 372, total: 372 }, openRate: 58,
   },
   {
     id: "an-3", title: "Quarterly Financial Briefing - Recording Available",
     body: "The Q1 briefing recording and slides are now in the Documents library under Member Briefings.",
     priority: "Medium", category: "General", audience: "All members",
     status: "Published", publishedAt: "2026-04-15T11:00:00",
-    author: "Tarek Mostafa", reach: { sent: 500, total: 500 }, openRate: 44,
+    author: "Nermine Elmahdy", reach: { sent: 500, total: 500 }, openRate: 44,
   },
   {
     id: "an-4", title: "Reminder: Update Your Profile and Areas of Focus",
     body: "Please review your profile to make sure your Areas of Focus and Products & Services are current. This drives the directory search.",
     priority: "Medium", category: "General", audience: "All members",
     status: "Scheduled", scheduledFor: "2026-05-02T09:00:00",
-    author: "Yasmin Allam",
+    author: "Nourhan Abbas",
   },
 ];
 
@@ -529,14 +529,14 @@ export interface Expense {
 }
 
 export const EXPENSES: Expense[] = [
-  { id: "x-1", date: "2026-04-26", vendor: "Four Seasons Nile Plaza", category: "Events", amount: 380000, status: "Paid", approver: "Mona", reference: "INV-2026-0421" },
-  { id: "x-2", date: "2026-04-22", vendor: "Smart Village Conference Hall", category: "Events", amount: 84000, status: "Paid", approver: "Mona", reference: "INV-2026-0418" },
-  { id: "x-3", date: "2026-04-19", vendor: "Allam & Co Legal Advisory", category: "Professional fees", amount: 75000, status: "Paid", approver: "Mona", reference: "INV-04-19" },
-  { id: "x-4", date: "2026-04-15", vendor: "Adobe Creative Cloud", category: "Software", amount: 18400, status: "Paid", approver: "Tarek", reference: "INV-AD-0415" },
-  { id: "x-5", date: "2026-04-12", vendor: "Cairo Marriott (Board offsite)", category: "Travel", amount: 142000, status: "Pending", approver: "Mona", reference: "INV-CM-0412" },
-  { id: "x-6", date: "2026-04-08", vendor: "Print House", category: "Marketing", amount: 22500, status: "Paid", approver: "Tarek", reference: "INV-PH-04" },
-  { id: "x-7", date: "2026-04-04", vendor: "Office Lease (Q2)", category: "Office", amount: 240000, status: "Paid", approver: "Nour", reference: "RNT-Q2" },
-  { id: "x-8", date: "2026-03-28", vendor: "Networking dinner - Sohour", category: "Events", amount: 96000, status: "Reimbursed", approver: "Mona", reference: "EXP-SOH-03" },
+  { id: "x-1", date: "2026-04-26", vendor: "Four Seasons Nile Plaza", category: "Events", amount: 380000, status: "Paid", approver: "Amany", reference: "INV-2026-0421" },
+  { id: "x-2", date: "2026-04-22", vendor: "Smart Village Conference Hall", category: "Events", amount: 84000, status: "Paid", approver: "Amany", reference: "INV-2026-0418" },
+  { id: "x-3", date: "2026-04-19", vendor: "Allam & Co Legal Advisory", category: "Professional fees", amount: 75000, status: "Paid", approver: "Amany", reference: "INV-04-19" },
+  { id: "x-4", date: "2026-04-15", vendor: "Adobe Creative Cloud", category: "Software", amount: 18400, status: "Paid", approver: "Nourhan", reference: "INV-AD-0415" },
+  { id: "x-5", date: "2026-04-12", vendor: "Cairo Marriott (Board offsite)", category: "Travel", amount: 142000, status: "Pending", approver: "Amany", reference: "INV-CM-0412" },
+  { id: "x-6", date: "2026-04-08", vendor: "Print House", category: "Marketing", amount: 22500, status: "Paid", approver: "Nermine", reference: "INV-PH-04" },
+  { id: "x-7", date: "2026-04-04", vendor: "Office Lease (Q2)", category: "Office", amount: 240000, status: "Paid", approver: "Amany", reference: "RNT-Q2" },
+  { id: "x-8", date: "2026-03-28", vendor: "Networking dinner - Sohour", category: "Events", amount: 96000, status: "Reimbursed", approver: "Nermine", reference: "EXP-SOH-03" },
 ];
 
 export const EXPENSE_BUDGET = {
@@ -563,9 +563,9 @@ export interface MemberNote {
 }
 
 export const MEMBER_NOTES: MemberNote[] = [
-  { id: "n-1", memberId: "m-001", author: "Mona Allam", hue: 220, body: "Confirmed attendance to Annual Summit. Wants intro to Hassan Allam re: PPP project.", ts: "2 days ago", pinned: true },
-  { id: "n-2", memberId: "m-001", author: "Yasmin Allam", hue: 320, body: "Updated phone number after WhatsApp confirmation.", ts: "1 week ago" },
-  { id: "n-3", memberId: "m-001", author: "Nour Hegazy", hue: 140, body: "Payment received via bank transfer. Receipt sent.", ts: "2 weeks ago" },
+  { id: "n-1", memberId: "m-001", author: "Amany Fikry",      hue: 220, body: "Confirmed attendance to Annual Summit. Wants intro to Hassan Allam re: PPP project.", ts: "2 days ago", pinned: true },
+  { id: "n-2", memberId: "m-001", author: "Nourhan Abbas",    hue: 30,  body: "Updated phone number after WhatsApp confirmation.", ts: "1 week ago" },
+  { id: "n-3", memberId: "m-001", author: "Amany Fikry",      hue: 220, body: "Payment received via bank transfer. Receipt sent.", ts: "2 weeks ago" },
 ];
 
 export interface CommsLog {
@@ -579,10 +579,10 @@ export interface CommsLog {
 }
 
 export const MEMBER_COMMS: CommsLog[] = [
-  { id: "co-1", memberId: "m-001", channel: "Email", direction: "out", subject: "Receipt for 2026/27 dues", ts: "2 days ago", by: "Nour" },
-  { id: "co-2", memberId: "m-001", channel: "WhatsApp", direction: "out", subject: "Reminder: cycle closes 31 Jul", ts: "5 days ago", by: "Yasmin" },
+  { id: "co-1", memberId: "m-001", channel: "Email", direction: "out", subject: "Receipt for 2026/27 dues", ts: "2 days ago", by: "Amany" },
+  { id: "co-2", memberId: "m-001", channel: "WhatsApp", direction: "out", subject: "Reminder: cycle closes 31 Jul", ts: "5 days ago", by: "Nourhan" },
   { id: "co-3", memberId: "m-001", channel: "Email", direction: "in", subject: "Re: Annual Summit RSVP confirmation", ts: "1 week ago", by: "-" },
-  { id: "co-4", memberId: "m-001", channel: "Phone", direction: "out", subject: "Welcome call - onboarding", ts: "3 weeks ago", by: "Mona" },
+  { id: "co-4", memberId: "m-001", channel: "Phone", direction: "out", subject: "Welcome call - onboarding", ts: "3 weeks ago", by: "Amany" },
 ];
 
 export interface AuditEntry {
