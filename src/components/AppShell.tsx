@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -8,6 +9,23 @@ import { RoleProvider, useRole } from "@/context/RoleContext";
 import { SearchProvider, useGlobalSearch } from "@/context/SearchContext";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { NotificationsBell } from "@/components/NotificationsBell";
+
+// Paths visible to Committee Heads (everything else redirects to /my-committee).
+const COMMITTEE_HEAD_ALLOW = ["/my-committee", "/members", "/events", "/documents", "/resources", "/templates", "/announcements"];
+
+function RoleGuard() {
+  const { role } = useRole();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (role === "Committee Heads") {
+      const allowed = COMMITTEE_HEAD_ALLOW.some((p) => pathname === p || pathname.startsWith(p + "/"));
+      if (!allowed) navigate("/my-committee", { replace: true });
+    }
+  }, [role, pathname, navigate]);
+  return null;
+}
+
 
 const labels: Record<string, string> = {
   "": "Cockpit", members: "Members", applicants: "Applicants & Prospects",
