@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, UserPlus, ClipboardList, ShieldCheck, Wallet,
   Handshake, Receipt, UsersRound, Calendar, Megaphone, FileText, BookOpen,
   FileCode2, Smartphone, MessageSquare, Tags, History, Settings, Crown,
-  Gavel, Target, Landmark,
+  Gavel, Target, Landmark, Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/context/RoleContext";
@@ -78,12 +78,27 @@ const groups: Group[] = [
   },
 ];
 
+const COMMITTEE_HEAD_GROUPS: Group[] = [
+  {
+    label: "Committee",
+    items: [
+      { title: "My Committee", url: "/my-committee", icon: Briefcase },
+      { title: "Directory",    url: "/members",      icon: Users },
+      { title: "Events",       url: "/events",       icon: Calendar },
+      { title: "Library",      url: "/documents",    icon: FileText },
+      { title: "Announcements",url: "/announcements",icon: Megaphone },
+    ],
+  },
+];
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { can, role } = useRole();
   const isActive = (url: string) => (url === "/" ? pathname === "/" : pathname === url || pathname.startsWith(url + "/"));
+
+  const activeGroups = role === "Committee Heads" ? COMMITTEE_HEAD_GROUPS : groups;
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
