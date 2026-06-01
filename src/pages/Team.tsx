@@ -16,19 +16,20 @@ const ROLE_PERMS: Record<string, string[]> = {
 export default function Team() {
   return (
     <div className="p-6 max-w-[1400px] mx-auto animate-fade-in">
-      <PageHeader title="Team" description={`${ADMIN_TEAM.length} admins · roles drive what each user can see and do`}
+      <PageHeader title="Team" description={`${ADMIN_TEAM.length} staff · all hold full operational rights as EJB Admin`}
         actions={<Button size="sm" className="h-9"><Plus className="h-3.5 w-3.5 mr-1.5" /> Invite admin</Button>} />
 
       <div className="ejb-card overflow-hidden mb-5">
         <table className="w-full data-table">
-          <thead className="bg-secondary/50"><tr><th>Member</th><th>Email</th><th>Role</th><th>Last login</th><th>Status</th><th></th></tr></thead>
+          <thead className="bg-secondary/50"><tr><th>Member</th><th>Function</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th></th></tr></thead>
           <tbody>
             {ADMIN_TEAM.map((u) => (
               <tr key={u.id} className="hover:bg-secondary/40">
                 <td><div className="flex items-center gap-2.5"><Avatar name={u.name} hue={u.avatarHue} size="sm" /><span className="font-medium text-sm">{u.name}</span></div></td>
+                <td className="text-xs text-muted-foreground">{ADMIN_TEAM_TITLES[u.id] ?? "-"}</td>
                 <td className="text-xs text-muted-foreground">{u.email}</td>
+                <td className="text-xs text-muted-foreground num">{ADMIN_TEAM_PHONES[u.id] ?? "-"}</td>
                 <td><StatusChip variant="brand" label={u.role} /></td>
-                <td className="text-xs text-muted-foreground">{u.lastLogin}</td>
                 <td><StatusChip variant={u.active ? "paid" : "neutral"} label={u.active ? "Active" : "Disabled"} dot /></td>
                 <td className="text-right">
                   <Button variant="ghost" size="sm" className="h-7 text-xs">Manage</Button>
