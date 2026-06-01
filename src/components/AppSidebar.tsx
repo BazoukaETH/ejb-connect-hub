@@ -121,7 +121,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="gap-0 pt-1">
-        {groups.map((g) => {
+        {activeGroups.map((g) => {
           // Hide whole group if no capability
           if (g.cap && !can(g.cap as any)) return null;
           // Filter items by capability
