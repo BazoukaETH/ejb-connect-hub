@@ -387,26 +387,40 @@ export const MEMBER_BASE_VALUE = {
 
 
 export const ADMIN_TEAM: AdminUser[] = [
-  { id: "u-1", name: "Mona Allam",    email: "mona@ejb.org.eg",   role: "EJB Admin",       lastLogin: "2 min ago",   active: true, avatarHue: 220 },
-  { id: "u-2", name: "Nour Hegazy",   email: "nour@ejb.org.eg",   role: "Finance",         lastLogin: "1 hour ago",  active: true, avatarHue: 140 },
-  { id: "u-3", name: "Yasmin Allam",  email: "yasmin@ejb.org.eg", role: "EJB Admin",       lastLogin: "3 hours ago", active: true, avatarHue: 320 },
-  { id: "u-4", name: "Tarek Mostafa", email: "tarek@ejb.org.eg",  role: "EJB Admin",       lastLogin: "yesterday",   active: true, avatarHue: 30  },
-  { id: "u-5", name: "Ahmed Hassan",  email: "ahmed@ejb.org.eg",  role: "Committee Heads", lastLogin: "5 hours ago", active: true, avatarHue: 180 },
-  { id: "u-6", name: "Hussein Osman", email: "hussein@ejb.org.eg",role: "Board Members",   lastLogin: "2 days ago",  active: true, avatarHue: 250 },
-  { id: "u-7", name: "Omar El Sherif",email: "omar@ejb.org.eg",   role: "Chairman",        lastLogin: "yesterday",   active: true, avatarHue: 260 },
+  { id: "u-1", name: "Amany Fikry Mohamed", email: "membership@ejb.org.eg", role: "EJB Admin", lastLogin: "2 min ago",   active: true, avatarHue: 220 },
+  { id: "u-2", name: "Nermine Elmahdy",     email: "business@ejb.org.eg",   role: "EJB Admin", lastLogin: "1 hour ago",  active: true, avatarHue: 140 },
+  { id: "u-3", name: "Nourhan Abbas",       email: "b.support@ejb.org.eg",  role: "EJB Admin", lastLogin: "3 hours ago", active: true, avatarHue: 30  },
+  { id: "u-4", name: "Nour Shawky",         email: "nour.shawki@gmail.com", role: "EJB Admin", lastLogin: "yesterday",   active: true, avatarHue: 320 },
+  { id: "u-5", name: "Mariana Shinouda",    email: "marianashinouda@gmail.com", role: "EJB Admin", lastLogin: "5 hours ago", active: true, avatarHue: 280 },
 ];
 
+export const ADMIN_TEAM_PHONES: Record<string, string> = {
+  "u-1": "+20 122 746 5873",
+  "u-2": "+20 122 838 0000",
+  "u-3": "+20 109 400 8188",
+  "u-4": "+20 111 505 901",
+  "u-5": "+20 106 611 2929",
+};
+
+export const ADMIN_TEAM_TITLES: Record<string, string> = {
+  "u-1": "Membership lead",
+  "u-2": "Business / Sponsorship lead",
+  "u-3": "Operations support",
+  "u-4": "TBD",
+  "u-5": "TBD",
+};
+
 export const RECENT_ACTIVITY: Activity[] = [
-  { id: "act-1", actorId: "u-1", actorName: "Mona", action: "moved Ahmed Hassan to Active Member", timestamp: "12 min ago", type: "stage" },
-  { id: "act-2", actorId: "u-2", actorName: "Nour", action: "recorded EGP 15,000 payment from Tarek Mostafa", timestamp: "1 hour ago", type: "payment" },
-  { id: "act-3", actorId: "u-4", actorName: "Tarek", action: "published announcement: Last Call: EJB x CIF 2026", timestamp: "2 hours ago", type: "announcement" },
-  { id: "act-4", actorId: "u-3", actorName: "Yasmin", action: "added Karim Ezzat to applicants pipeline", timestamp: "3 hours ago", type: "member" },
-  { id: "act-5", actorId: "u-2", actorName: "Nour", action: "recorded EGP 15,000 payment from Hala Saleh", timestamp: "4 hours ago", type: "payment" },
-  { id: "act-6", actorId: "u-1", actorName: "Mona", action: "approved Reem Mansour application", timestamp: "yesterday", type: "stage" },
-  { id: "act-7", actorId: "u-4", actorName: "Tarek", action: "added 12 RSVPs to Annual Business Summit", timestamp: "yesterday", type: "event" },
-  { id: "act-8", actorId: "u-3", actorName: "Yasmin", action: "added note to Bassem Sharif", timestamp: "2 days ago", type: "note" },
-  { id: "act-9", actorId: "u-2", actorName: "Nour", action: "recorded EGP 7,500 partial payment from Soha Badr", timestamp: "2 days ago", type: "payment" },
-  { id: "act-10", actorId: "u-1", actorName: "Mona", action: "updated Tech committee chair to Karim Said", timestamp: "3 days ago", type: "stage" },
+  { id: "act-1", actorId: "u-1", actorName: "Amany",   action: "moved Ahmed Hassan to Active Member", timestamp: "12 min ago", type: "stage" },
+  { id: "act-2", actorId: "u-1", actorName: "Amany",   action: "recorded EGP 15,000 payment from Tarek Mostafa", timestamp: "1 hour ago", type: "payment" },
+  { id: "act-3", actorId: "u-3", actorName: "Nourhan", action: "published announcement: Last Call: EJB x CIF 2026", timestamp: "2 hours ago", type: "announcement" },
+  { id: "act-4", actorId: "u-2", actorName: "Nermine", action: "added Karim Ezzat to applicants pipeline", timestamp: "3 hours ago", type: "member" },
+  { id: "act-5", actorId: "u-1", actorName: "Amany",   action: "recorded EGP 15,000 payment from Hala Saleh", timestamp: "4 hours ago", type: "payment" },
+  { id: "act-6", actorId: "u-1", actorName: "Amany",   action: "approved Reem Mansour application", timestamp: "yesterday", type: "stage" },
+  { id: "act-7", actorId: "u-3", actorName: "Nourhan", action: "added 12 RSVPs to Annual Business Summit", timestamp: "yesterday", type: "event" },
+  { id: "act-8", actorId: "u-2", actorName: "Nermine", action: "added note to Bassem Sharif", timestamp: "2 days ago", type: "note" },
+  { id: "act-9", actorId: "u-1", actorName: "Amany",   action: "recorded EGP 7,500 partial payment from Soha Badr", timestamp: "2 days ago", type: "payment" },
+  { id: "act-10", actorId: "u-3", actorName: "Nourhan", action: "updated Tech committee chair to Karim Said", timestamp: "3 days ago", type: "stage" },
 ];
 
 export const DOCUMENTS = [
