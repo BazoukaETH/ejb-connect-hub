@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { StatusChip } from "@/components/StatusChip";
-import { ADMIN_TEAM } from "@/data/mock";
+import { ADMIN_TEAM, ADMIN_TEAM_PHONES, ADMIN_TEAM_TITLES } from "@/data/mock";
 import { Button } from "@/components/ui/button";
 import { Plus, ShieldCheck } from "lucide-react";
 
