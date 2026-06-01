@@ -323,28 +323,28 @@ export const ANNOUNCEMENTS: Announcement[] = [
     body: "Members who plan to attend the Cairo International Forum representing EJB must register by Friday 2 May. Limited delegate slots remain.",
     priority: "Urgent", category: "Event", audience: "All members",
     status: "Published", publishedAt: "2026-04-26T10:30:00",
-    author: "Mona Allam", reach: { sent: 500, total: 500 }, openRate: 71,
+    author: "Nourhan Abbas", reach: { sent: 500, total: 500 }, openRate: 71,
   },
   {
     id: "an-2", title: "New Member Benefit: CIB Premium Banking Tier",
     body: "EJB members are now eligible for fast-track access to CIB's Premium Banking tier. See benefit details in the Hub.",
     priority: "High", category: "Member benefit", audience: "Paid only",
     status: "Published", publishedAt: "2026-04-22T09:00:00",
-    author: "Nour Hegazy", reach: { sent: 372, total: 372 }, openRate: 58,
+    author: "Amany Fikry", reach: { sent: 372, total: 372 }, openRate: 58,
   },
   {
     id: "an-3", title: "Quarterly Financial Briefing - Recording Available",
     body: "The Q1 briefing recording and slides are now in the Documents library under Member Briefings.",
     priority: "Medium", category: "General", audience: "All members",
     status: "Published", publishedAt: "2026-04-15T11:00:00",
-    author: "Tarek Mostafa", reach: { sent: 500, total: 500 }, openRate: 44,
+    author: "Nermine Elmahdy", reach: { sent: 500, total: 500 }, openRate: 44,
   },
   {
     id: "an-4", title: "Reminder: Update Your Profile and Areas of Focus",
     body: "Please review your profile to make sure your Areas of Focus and Products & Services are current. This drives the directory search.",
     priority: "Medium", category: "General", audience: "All members",
     status: "Scheduled", scheduledFor: "2026-05-02T09:00:00",
-    author: "Yasmin Allam",
+    author: "Nourhan Abbas",
   },
 ];
 
@@ -387,26 +387,40 @@ export const MEMBER_BASE_VALUE = {
 
 
 export const ADMIN_TEAM: AdminUser[] = [
-  { id: "u-1", name: "Mona Allam",    email: "mona@ejb.org.eg",   role: "EJB Admin",       lastLogin: "2 min ago",   active: true, avatarHue: 220 },
-  { id: "u-2", name: "Nour Hegazy",   email: "nour@ejb.org.eg",   role: "Finance",         lastLogin: "1 hour ago",  active: true, avatarHue: 140 },
-  { id: "u-3", name: "Yasmin Allam",  email: "yasmin@ejb.org.eg", role: "EJB Admin",       lastLogin: "3 hours ago", active: true, avatarHue: 320 },
-  { id: "u-4", name: "Tarek Mostafa", email: "tarek@ejb.org.eg",  role: "EJB Admin",       lastLogin: "yesterday",   active: true, avatarHue: 30  },
-  { id: "u-5", name: "Ahmed Hassan",  email: "ahmed@ejb.org.eg",  role: "Committee Heads", lastLogin: "5 hours ago", active: true, avatarHue: 180 },
-  { id: "u-6", name: "Hussein Osman", email: "hussein@ejb.org.eg",role: "Board Members",   lastLogin: "2 days ago",  active: true, avatarHue: 250 },
-  { id: "u-7", name: "Omar El Sherif",email: "omar@ejb.org.eg",   role: "Chairman",        lastLogin: "yesterday",   active: true, avatarHue: 260 },
+  { id: "u-1", name: "Amany Fikry Mohamed", email: "membership@ejb.org.eg", role: "EJB Admin", lastLogin: "2 min ago",   active: true, avatarHue: 220 },
+  { id: "u-2", name: "Nermine Elmahdy",     email: "business@ejb.org.eg",   role: "EJB Admin", lastLogin: "1 hour ago",  active: true, avatarHue: 140 },
+  { id: "u-3", name: "Nourhan Abbas",       email: "b.support@ejb.org.eg",  role: "EJB Admin", lastLogin: "3 hours ago", active: true, avatarHue: 30  },
+  { id: "u-4", name: "Nour Shawky",         email: "nour.shawki@gmail.com", role: "EJB Admin", lastLogin: "yesterday",   active: true, avatarHue: 320 },
+  { id: "u-5", name: "Mariana Shinouda",    email: "marianashinouda@gmail.com", role: "EJB Admin", lastLogin: "5 hours ago", active: true, avatarHue: 280 },
 ];
 
+export const ADMIN_TEAM_PHONES: Record<string, string> = {
+  "u-1": "+20 122 746 5873",
+  "u-2": "+20 122 838 0000",
+  "u-3": "+20 109 400 8188",
+  "u-4": "+20 111 505 901",
+  "u-5": "+20 106 611 2929",
+};
+
+export const ADMIN_TEAM_TITLES: Record<string, string> = {
+  "u-1": "Membership lead",
+  "u-2": "Business / Sponsorship lead",
+  "u-3": "Operations support",
+  "u-4": "TBD",
+  "u-5": "TBD",
+};
+
 export const RECENT_ACTIVITY: Activity[] = [
-  { id: "act-1", actorId: "u-1", actorName: "Mona", action: "moved Ahmed Hassan to Active Member", timestamp: "12 min ago", type: "stage" },
-  { id: "act-2", actorId: "u-2", actorName: "Nour", action: "recorded EGP 15,000 payment from Tarek Mostafa", timestamp: "1 hour ago", type: "payment" },
-  { id: "act-3", actorId: "u-4", actorName: "Tarek", action: "published announcement: Last Call: EJB x CIF 2026", timestamp: "2 hours ago", type: "announcement" },
-  { id: "act-4", actorId: "u-3", actorName: "Yasmin", action: "added Karim Ezzat to applicants pipeline", timestamp: "3 hours ago", type: "member" },
-  { id: "act-5", actorId: "u-2", actorName: "Nour", action: "recorded EGP 15,000 payment from Hala Saleh", timestamp: "4 hours ago", type: "payment" },
-  { id: "act-6", actorId: "u-1", actorName: "Mona", action: "approved Reem Mansour application", timestamp: "yesterday", type: "stage" },
-  { id: "act-7", actorId: "u-4", actorName: "Tarek", action: "added 12 RSVPs to Annual Business Summit", timestamp: "yesterday", type: "event" },
-  { id: "act-8", actorId: "u-3", actorName: "Yasmin", action: "added note to Bassem Sharif", timestamp: "2 days ago", type: "note" },
-  { id: "act-9", actorId: "u-2", actorName: "Nour", action: "recorded EGP 7,500 partial payment from Soha Badr", timestamp: "2 days ago", type: "payment" },
-  { id: "act-10", actorId: "u-1", actorName: "Mona", action: "updated Tech committee chair to Karim Said", timestamp: "3 days ago", type: "stage" },
+  { id: "act-1", actorId: "u-1", actorName: "Amany",   action: "moved Ahmed Hassan to Active Member", timestamp: "12 min ago", type: "stage" },
+  { id: "act-2", actorId: "u-1", actorName: "Amany",   action: "recorded EGP 15,000 payment from Tarek Mostafa", timestamp: "1 hour ago", type: "payment" },
+  { id: "act-3", actorId: "u-3", actorName: "Nourhan", action: "published announcement: Last Call: EJB x CIF 2026", timestamp: "2 hours ago", type: "announcement" },
+  { id: "act-4", actorId: "u-2", actorName: "Nermine", action: "added Karim Ezzat to applicants pipeline", timestamp: "3 hours ago", type: "member" },
+  { id: "act-5", actorId: "u-1", actorName: "Amany",   action: "recorded EGP 15,000 payment from Hala Saleh", timestamp: "4 hours ago", type: "payment" },
+  { id: "act-6", actorId: "u-1", actorName: "Amany",   action: "approved Reem Mansour application", timestamp: "yesterday", type: "stage" },
+  { id: "act-7", actorId: "u-3", actorName: "Nourhan", action: "added 12 RSVPs to Annual Business Summit", timestamp: "yesterday", type: "event" },
+  { id: "act-8", actorId: "u-2", actorName: "Nermine", action: "added note to Bassem Sharif", timestamp: "2 days ago", type: "note" },
+  { id: "act-9", actorId: "u-1", actorName: "Amany",   action: "recorded EGP 7,500 partial payment from Soha Badr", timestamp: "2 days ago", type: "payment" },
+  { id: "act-10", actorId: "u-3", actorName: "Nourhan", action: "updated Tech committee chair to Karim Said", timestamp: "3 days ago", type: "stage" },
 ];
 
 export const DOCUMENTS = [
@@ -515,14 +529,14 @@ export interface Expense {
 }
 
 export const EXPENSES: Expense[] = [
-  { id: "x-1", date: "2026-04-26", vendor: "Four Seasons Nile Plaza", category: "Events", amount: 380000, status: "Paid", approver: "Mona", reference: "INV-2026-0421" },
-  { id: "x-2", date: "2026-04-22", vendor: "Smart Village Conference Hall", category: "Events", amount: 84000, status: "Paid", approver: "Mona", reference: "INV-2026-0418" },
-  { id: "x-3", date: "2026-04-19", vendor: "Allam & Co Legal Advisory", category: "Professional fees", amount: 75000, status: "Paid", approver: "Mona", reference: "INV-04-19" },
-  { id: "x-4", date: "2026-04-15", vendor: "Adobe Creative Cloud", category: "Software", amount: 18400, status: "Paid", approver: "Tarek", reference: "INV-AD-0415" },
-  { id: "x-5", date: "2026-04-12", vendor: "Cairo Marriott (Board offsite)", category: "Travel", amount: 142000, status: "Pending", approver: "Mona", reference: "INV-CM-0412" },
-  { id: "x-6", date: "2026-04-08", vendor: "Print House", category: "Marketing", amount: 22500, status: "Paid", approver: "Tarek", reference: "INV-PH-04" },
-  { id: "x-7", date: "2026-04-04", vendor: "Office Lease (Q2)", category: "Office", amount: 240000, status: "Paid", approver: "Nour", reference: "RNT-Q2" },
-  { id: "x-8", date: "2026-03-28", vendor: "Networking dinner - Sohour", category: "Events", amount: 96000, status: "Reimbursed", approver: "Mona", reference: "EXP-SOH-03" },
+  { id: "x-1", date: "2026-04-26", vendor: "Four Seasons Nile Plaza", category: "Events", amount: 380000, status: "Paid", approver: "Amany", reference: "INV-2026-0421" },
+  { id: "x-2", date: "2026-04-22", vendor: "Smart Village Conference Hall", category: "Events", amount: 84000, status: "Paid", approver: "Amany", reference: "INV-2026-0418" },
+  { id: "x-3", date: "2026-04-19", vendor: "Allam & Co Legal Advisory", category: "Professional fees", amount: 75000, status: "Paid", approver: "Amany", reference: "INV-04-19" },
+  { id: "x-4", date: "2026-04-15", vendor: "Adobe Creative Cloud", category: "Software", amount: 18400, status: "Paid", approver: "Nourhan", reference: "INV-AD-0415" },
+  { id: "x-5", date: "2026-04-12", vendor: "Cairo Marriott (Board offsite)", category: "Travel", amount: 142000, status: "Pending", approver: "Amany", reference: "INV-CM-0412" },
+  { id: "x-6", date: "2026-04-08", vendor: "Print House", category: "Marketing", amount: 22500, status: "Paid", approver: "Nermine", reference: "INV-PH-04" },
+  { id: "x-7", date: "2026-04-04", vendor: "Office Lease (Q2)", category: "Office", amount: 240000, status: "Paid", approver: "Amany", reference: "RNT-Q2" },
+  { id: "x-8", date: "2026-03-28", vendor: "Networking dinner - Sohour", category: "Events", amount: 96000, status: "Reimbursed", approver: "Nermine", reference: "EXP-SOH-03" },
 ];
 
 export const EXPENSE_BUDGET = {
@@ -549,9 +563,9 @@ export interface MemberNote {
 }
 
 export const MEMBER_NOTES: MemberNote[] = [
-  { id: "n-1", memberId: "m-001", author: "Mona Allam", hue: 220, body: "Confirmed attendance to Annual Summit. Wants intro to Hassan Allam re: PPP project.", ts: "2 days ago", pinned: true },
-  { id: "n-2", memberId: "m-001", author: "Yasmin Allam", hue: 320, body: "Updated phone number after WhatsApp confirmation.", ts: "1 week ago" },
-  { id: "n-3", memberId: "m-001", author: "Nour Hegazy", hue: 140, body: "Payment received via bank transfer. Receipt sent.", ts: "2 weeks ago" },
+  { id: "n-1", memberId: "m-001", author: "Amany Fikry",      hue: 220, body: "Confirmed attendance to Annual Summit. Wants intro to Hassan Allam re: PPP project.", ts: "2 days ago", pinned: true },
+  { id: "n-2", memberId: "m-001", author: "Nourhan Abbas",    hue: 30,  body: "Updated phone number after WhatsApp confirmation.", ts: "1 week ago" },
+  { id: "n-3", memberId: "m-001", author: "Amany Fikry",      hue: 220, body: "Payment received via bank transfer. Receipt sent.", ts: "2 weeks ago" },
 ];
 
 export interface CommsLog {
@@ -565,10 +579,10 @@ export interface CommsLog {
 }
 
 export const MEMBER_COMMS: CommsLog[] = [
-  { id: "co-1", memberId: "m-001", channel: "Email", direction: "out", subject: "Receipt for 2026/27 dues", ts: "2 days ago", by: "Nour" },
-  { id: "co-2", memberId: "m-001", channel: "WhatsApp", direction: "out", subject: "Reminder: cycle closes 31 Jul", ts: "5 days ago", by: "Yasmin" },
+  { id: "co-1", memberId: "m-001", channel: "Email", direction: "out", subject: "Receipt for 2026/27 dues", ts: "2 days ago", by: "Amany" },
+  { id: "co-2", memberId: "m-001", channel: "WhatsApp", direction: "out", subject: "Reminder: cycle closes 31 Jul", ts: "5 days ago", by: "Nourhan" },
   { id: "co-3", memberId: "m-001", channel: "Email", direction: "in", subject: "Re: Annual Summit RSVP confirmation", ts: "1 week ago", by: "-" },
-  { id: "co-4", memberId: "m-001", channel: "Phone", direction: "out", subject: "Welcome call - onboarding", ts: "3 weeks ago", by: "Mona" },
+  { id: "co-4", memberId: "m-001", channel: "Phone", direction: "out", subject: "Welcome call - onboarding", ts: "3 weeks ago", by: "Amany" },
 ];
 
 export interface AuditEntry {
@@ -586,18 +600,18 @@ export interface AuditEntry {
 }
 
 export const AUDIT: AuditEntry[] = [
-  { id: "au-1",  actor: "Nour Hegazy",   hue: 140, role: "Finance",         type: "payment", action: "Recorded payment",          entity: "Tarek Mostafa · M-0023", before: "Unpaid", after: "Paid · EGP 15,000", ts: "12 min ago", ip: "156.193.44.12" },
-  { id: "au-2",  actor: "Yasmin Allam",  hue: 320, role: "EJB Admin",       type: "stage",   action: "Moved applicant",           entity: "Reem Mansour", before: "Applicant", after: "Pending Payment", ts: "1 hour ago", ip: "156.193.44.12" },
-  { id: "au-3",  actor: "Tarek Mostafa", hue: 30,  role: "EJB Admin",       type: "publish", action: "Published announcement",    entity: "Last Call: EJB x CIF 2026", ts: "2 hours ago", ip: "41.34.221.5" },
-  { id: "au-4",  actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "update",  action: "Updated committee chair",   entity: "Consulting & Technology", before: "Karim Said", after: "Yasmin Allam", ts: "3 hours ago", ip: "156.193.44.12" },
-  { id: "au-5",  actor: "Nour Hegazy",   hue: 140, role: "Finance",         type: "payment", action: "Recorded partial payment",  entity: "Soha Badr · M-0044", before: "Unpaid", after: "Partial · EGP 7,500", ts: "yesterday", ip: "156.193.44.12" },
-  { id: "au-6",  actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "create",  action: "Added member",              entity: "Karim Ezzat · M-0061", ts: "yesterday", ip: "156.193.44.12" },
-  { id: "au-7",  actor: "Tarek Mostafa", hue: 30,  role: "EJB Admin",       type: "update",  action: "Reordered partners strip",  entity: "App content", before: "CIB · EFG · Orascom", after: "CIB · Orascom · EFG", ts: "2 days ago", ip: "41.34.221.5" },
-  { id: "au-8",  actor: "Yasmin Allam",  hue: 320, role: "EJB Admin",       type: "update",  action: "Edited member profile",     entity: "Hassan Allam · M-0005", ts: "2 days ago", ip: "156.193.44.12" },
-  { id: "au-9",  actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "auth",    action: "Signed in",                 entity: "Web · Chrome / macOS", ts: "3 days ago", ip: "156.193.44.12" },
-  { id: "au-10", actor: "Ahmed Hassan",  hue: 180, role: "Committee Heads", type: "update",  action: "Uploaded document",         entity: "CIB Premium Banking Benefit.pdf", ts: "3 days ago", ip: "156.193.44.12" },
-  { id: "au-11", actor: "Mona Allam",    hue: 220, role: "EJB Admin",       type: "delete",  action: "Removed taxonomy term",     entity: "Areas of Focus → 'Misc'", ts: "4 days ago", ip: "156.193.44.12" },
-  { id: "au-12", actor: "Nour Hegazy",   hue: 140, role: "Finance",         type: "publish", action: "Closed cycle",              entity: "Cycle 2025/2026 · 91% paid", ts: "5 days ago", ip: "156.193.44.12" },
+  { id: "au-1",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "payment", action: "Recorded payment",          entity: "Tarek Mostafa · M-0023", before: "Unpaid", after: "Paid · EGP 15,000", ts: "12 min ago", ip: "156.193.44.12" },
+  { id: "au-2",  actor: "Mariana Shinouda", hue: 280, role: "EJB Admin", type: "stage",   action: "Moved applicant",           entity: "Reem Mansour", before: "Applicant", after: "Pending Payment", ts: "1 hour ago", ip: "156.193.44.12" },
+  { id: "au-3",  actor: "Nourhan Abbas",    hue: 30,  role: "EJB Admin", type: "publish", action: "Published announcement",    entity: "Last Call: EJB x CIF 2026", ts: "2 hours ago", ip: "41.34.221.5" },
+  { id: "au-4",  actor: "Nourhan Abbas",    hue: 30,  role: "EJB Admin", type: "update",  action: "Updated committee chair",   entity: "Consulting & Technology", before: "Karim Said", after: "Yasmin Allam", ts: "3 hours ago", ip: "156.193.44.12" },
+  { id: "au-5",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "payment", action: "Recorded partial payment",  entity: "Soha Badr · M-0044", before: "Unpaid", after: "Partial · EGP 7,500", ts: "yesterday", ip: "156.193.44.12" },
+  { id: "au-6",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "create",  action: "Added member",              entity: "Karim Ezzat · M-0061", ts: "yesterday", ip: "156.193.44.12" },
+  { id: "au-7",  actor: "Nermine Elmahdy",  hue: 140, role: "EJB Admin", type: "update",  action: "Reordered partners strip",  entity: "App content", before: "CIB · EFG · Orascom", after: "CIB · Orascom · EFG", ts: "2 days ago", ip: "41.34.221.5" },
+  { id: "au-8",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "update",  action: "Edited member profile",     entity: "Hassan Allam · M-0005", ts: "2 days ago", ip: "156.193.44.12" },
+  { id: "au-9",  actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "auth",    action: "Signed in",                 entity: "Web · Chrome / macOS", ts: "3 days ago", ip: "156.193.44.12" },
+  { id: "au-10", actor: "Laila El-Sayed",   hue: 180, role: "Committee Heads", type: "update",  action: "Uploaded document",   entity: "CIB Premium Banking Benefit.pdf", ts: "3 days ago", ip: "156.193.44.12" },
+  { id: "au-11", actor: "Nourhan Abbas",    hue: 30,  role: "EJB Admin", type: "delete",  action: "Removed taxonomy term",     entity: "Areas of Focus → 'Misc'", ts: "4 days ago", ip: "156.193.44.12" },
+  { id: "au-12", actor: "Amany Fikry",      hue: 220, role: "EJB Admin", type: "publish", action: "Closed cycle",              entity: "Cycle 2025/2026 · 91% paid", ts: "5 days ago", ip: "156.193.44.12" },
 ];
 
 // Per-member quick stats helper

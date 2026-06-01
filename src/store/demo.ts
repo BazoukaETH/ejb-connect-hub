@@ -126,15 +126,15 @@ export interface Tx {
 }
 
 const SEED_TX: Tx[] = [
-  { id: "tx-1", cycle: "2026 / 2027", memberId: "m-001", memberName: "Tarek Mostafa", amount: 15000, method: "Bank transfer", date: "2026-04-28 14:22", ref: "TRX-99821", recordedBy: "Nour" },
-  { id: "tx-2", cycle: "2026 / 2027", memberId: "m-002", memberName: "Hala Saleh",    amount: 15000, method: "Bank transfer", date: "2026-04-28 11:08", ref: "TRX-99820", recordedBy: "Nour" },
-  { id: "tx-3", cycle: "2026 / 2027", memberId: "m-003", memberName: "Yasmin Allam",  amount: 15000, method: "Cheque",        date: "2026-04-27 16:40", ref: "CHQ-2455",  recordedBy: "Nour" },
-  { id: "tx-4", cycle: "2026 / 2027", memberId: "m-004", memberName: "Soha Badr",     amount:  7500, method: "Bank transfer", date: "2026-04-27 09:55", ref: "TRX-99812", recordedBy: "Nour" },
-  { id: "tx-5", cycle: "2026 / 2027", memberId: "m-005", memberName: "Karim Said",    amount: 15000, method: "Card",          date: "2026-04-26 17:12", ref: "CRD-77124", recordedBy: "Mona" },
-  { id: "tx-6", cycle: "2026 / 2027", memberId: "m-006", memberName: "Ahmed Hassan",  amount: 15000, method: "Bank transfer", date: "2026-04-26 13:00", ref: "TRX-99801", recordedBy: "Nour" },
-  { id: "tx-7", cycle: "2025 / 2026", memberId: "m-001", memberName: "Tarek Mostafa", amount: 15000, method: "Bank transfer", date: "2025-06-30 10:00", ref: "TRX-87412", recordedBy: "Nour" },
-  { id: "tx-8", cycle: "2025 / 2026", memberId: "m-002", memberName: "Hala Saleh",    amount: 15000, method: "Bank transfer", date: "2025-07-04 09:00", ref: "TRX-87413", recordedBy: "Nour" },
-  { id: "tx-9", cycle: "2024 / 2025", memberId: "m-001", memberName: "Tarek Mostafa", amount: 15000, method: "Cheque",        date: "2024-07-04 12:00", ref: "CHQ-2310",  recordedBy: "Nour" },
+  { id: "tx-1", cycle: "2026 / 2027", memberId: "m-001", memberName: "Tarek Mostafa", amount: 15000, method: "Bank transfer", date: "2026-04-28 14:22", ref: "TRX-99821", recordedBy: "Amany" },
+  { id: "tx-2", cycle: "2026 / 2027", memberId: "m-002", memberName: "Hala Saleh",    amount: 15000, method: "Bank transfer", date: "2026-04-28 11:08", ref: "TRX-99820", recordedBy: "Amany" },
+  { id: "tx-3", cycle: "2026 / 2027", memberId: "m-003", memberName: "Yasmin Allam",  amount: 15000, method: "Cheque",        date: "2026-04-27 16:40", ref: "CHQ-2455",  recordedBy: "Amany" },
+  { id: "tx-4", cycle: "2026 / 2027", memberId: "m-004", memberName: "Soha Badr",     amount:  7500, method: "Bank transfer", date: "2026-04-27 09:55", ref: "TRX-99812", recordedBy: "Amany" },
+  { id: "tx-5", cycle: "2026 / 2027", memberId: "m-005", memberName: "Karim Said",    amount: 15000, method: "Card",          date: "2026-04-26 17:12", ref: "CRD-77124", recordedBy: "Nourhan" },
+  { id: "tx-6", cycle: "2026 / 2027", memberId: "m-006", memberName: "Ahmed Hassan",  amount: 15000, method: "Bank transfer", date: "2026-04-26 13:00", ref: "TRX-99801", recordedBy: "Amany" },
+  { id: "tx-7", cycle: "2025 / 2026", memberId: "m-001", memberName: "Tarek Mostafa", amount: 15000, method: "Bank transfer", date: "2025-06-30 10:00", ref: "TRX-87412", recordedBy: "Amany" },
+  { id: "tx-8", cycle: "2025 / 2026", memberId: "m-002", memberName: "Hala Saleh",    amount: 15000, method: "Bank transfer", date: "2025-07-04 09:00", ref: "TRX-87413", recordedBy: "Amany" },
+  { id: "tx-9", cycle: "2024 / 2025", memberId: "m-001", memberName: "Tarek Mostafa", amount: 15000, method: "Cheque",        date: "2024-07-04 12:00", ref: "CHQ-2310",  recordedBy: "Amany" },
 ];
 
 // ---------------- Saved views ----------------

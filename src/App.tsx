@@ -27,6 +27,7 @@ import Boardroom from "./pages/Boardroom";
 import BoardroomDecisions from "./pages/BoardroomDecisions";
 import BoardroomStrategic from "./pages/BoardroomStrategic";
 import BoardroomTreasury from "./pages/BoardroomTreasury";
+import MyCommittee from "./pages/MyCommittee";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/my-committee" element={<MyCommittee />} />
             <Route path="/boardroom" element={<Boardroom />} />
             <Route path="/boardroom/decisions" element={<BoardroomDecisions />} />
             <Route path="/boardroom/strategic" element={<BoardroomStrategic />} />
