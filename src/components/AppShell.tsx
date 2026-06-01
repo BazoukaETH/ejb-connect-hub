@@ -121,6 +121,7 @@ function ShellInner() {
             </div>
           </header>
           <main className="flex-1 min-w-0">
+            <RoleGuard />
             <Outlet />
           </main>
         </div>
