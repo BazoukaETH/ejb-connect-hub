@@ -57,7 +57,7 @@ export default function Expenses() {
         <div className="ejb-card p-4">
           <div className="ejb-eyebrow">Pending approvals</div>
           <div className="text-3xl font-bold num tracking-tight mt-1">1</div>
-          <p className="text-xs text-muted-foreground mt-1">Awaiting Mona Allam approval</p>
+          <p className="text-xs text-muted-foreground mt-1">Awaiting Amany Fikry approval</p>
           <Button size="sm" variant="outline" className="mt-3 h-8 text-xs">Review queue</Button>
         </div>
       </div>

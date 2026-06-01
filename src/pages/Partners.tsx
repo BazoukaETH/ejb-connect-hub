@@ -34,7 +34,7 @@ export default function Partners() {
   const [addOpen, setAddOpen] = useState(false);
   const [proposalFor, setProposalFor] = useState<Partner | null>(null);
   const [reEngageFor, setReEngageFor] = useState<Partner | null>(null);
-  const [reDraft, setReDraft] = useState({ owner: "Mona Allam", status: "Pitched" as const, notes: "" });
+  const [reDraft, setReDraft] = useState({ owner: "Nermine Elmahdy", status: "Pitched" as const, notes: "" });
 
   const [draft, setDraft] = useState({
     name: "", tier: "Silver" as SponsorTier, website: "",
@@ -99,7 +99,7 @@ export default function Partners() {
       notes: reDraft.notes || `${reDraft.status} outreach logged.`,
     });
     setReEngageFor(null);
-    setReDraft({ owner: "Mona Allam", status: "Pitched", notes: "" });
+    setReDraft({ owner: "Nermine Elmahdy", status: "Pitched", notes: "" });
   };
 
   return (
@@ -438,7 +438,7 @@ export default function Partners() {
       </Dialog>
 
       {/* Re-engagement modal */}
-      <Dialog open={!!reEngageFor} onOpenChange={(o) => { if (!o) { setReEngageFor(null); setReDraft({ owner: "Mona Allam", status: "Pitched", notes: "" }); } }}>
+      <Dialog open={!!reEngageFor} onOpenChange={(o) => { if (!o) { setReEngageFor(null); setReDraft({ owner: "Nermine Elmahdy", status: "Pitched", notes: "" }); } }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Log re-engagement</DialogTitle>

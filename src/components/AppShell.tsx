@@ -75,11 +75,11 @@ function GlobalSearchBar() {
 function ShellInner() {
   const { role } = useRole();
   const personas: Record<string, { name: string; hue: number }> = {
-    "EJB Admin":       { name: "Mona Allam",    hue: 220 },
-    "Finance":         { name: "Nour Hegazy",   hue: 140 },
-    "Committee Heads": { name: "Ahmed Hassan",  hue: 180 },
-    "Board Members":   { name: "Hussein Osman", hue: 250 },
-    "Chairman":        { name: "Omar El Sherif",hue: 260 },
+    "EJB Admin":       { name: "Amany Fikry",    hue: 220 },
+    "Finance":         { name: "Finance Lead",   hue: 140 },
+    "Committee Heads": { name: "Laila El-Sayed", hue: 180 },
+    "Board Members":   { name: "Hussein Osman",  hue: 250 },
+    "Chairman":        { name: "Omar El Sherif", hue: 260 },
   };
   const persona = personas[role];
 
