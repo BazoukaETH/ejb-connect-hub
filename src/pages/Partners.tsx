@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusChip } from "@/components/StatusChip";
 import {
-  SPONSOR_PIPELINE, SponsorStage, fmtEGP, Partner,
+  SPONSOR_PIPELINE, SponsorStage, SponsorDeal, fmtEGP, Partner,
   SponsorPackage, SponsorTier, MEMBER_BASE_VALUE,
 } from "@/data/mock";
 import { useDemoStore } from "@/store/demo";
@@ -27,6 +27,8 @@ export default function Partners() {
   const updatePartner = useDemoStore((s) => s.updatePartner);
   const reorderPartners = useDemoStore((s) => s.reorderPartners);
   const addReEngagement = useDemoStore((s) => s.addReEngagement);
+  const pipeline = useDemoStore((s) => s.pipeline);
+  const addSponsorDeal = useDemoStore((s) => s.addSponsorDeal);
   const { query: globalQ } = useGlobalSearch();
 
   const [active, setActive] = useState<Partner | null>(null);
@@ -35,6 +37,8 @@ export default function Partners() {
   const [proposalFor, setProposalFor] = useState<Partner | null>(null);
   const [reEngageFor, setReEngageFor] = useState<Partner | null>(null);
   const [reDraft, setReDraft] = useState({ owner: "Nermine Elmahdy", status: "Pitched" as const, notes: "" });
+  const [pipeOpen, setPipeOpen] = useState(false);
+  const [pipeDraft, setPipeDraft] = useState({ name: "", tier: "Silver" as SponsorTier, stage: "Prospect" as SponsorStage, value: 150000, owner: "Mona" });
 
   const [draft, setDraft] = useState({
     name: "", tier: "Silver" as SponsorTier, website: "",
@@ -59,9 +63,9 @@ export default function Partners() {
     return list;
   }, [partners, globalQ, tierFilter, packageFilter]);
 
-  const totalPipeline = SPONSOR_PIPELINE.reduce((s, d) => s + d.value, 0);
+  const totalPipeline = pipeline.reduce((s, d) => s + d.value, 0);
   const liveValue = partners.filter((p) => p.active).reduce((s, p) => s + p.value, 0);
-  const renewalValue = SPONSOR_PIPELINE.filter((d) => d.stage === "Renewal due").reduce((s, d) => s + d.value, 0);
+  const renewalValue = pipeline.filter((d) => d.stage === "Renewal due").reduce((s, d) => s + d.value, 0);
 
   const tierCounts = TIERS.map((t) => ({ tier: t, count: partners.filter((p) => p.tier === t).length, value: partners.filter((p) => p.tier === t).reduce((s, p) => s + p.value, 0) }));
 
@@ -102,6 +106,13 @@ export default function Partners() {
     setReDraft({ owner: "Nermine Elmahdy", status: "Pitched", notes: "" });
   };
 
+  const submitPipe = () => {
+    if (!pipeDraft.name.trim()) return;
+    addSponsorDeal({ ...pipeDraft });
+    setPipeOpen(false);
+    setPipeDraft({ name: "", tier: "Silver", stage: "Prospect", value: 150000, owner: "Mona" });
+  };
+
   return (
     <div className="p-6 max-w-[1600px] mx-auto animate-fade-in">
       <PageHeader title="Partners & Sponsors" description="Tag with package + tier · drag to reorder app home strip"
@@ -111,7 +122,7 @@ export default function Partners() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <div className="ejb-card p-3"><div className="ejb-eyebrow">Active partners</div><div className="text-xl font-bold num mt-1">{partners.filter(p => p.active).length}</div><div className="text-[11px] text-muted-foreground">{historicalPartners.length} historical</div></div>
         <div className="ejb-card p-3"><div className="ejb-eyebrow">Live revenue</div><div className="text-xl font-bold num mt-1 text-[hsl(var(--success))]">{fmtEGP(liveValue, { compact: true })}</div><div className="text-[11px] text-muted-foreground">contracted this year</div></div>
-        <div className="ejb-card p-3"><div className="ejb-eyebrow">Pipeline value</div><div className="text-xl font-bold num mt-1">{fmtEGP(totalPipeline, { compact: true })}</div><div className="text-[11px] text-muted-foreground">{SPONSOR_PIPELINE.length} deals</div></div>
+        <div className="ejb-card p-3"><div className="ejb-eyebrow">Pipeline value</div><div className="text-xl font-bold num mt-1">{fmtEGP(totalPipeline, { compact: true })}</div><div className="text-[11px] text-muted-foreground">{pipeline.length} deals</div></div>
         <div className="ejb-card p-3"><div className="ejb-eyebrow">Renewals due</div><div className="text-xl font-bold num mt-1 text-[hsl(var(--ejb-amber))]">{fmtEGP(renewalValue, { compact: true })}</div><div className="text-[11px] text-muted-foreground">next 90 days</div></div>
       </div>
 
@@ -185,9 +196,12 @@ export default function Partners() {
         </TabsContent>
 
         <TabsContent value="pipeline">
+          <div className="flex justify-end mb-3">
+            <Button size="sm" className="h-8" onClick={() => setPipeOpen(true)}><Plus className="h-3.5 w-3.5 mr-1.5" /> Add sponsor</Button>
+          </div>
           <div className="grid grid-cols-6 gap-3 min-w-[1200px] overflow-x-auto pb-4">
             {STAGES.map((stage) => {
-              const items = SPONSOR_PIPELINE.filter(d => d.stage === stage);
+              const items = pipeline.filter(d => d.stage === stage);
               const total = items.reduce((s, d) => s + d.value, 0);
               return (
                 <div key={stage} className="bg-secondary/50 rounded-lg p-2.5 min-h-[400px] flex flex-col">
@@ -433,6 +447,50 @@ export default function Partners() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button disabled={!draft.name.trim()} onClick={submit}>Add partner</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add sponsor to pipeline */}
+      <Dialog open={pipeOpen} onOpenChange={setPipeOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add sponsor to pipeline</DialogTitle>
+            <DialogDescription>Track a potential sponsor through the pipeline stages.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <div>
+              <label className="ejb-eyebrow">Sponsor name</label>
+              <Input value={pipeDraft.name} onChange={(e) => setPipeDraft({ ...pipeDraft, name: e.target.value })} className="h-9 mt-1" placeholder="e.g. QNB Al Ahli" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="ejb-eyebrow">Stage</label>
+                <select value={pipeDraft.stage} onChange={(e) => setPipeDraft({ ...pipeDraft, stage: e.target.value as SponsorStage })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                  {STAGES.map((st) => <option key={st} value={st}>{st}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="ejb-eyebrow">Tier</label>
+                <select value={pipeDraft.tier} onChange={(e) => setPipeDraft({ ...pipeDraft, tier: e.target.value as SponsorTier })} className="w-full h-9 mt-1 px-3 border border-border rounded-md bg-card">
+                  {TIERS.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="ejb-eyebrow">Value (EGP)</label>
+                <Input type="number" value={pipeDraft.value} onChange={(e) => setPipeDraft({ ...pipeDraft, value: Number(e.target.value) || 0 })} className="h-9 mt-1" />
+              </div>
+              <div>
+                <label className="ejb-eyebrow">Owner</label>
+                <Input value={pipeDraft.owner} onChange={(e) => setPipeDraft({ ...pipeDraft, owner: e.target.value })} className="h-9 mt-1" />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPipeOpen(false)}>Cancel</Button>
+            <Button disabled={!pipeDraft.name.trim()} onClick={submitPipe}>Add to pipeline</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
