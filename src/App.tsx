@@ -14,6 +14,7 @@ import Announcements from "./pages/Announcements";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import Committees from "./pages/Committees";
+import CommitteeDetail from "./pages/CommitteeDetail";
 import Partners from "./pages/Partners";
 import Library from "./pages/Library";
 import Taxonomies from "./pages/Taxonomies";
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/partners" element={<Partners />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/committees" element={<Committees />} />
+            <Route path="/committees/:id" element={<CommitteeDetail />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/announcements" element={<Announcements />} />
