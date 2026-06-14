@@ -190,6 +190,8 @@ interface DemoState {
 
   // Members
   addMember: (m: Omit<Member, "id" | "membershipNo">) => Member;
+  addMemberToCommittee: (committeeId: string, memberId: string) => void;
+  removeMemberFromCommittee: (committeeId: string, memberId: string) => void;
   // Applicants
   addApplicant: (a: Partial<Applicant> & { name: string; company: string }) => Applicant;
   moveApplicantStage: (id: string, stage: Applicant["stage"]) => void;
@@ -266,6 +268,30 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     set((s) => ({ members: [member, ...s.members] }));
     toast.success("Member added", { description: `${member.name} (${member.membershipNo}) is now in the directory.` });
     return member;
+  },
+
+  addMemberToCommittee: (committeeId, memberId) => {
+    set((s) => ({
+      members: s.members.map((m) =>
+        m.id === memberId && !m.committees.some((c) => c.id === committeeId)
+          ? { ...m, committees: [...m.committees, { id: committeeId, role: "Member" as const }] }
+          : m,
+      ),
+    }));
+    const m = get().members.find((x) => x.id === memberId);
+    toast.success("Added to committee", { description: `${m?.name ?? "Member"} is now a committee member.` });
+  },
+
+  removeMemberFromCommittee: (committeeId, memberId) => {
+    const m = get().members.find((x) => x.id === memberId);
+    set((s) => ({
+      members: s.members.map((mm) =>
+        mm.id === memberId
+          ? { ...mm, committees: mm.committees.filter((c) => c.id !== committeeId) }
+          : mm,
+      ),
+    }));
+    toast.success("Removed from committee", { description: `${m?.name ?? "Member"} was removed.` });
   },
 
   addApplicant: (a) => {
