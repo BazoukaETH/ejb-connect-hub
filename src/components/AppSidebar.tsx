@@ -78,6 +78,38 @@ const groups: Group[] = [
   },
 ];
 
+const LITE_GROUPS: Group[] = [
+  {
+    label: "People",
+    items: [
+      { title: "Members", url: "/members", icon: Users, syncs: true },
+      { title: "Applicants & Prospects", url: "/applicants", icon: UserPlus },
+    ],
+  },
+  {
+    label: "Sponsors",
+    items: [
+      { title: "Partners & Sponsors", url: "/partners", icon: Handshake, syncs: true },
+    ],
+  },
+  {
+    label: "Programmes",
+    items: [
+      { title: "Committees", url: "/committees", icon: UsersRound, syncs: true },
+      { title: "Events", url: "/events", icon: Calendar, syncs: true },
+      { title: "Announcements", url: "/announcements", icon: Megaphone, syncs: true },
+    ],
+  },
+  {
+    label: "Library",
+    items: [
+      { title: "Documents", url: "/documents", icon: FileText, syncs: true },
+      { title: "Resources", url: "/resources", icon: BookOpen },
+      { title: "Templates", url: "/templates", icon: FileCode2 },
+    ],
+  },
+];
+
 const COMMITTEE_HEAD_GROUPS: Group[] = [
   {
     label: "Committee",
@@ -98,7 +130,10 @@ export function AppSidebar() {
   const { can, role } = useRole();
   const isActive = (url: string) => (url === "/" ? pathname === "/" : pathname === url || pathname.startsWith(url + "/"));
 
-  const activeGroups = role === "Committee Heads" ? COMMITTEE_HEAD_GROUPS : groups;
+  const activeGroups =
+    role === "EJB Staff (Lite)" ? LITE_GROUPS :
+    role === "Committee Heads" ? COMMITTEE_HEAD_GROUPS :
+    groups;
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
