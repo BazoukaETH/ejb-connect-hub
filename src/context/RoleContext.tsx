@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 export type ViewerRole =
+  | "EJB Staff (Lite)"
   | "EJB Admin"
   | "Finance"
   | "Committee Heads"
@@ -29,6 +30,10 @@ export type Capability =
   | "close:cycle";
 
 const MATRIX: Record<ViewerRole, Capability[]> = {
+  // Lite v1 launch role: the 7 hand-over sections only.
+  "EJB Staff (Lite)": [
+    "view:notes","edit:announcements","edit:payments","edit:members","edit:committeeScoped",
+  ],
   // Full write access across all screens
   "EJB Admin": [
     "view:financialSnapshot","view:notes","view:expenses","view:audit",
@@ -63,7 +68,7 @@ const Ctx = createContext<RoleCtx>({
 });
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<ViewerRole>("EJB Admin");
+  const [role, setRole] = useState<ViewerRole>("EJB Staff (Lite)");
   const can = (c: Capability) => MATRIX[role]?.includes(c) ?? false;
   return <Ctx.Provider value={{ role, setRole, can }}>{children}</Ctx.Provider>;
 }
@@ -71,6 +76,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 export const useRole = () => useContext(Ctx);
 
 export const ALL_ROLES: ViewerRole[] = [
+  "EJB Staff (Lite)",
   "Chairman",
   "Board Members",
   "Committee Heads",
