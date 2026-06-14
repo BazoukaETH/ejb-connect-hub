@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { COMMITTEES, getMember, MEMBERS } from "@/data/mock";
@@ -14,7 +15,7 @@ export default function Committees() {
         {COMMITTEES.map((c) => {
           const chair = MEMBERS.find((m) => m.id === c.chairId) ?? MEMBERS[0];
           return (
-            <div key={c.id} className="ejb-card p-4 ejb-card-hover">
+            <Link key={c.id} to={`/committees/${c.id}`} className="ejb-card p-4 ejb-card-hover block">
               <h3 className="font-semibold text-sm leading-tight">{c.name}</h3>
               <p lang="ar" dir="rtl" className="text-xs text-muted-foreground">{c.nameAr}</p>
               <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{c.description}</p>
@@ -32,7 +33,7 @@ export default function Committees() {
                 <span>Last activity {c.lastActivity}</span>
                 <Button variant="ghost" size="sm" className="h-6 text-xs text-primary">Manage →</Button>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
