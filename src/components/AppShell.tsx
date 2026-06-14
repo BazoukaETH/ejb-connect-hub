@@ -12,13 +12,18 @@ import { NotificationsBell } from "@/components/NotificationsBell";
 
 // Paths visible to Committee Heads (everything else redirects to /my-committee).
 const COMMITTEE_HEAD_ALLOW = ["/my-committee", "/members", "/events", "/documents", "/resources", "/templates", "/announcements"];
+// Lite v1 launch role can only reach the 7 hand-over sections.
+const LITE_ALLOW = ["/members", "/applicants", "/partners", "/committees", "/events", "/announcements", "/documents", "/resources", "/templates"];
 
 function RoleGuard() {
   const { role } = useRole();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
-    if (role === "Committee Heads") {
+    if (role === "EJB Staff (Lite)") {
+      const allowed = LITE_ALLOW.some((p) => pathname === p || pathname.startsWith(p + "/"));
+      if (!allowed) navigate("/members", { replace: true });
+    } else if (role === "Committee Heads") {
       const allowed = COMMITTEE_HEAD_ALLOW.some((p) => pathname === p || pathname.startsWith(p + "/"));
       if (!allowed) navigate("/my-committee", { replace: true });
     }
@@ -93,6 +98,7 @@ function GlobalSearchBar() {
 function ShellInner() {
   const { role } = useRole();
   const personas: Record<string, { name: string; hue: number }> = {
+    "EJB Staff (Lite)": { name: "EJB Staff",      hue: 200 },
     "EJB Admin":       { name: "Amany Fikry",    hue: 220 },
     "Finance":         { name: "Finance Lead",   hue: 140 },
     "Committee Heads": { name: "Laila El-Sayed", hue: 180 },
