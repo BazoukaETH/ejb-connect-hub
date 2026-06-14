@@ -10,6 +10,7 @@ import {
   PARTNERS as SEED_PARTNERS,
   HISTORICAL_PARTNERS as SEED_HISTORICAL_PARTNERS,
   ADMIN_TEAM as SEED_ADMIN_TEAM,
+  SPONSOR_PIPELINE as SEED_PIPELINE,
   AREAS_OF_FOCUS,
   PRODUCTS_SERVICES,
   type Member,
@@ -23,6 +24,7 @@ import {
   type SponsorPackage,
   type SponsorTier,
   type SponsorStatus,
+  type SponsorDeal,
 } from "@/data/mock";
 
 // ---------------- RSVP ----------------
@@ -175,6 +177,7 @@ interface DemoState {
   announcements: Announcement[];
   partners: Partner[];
   historicalPartners: Partner[];
+  pipeline: SponsorDeal[];
   team: AdminUser[];
   rsvps: Rsvp[];
   transactions: Tx[];
@@ -209,6 +212,7 @@ interface DemoState {
   addAnnouncement: (a: Partial<Announcement> & { title: string; body: string }) => Announcement;
   // Partners
   addPartner: (p: Partial<Partner> & { name: string }) => Partner;
+  addSponsorDeal: (d: Omit<SponsorDeal, "id" | "daysInStage"> & { daysInStage?: number }) => SponsorDeal;
   updatePartner: (id: string, patch: Partial<Partner>) => void;
   reorderPartners: (orderedIds: string[]) => void;
   addReEngagement: (partnerId: string, entry: Omit<ReEngagement, "id">) => void;
@@ -244,6 +248,7 @@ export const useDemoStore = create<DemoState>((set, get) => ({
   announcements: SEED_ANNOUNCEMENTS,
   partners: SEED_PARTNERS,
   historicalPartners: SEED_HISTORICAL_PARTNERS,
+  pipeline: SEED_PIPELINE,
   team: SEED_ADMIN_TEAM,
   rsvps: seedRsvps(),
   transactions: SEED_TX,
@@ -419,6 +424,13 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     set((s) => ({ partners: [partner, ...s.partners] }));
     toast.success("Partner added", { description: `${partner.name} - ${partner.tier} tier.` });
     return partner;
+  },
+
+  addSponsorDeal: (d) => {
+    const deal: SponsorDeal = { id: `sd-${Date.now()}`, ...d, daysInStage: d.daysInStage ?? 0 };
+    set((s) => ({ pipeline: [deal, ...s.pipeline] }));
+    toast.success("Sponsor added to pipeline", { description: `${deal.name} · ${deal.stage}` });
+    return deal;
   },
 
   reorderPartners: (orderedIds) => {
