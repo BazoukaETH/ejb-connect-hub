@@ -9,13 +9,13 @@ interface AvatarProps {
 }
 
 export function Avatar({ name, hue = 220, size = "md", className, square }: AvatarProps) {
-  const initials = name
+  const initials = (name ?? "?")
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
     .map((p) => p[0])
     .join("")
-    .toUpperCase();
+    .toUpperCase() || "?";
 
   const sizes = {
     xs: "h-6 w-6 text-[10px]",
